@@ -2,6 +2,7 @@ import express from 'express';
 import database from './database/connectDB.js'
 import dotenv from 'dotenv'; // to use env variables
 import userRouter from './routes/userRouter.js';
+import data from './data.js';
 
 dotenv.config();
 
@@ -11,9 +12,13 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 database.call();
 
-//Middlewares
-app.use('api/users', userRouter);
 
+//Middlewares
+app.use('/api/users', userRouter);
+
+app.get('/', (req, res) => {
+    res.send('Server is ready');
+});
 
 app.use((err,req,res, next) => {
     res.status(500).send({message: err.message});
@@ -22,4 +27,4 @@ app.use((err,req,res, next) => {
 const port = process.env.PORT;
 app.listen(port, () => {
     console.log(`Server is running on port:  http://localhost:${port}`);
-})
+});

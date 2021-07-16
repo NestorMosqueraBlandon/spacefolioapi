@@ -17,6 +17,7 @@
     "express-async-handler": "^1.1.4",
     "express-jwt": "^6.0.0",
     "jsonwebtoken": "^8.5.1",
+    "mailgun-js": "^0.22.0",
     "mongoose": "^5.13.2",
     "nodemon": "^2.0.12"
   },
