@@ -78,8 +78,8 @@ export const resolvers = {
             }
         },
 
-        async sendResetPassword(_, {input}){
-            
+        async resetPassword(_, {input}){
+
         }
     }
 
