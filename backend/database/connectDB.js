@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const connectDB = () => {
+ const connectDB = () => {
     mongoose.connect(process.env.MONGODB_URL || 'mongodb://localhost/spacefolio', {
         useNewUrlParser: true,
         useUnifiedTopology: true,
