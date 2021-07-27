@@ -24,7 +24,7 @@ export const resolvers = {
 
             const token = await sendConfirmationEmail({ email, password });
             console.log(token);
-            return { token, input };
+            return { token, user };
         },
 
         async emailActivate(_, { token }) {
@@ -49,7 +49,7 @@ export const resolvers = {
         async signin(_, { input }) {
             const email = input.email;
             const user = await User.findOne({ email });
-            console.log(user);
+
             if (!user) {
                 throw new Error('This user doesnt exist, signup first')
             } else {
@@ -68,18 +68,41 @@ export const resolvers = {
 
         async forgotPassword(_, { email }) {
             const user = await User.findOne({email});
+            console.log(user);
             if(!user){
                 return "User with this email does not exists."
             }
             else{
-                const token  = await sendResetPassword({ user });
-                await user.updateOne({resetLink: token});
+                const token  = await sendResetPassword( user );
+                await user.updateOne({token: token});
+                console.log(token);
                 return "Email has been sent, kindly activate follow the instrutions"
             }
         },
 
         async resetPassword(_, {input}){
+            const token = input.token;
+            const newPassword = bcrypt.hashSync(input.newPassword, 8);
 
+            try
+            {
+                if(token){
+                    const verifyToken = jwt.verify(token, process.env.JWT_ACC_ACTIVATE);
+                    console.log('Verify', verifyToken);
+                    
+                    const user = await User.findOne({token});
+                    console.log('OldUser', user)
+                    if(!user){
+                        return "User with this token does not exists."
+                    }else{
+                        await user.updateOne({password: newPassword});
+                        return "Your password has been changed"
+                    }
+                }
+            }catch{
+
+                return "Reset password error"
+            }
         }
     }
 

@@ -45,6 +45,7 @@ export const sendResetPassword = async (user) => {
 
     const url =  `${process.env.CLIENT_URL}/resetpassword/${token}`;
 
+    console.log(email);
     const data = {
         from: 'noreply@spacefolio.com',
         to: email,
