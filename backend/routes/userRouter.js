@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import mailgun from 'mailgun-js';
 import lodash from 'lodash';
 import bcrypt from 'bcrypt';
+import config from '../utils/config.js';
 
 //Mailgun configuration
 const DOMAIN = 'sandbox3ceb8a67548640459e759b3626d3565a.mailgun.org';
@@ -26,7 +27,7 @@ userRouter.post('/signup', expressAsyncHandler(async (req, res) => {
         if (user) {
             return res.status(400).json({ error: 'User with this email already exists.' });
         }
-        const token = jwt.sign({ email, password }, process.env.JWT_ACC_ACTIVATE, { expiresIn: '20m' });
+        const token = jwt.sign({ email, password }, config.JWT_ACC_ACTIVATE, { expiresIn: '20m' });
         const data = {
             from: 'noreply@spacefolio.com',
             to: email,
@@ -34,7 +35,7 @@ userRouter.post('/signup', expressAsyncHandler(async (req, res) => {
             html: 
             `
                 <h2>Please click on given link to activate you account</h2>
-                <p>${process.env.CLIENT_URL}/autentication/activate/${token}</p>
+                <p>${config.CLIENT_URL}/autentication/activate/${token}</p>
             `
         };
         mg.messages().send(data, function (error, body) {
@@ -53,7 +54,7 @@ userRouter.post('/email-activate', expressAsyncHandler(async (req, res) => {
     const { token } = req.body;
 
     if (token) {
-        jwt.verify(token, process.env.JWT_ACC_ACTIVATE, (err, decodeedToken) => {
+        jwt.verify(token, config.JWT_ACC_ACTIVATE, (err, decodeedToken) => {
             if (err) {
                 return res.status(400).json({ error: 'Incorrect o Expired link' });
             }
@@ -96,7 +97,7 @@ userRouter.post('/signin',  expressAsyncHandler(async(req,res) => {
             });
         }
 
-        const token = jwt.sign({_id: user._id }, process.env.JWT_SIGNIN_KEY, {});
+        const token = jwt.sign({_id: user._id }, config.JWT_SIGNIN_KEY, {});
         const {_id, email} = user;
 
         res.json({
@@ -114,7 +115,7 @@ userRouter.post('/forgot-password', expressAsyncHandler(async(req,res) => {
             return res.status(400).json({ error: 'User with this email does not exists.' });
         }
 
-        const token = jwt.sign({ _id: user._id }, process.env.JWT_ACC_ACTIVATE, { expiresIn: '20m' });
+        const token = jwt.sign({ _id: user._id }, config.JWT_ACC_ACTIVATE, { expiresIn: '20m' });
         const data = {
             from: 'noreply@spacefolio.com',
             to: email,
@@ -122,7 +123,7 @@ userRouter.post('/forgot-password', expressAsyncHandler(async(req,res) => {
             html: 
             `
                 <h2>Please click on given link to reset your password</h2>
-                <p>${process.env.CLIENT_URL}/resetpassword/${token}</p>
+                <p>${config.CLIENT_URL}/resetpassword/${token}</p>
             `
         };
         	
@@ -149,7 +150,7 @@ userRouter.post('/reset-password', expressAsyncHandler(async(req,res) => {
 
     if(resetLink)
     {
-        jwt.verify(resetLink, process.env.RESET_PASSWORD_KEY, (err, decodeedToken) => {
+        jwt.verify(resetLink, config.RESET_PASSWORD_KEY, (err, decodeedToken) => {
             console.log(err);
             if(err){
                 return res.status(401).json({error: "Incorrect token or it is expired"});

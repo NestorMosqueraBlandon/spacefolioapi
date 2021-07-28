@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
+import config from '../utils/config.js';
 
  const connectDB = () => {
-    mongoose.connect(process.env.MONGODB_URL || 'mongodb://localhost/spacefolio', {
+    mongoose.connect(config.MONGODB_URL || 'mongodb://localhost/spacefolio', {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex: true,

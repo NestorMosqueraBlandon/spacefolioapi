@@ -1,14 +1,12 @@
 import express from 'express';
+import config from './utils/config.js'
 import { graphqlHTTP } from 'express-graphql';
 import { graphql, GraphQLSchema, buildSchema, GraphQLString, GraphQLObjectType, } from 'graphql';
 import bodyParser from 'body-parser';
 import database from './database/connectDB.js'
-import dotenv from 'dotenv'; // to use env variables
 import userRouter from './routes/userRouter.js';
 import data from './data.js';
 import schema from './utils/schema.js';
-
-dotenv.config();
 
 const app = express();
 
@@ -43,8 +41,8 @@ app.use('/graphql', graphqlHTTP({
 app.use((err,req,res, next) => {
     res.status(500).send({message: err.message});
 });
-
-const port = process.env.PORT;
+console.log(`NODE_ENV=${config.NODE_ENV}`);
+const port = config.PORT;
 app.listen(port, () => {
     console.log(`Server is running on port:  http://localhost:${port}`);
     console.log('Running a GraphQL API server at http://localhost:8000/graphql');

@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import lodash from 'lodash';
 
 import { sendConfirmationEmail, sendResetPassword } from '../services/emailService.js';
+import config from './config.js';
 export const resolvers = {
     Query: {
         async users() {
@@ -30,7 +31,7 @@ export const resolvers = {
         async emailActivate(_, { token }) {
             try {
                 if (token) {
-                    const { email, password } = jwt.verify(token, process.env.JWT_ACC_ACTIVATE);
+                    const { email, password } = jwt.verify(token, config.JWT_ACC_ACTIVATE);
                     const user = await User.findOne({ email });
                     if (user) {
                         return false
@@ -57,7 +58,7 @@ export const resolvers = {
                     throw new Error("Email or password incorrect")
                 }
                 else {
-                    const token = jwt.sign({ _id: user._id }, process.env.JWT_SIGNIN_KEY, {});
+                    const token = jwt.sign({ _id: user._id }, config.JWT_SIGNIN_KEY, {});
                     return ({
                         token,
                         user
@@ -87,7 +88,7 @@ export const resolvers = {
             try
             {
                 if(token){
-                    const verifyToken = jwt.verify(token, process.env.JWT_ACC_ACTIVATE);
+                    const verifyToken = jwt.verify(token, config.JWT_ACC_ACTIVATE);
                     console.log('Verify', verifyToken);
                     
                     const user = await User.findOne({token});

@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --watch backend --exec node --experimental-modules backend/server.js",
+    "start": "set NODE_ENV=development && nodemon --watch backend --exec node --experimental-modules backend/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -24,7 +24,8 @@
     "lodash": "^4.17.21",
     "mailgun-js": "^0.22.0",
     "mongoose": "^5.13.2",
-    "nodemon": "^2.0.12"
+    "nodemon": "^2.0.12",
+    "path": "^0.12.7"
   },
   "engines": {
     "node": "12.4.0",

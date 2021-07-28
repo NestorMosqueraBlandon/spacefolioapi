@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import mailgun from 'mailgun-js';
+import config from '../utils/config.js';
 
 //Mailgun configuration
 const DOMAIN = 'sandbox3ceb8a67548640459e759b3626d3565a.mailgun.org';
@@ -10,9 +11,9 @@ export const sendConfirmationEmail = async (user) => {
     const email = user.email;
     const password = user.password;
 
-    const token = await jwt.sign({email, password }, process.env.JWT_ACC_ACTIVATE, { expiresIn: '20m' });
+    const token = await jwt.sign({email, password }, config.JWT_ACC_ACTIVATE, { expiresIn: '20m' });
 
-    const url =  `${process.env.CLIENT_URL}/autentication/activate/${token}`;
+    const url =  `${config.CLIENT_URL}/autentication/activate/${token}`;
 
     const data = {
         from: 'noreply@spacefolio.com',
@@ -41,9 +42,9 @@ export const sendResetPassword = async (user) => {
     const _id = user.id;
     const email = user.email;
 
-    const token = await jwt.sign({_id}, process.env.JWT_ACC_ACTIVATE, { expiresIn: '20m' });
+    const token = await jwt.sign({_id}, config.JWT_ACC_ACTIVATE, { expiresIn: '20m' });
 
-    const url =  `${process.env.CLIENT_URL}/resetpassword/${token}`;
+    const url =  `${config.CLIENT_URL}/resetpassword/${token}`;
 
     console.log(email);
     const data = {
