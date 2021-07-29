@@ -22,6 +22,10 @@ app.get('/', (req, res) => {
     });
 });
 
+app.get('/', (req, res) => {
+    res.json(data.users);
+});
+
 app.use('/graphql', graphqlHTTP({
     schema: schema,
     rootValue: root,
