@@ -1,11 +1,13 @@
 import express from 'express';
 import config from './utils/config.js'
-import { graphqlHTTP } from 'express-graphql';
+import expressGraphql from 'express-graphql';
 import bodyParser from 'body-parser';
 import database from './database/connectDB.js'
 import userRouter from './routes/userRouter.js';
 import data from './data.js';
 import schema from './utils/schema.js';
+
+const { graphqlHTTP } = expressGraphql;
 
 const app = express();
 
