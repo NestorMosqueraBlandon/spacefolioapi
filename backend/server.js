@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
     });
 });
 
-app.get('/', (req, res) => {
+app.get('/data', (req, res) => {
     res.json(data.users);
 });
 
