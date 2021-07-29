@@ -1,7 +1,6 @@
 import express from 'express';
 import config from './utils/config.js'
 import { graphqlHTTP } from 'express-graphql';
-import { graphql, GraphQLSchema, buildSchema, GraphQLString, GraphQLObjectType, } from 'graphql';
 import bodyParser from 'body-parser';
 import database from './database/connectDB.js'
 import userRouter from './routes/userRouter.js';

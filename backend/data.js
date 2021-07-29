@@ -6,11 +6,6 @@ const data = {
       email: 'yunsde18@example.com',
       password: bcrypt.hashSync('1234', 8)
     },
-    {
-      email: 'useradmin@example.com',
-      password: bcrypt.hashSync('1234', 8)
-    }
-
   ],
 };
 
