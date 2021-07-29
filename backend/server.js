@@ -13,12 +13,6 @@ database.call();
 app.use(/\/((?!graphql).)*/, bodyParser.urlencoded({ extended: true }));
 app.use(/\/((?!graphql).)*/, bodyParser.json());
 
-const root = {
-    hello: () => {
-        return 'Hello world!';
-    },
-};
-
 //Middlewares
 app.use('/api/users', userRouter);
 
