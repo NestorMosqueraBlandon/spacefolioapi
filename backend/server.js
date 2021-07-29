@@ -41,7 +41,7 @@ app.use('/graphql', graphqlHTTP({
 app.use((err,req,res, next) => {
     res.status(500).send({message: err.message});
 });
-console.log(`NODE_ENV=${config.NODE_ENV}`);
+
 const port = config.PORT;
 app.listen(port, () => {
     console.log(`Server is running on port:  http://localhost:${port}`);
