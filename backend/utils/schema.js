@@ -1,4 +1,6 @@
-import { makeExecutableSchema } from '@graphql-tools/schema';
+import graphqlTools from 'graphql-tools';
+const { makeExecutableSchema } = graphqlTools;
+
 import {resolvers} from './resolvers.js';
 
 const typeDefs = `
