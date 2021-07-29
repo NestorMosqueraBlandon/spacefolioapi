@@ -13,6 +13,12 @@ database.call();
 app.use(/\/((?!graphql).)*/, bodyParser.urlencoded({ extended: true }));
 app.use(/\/((?!graphql).)*/, bodyParser.json());
 
+const root = {
+    hello: () => {
+        return 'Hello world!';
+    },
+};
+
 //Middlewares
 app.use('/api/users', userRouter);
 
@@ -20,10 +26,6 @@ app.get('/', (req, res) => {
     res.json({
         message: 'Hello world'
     });
-});
-
-app.get('/data', (req, res) => {
-    res.json(data.users);
 });
 
 app.use('/graphql', graphqlHTTP({
