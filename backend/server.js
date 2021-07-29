@@ -45,7 +45,7 @@ console.log(`NODE_ENV=${config.NODE_ENV}`);
 const port = config.PORT;
 app.listen(port, () => {
     console.log(`Server is running on port:  http://localhost:${port}`);
-    console.log('Running a GraphQL API server at http://localhost:8000/graphql');
+    console.log(`Running a GraphQL API server at http://localhost:${port}/graphql`);
 });
 
 
