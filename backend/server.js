@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import database from './database/connectDB.js'
 import userRouter from './routes/userRouter.js';
 import data from './data.js';
+import cors from 'cors';
 import schema from './utils/schema.js';
 
 const { graphqlHTTP } = expressGraphql;
@@ -15,6 +16,7 @@ database.call();
 app.use(/\/((?!graphql).)*/, bodyParser.urlencoded({ extended: true }));
 app.use(/\/((?!graphql).)*/, bodyParser.json());
 
+
 const root = {
     hello: () => {
         return 'Hello world!';
@@ -23,6 +25,8 @@ const root = {
 
 //Middlewares
 app.use('/api/users', userRouter);
+app.use(cors());
+
 
 app.get('/', (req, res) => {
     res.json({
