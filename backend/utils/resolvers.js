@@ -1,10 +1,13 @@
 import User from '../models/userModel.js'
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import messagebird from 'messagebird';
 import lodash from 'lodash';
+
 
 import { sendConfirmationEmail, sendResetPassword } from '../services/emailService.js';
 import config from './config.js';
+import { isValidNameError } from 'graphql';
 export const resolvers = {
     Query: {
         async users() {
@@ -12,45 +15,45 @@ export const resolvers = {
             return users;
         },
     },
-
+    
     Mutation: {
         async signup(_, { input }) {
-            const password = bcrypt.hashSync(input.password, 8);
             const email = input.email;
-            console.log(email);
+            const password = bcrypt.hashSync(input.password, 8);
+            
             const user = await User.findOne({ email });
             if (user) {
                 throw new Error("User this email already exists.");
             }
-
+        
             const token = await sendConfirmationEmail({ email, password });
-            console.log(token);
-            return { token, user };
+
+            console.log("CODE", token);
+            let newUser = new User({ email, password,  activateCode: token});
+            console.log("newUser", newUser)
+            newUser.save();
+
+            return { token };
         },
 
         async emailActivate(_, { token }) {
             try {
-                if (token) {
-                    const { email, password } = jwt.verify(token, config.JWT_ACC_ACTIVATE);
-                    const user = await User.findOne({ email });
-                    if (user) {
-                        return false
-                    }
-
-                    let newUser = new User({ email, password });
-                    newUser.save();
-                    return true;
+                const activateCode = token;
+                const user = await User.findOne({ activateCode }); 
+                if (user) {
+                    await user.updateOne({activate: true});
+                    return user;
 
                 }
             } catch (err) {
                 return false
             }
         },
-
+        
         async signin(_, { input }) {
             const email = input.email;
             const user = await User.findOne({ email });
-
+            
             if (!user) {
                 throw new Error('This user doesnt exist, signup first')
             } else {

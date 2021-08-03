@@ -24,10 +24,14 @@ const typeDefs = `
         user: User
     }
 
+    type ActivateEmail {
+        user: User
+    }
+
     type Mutation{
         signup(input: UserInput): MessageSignin
         signin(input: UserInput): MessageSignin
-        emailActivate(token: String): Boolean!
+        emailActivate(token: String): ActivateEmail
         forgotPassword(email: String): String!
         resetPassword(input: ResetPasswordInput): String!
     }

@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken';
 import mailgun from 'mailgun-js';
 import config from '../utils/config.js';
+import messagebird from 'messagebird';
+import otpGenerator from 'otp-generator';
 
 //Mailgun configuration
 const DOMAIN = 'sandbox3ceb8a67548640459e759b3626d3565a.mailgun.org';
@@ -11,18 +13,21 @@ export const sendConfirmationEmail = async (user) => {
     const email = user.email;
     const password = user.password;
 
-    const token = await jwt.sign({email, password }, config.JWT_ACC_ACTIVATE, { expiresIn: '20m' });
+    const otpCode = otpGenerator.generate(6, {upperCase: false, specialChars: false});
+    
+    // const token = await jwt.sign({email, password }, config.JWT_ACC_ACTIVATE, { expiresIn: '20m' });
+    const token = otpCode;
 
     const url =  `${config.CLIENT_URL}/autentication/activate/${token}`;
 
     const data = {
         from: 'noreply@spacefolio.com',
         to: user.email,
-        subject: 'Account Activation Link',
+        subject: 'Account Activation Code',
         html: 
         `
-            <h2>Please click on given link to activate you account</h2>
-            <p>${url}</p>
+            <h2>Your activation code is</h2>
+            <p>${otpCode}</p>
         `
     };
 

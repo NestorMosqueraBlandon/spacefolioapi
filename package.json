@@ -23,7 +23,9 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "mailgun-js": "^0.22.0",
+    "messagebird": "^3.6.4",
     "mongoose": "^5.13.2",
+    "otp-generator": "^2.0.1",
     "path": "^0.12.7"
   },
   "engines": {
