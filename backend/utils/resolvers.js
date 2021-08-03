@@ -1,13 +1,11 @@
 import User from '../models/userModel.js'
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import messagebird from 'messagebird';
-import lodash from 'lodash';
 
 
 import { sendConfirmationEmail, sendResetPassword } from '../services/emailService.js';
 import config from './config.js';
-import { isValidNameError } from 'graphql';
+
 export const resolvers = {
     Query: {
         async users() {
