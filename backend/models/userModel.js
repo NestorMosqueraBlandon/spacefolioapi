@@ -5,7 +5,8 @@ const userSchema = new mongoose.Schema({
     password: {type: String, required: true},
     activateCode: {type: String, required: true},
     activate: {type: Boolean, required: true, default:false},
-    token:{ data: String, dafault: ''}
+    balance:{type: Number, default: 0},
+    token:{ data: String, dafault: ''},
 },{
     timestamps: true
 });

@@ -1,17 +1,48 @@
 import User from '../models/userModel.js'
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+<<<<<<< HEAD
+=======
+import CoinGecko from 'coingecko-api';
+>>>>>>> develop
 
+const CoinGeckoClient = new CoinGecko();
 
 import { sendConfirmationEmail, sendResetPassword } from '../services/emailService.js';
 import config from './config.js';
+<<<<<<< HEAD
+=======
+import BuyManualTransaction from '../models/buyManualTransaction.js';
+import SellManualTransaction from '../models/sellManualTransaction.js';
+import TransferTransaction from '../models/transferTransaction.js';
+
+>>>>>>> develop
 
 export const resolvers = {
     Query: {
         async users() {
             const users = await User.find();
+            console.log(users);
             return users;
         },
+        
+        // TRANSACTION
+        async coinList(){
+            let data = await CoinGeckoClient.coins.all();
+            let e = null;
+            for(e in data){
+                //
+            }
+            return data[e];
+        },
+        async exchangeList(){
+            const exchange = await CoinGeckoClient.exchanges.all();
+            let e = null;
+            for(e in exchange){
+                //
+            }
+            return exchange[e];
+        }
     },
     
     Mutation: {
@@ -26,7 +57,6 @@ export const resolvers = {
         
             const token = await sendConfirmationEmail({ email, password });
 
-            console.log("CODE", token);
             let newUser = new User({ email, password,  activateCode: token});
             console.log("newUser", newUser)
             newUser.save();
@@ -40,8 +70,8 @@ export const resolvers = {
                 const user = await User.findOne({ activateCode }); 
                 if (user) {
                     await user.updateOne({activate: true});
-                    return user;
-
+                    const token = jwt.sign({ _id: user._id }, config.JWT_SIGNIN_KEY, {});
+                    return {user,token};
                 }
             } catch (err) {
                 return false
@@ -52,18 +82,22 @@ export const resolvers = {
             const email = input.email;
             const user = await User.findOne({ email });
             
-            if (!user) {
+            if (!user ) {
                 throw new Error('This user doesnt exist, signup first')
             } else {
                 if (!bcrypt.compareSync(input.password, user.password)) {
                     throw new Error("Email or password incorrect")
                 }
                 else {
-                    const token = jwt.sign({ _id: user._id }, config.JWT_SIGNIN_KEY, {});
-                    return ({
-                        token,
-                        user
-                    });
+                    if(user.activate){   
+                        const token = jwt.sign({ _id: user._id }, config.JWT_SIGNIN_KEY, {});
+                        return ({
+                            token,
+                            user
+                        });
+                    }else{
+                        throw new Error("User don't activate")
+                    }
                 }
             }
         },
@@ -105,7 +139,45 @@ export const resolvers = {
 
                 return "Reset password error"
             }
+        },
+
+        // TRANSACTION
+        async addManualTransaction(_, {input}){
+
+            try {
+                const {coinId, quantity, buyPrice, type} = input;
+
+                if(type === 'sell'){
+                    const newTransaction = new SellManualTransaction({ coinId, quantity, buyPrice, type });
+                    await newTransaction.save();
+                    return "Sell Transaction add successfully" 
+                }else
+                {
+                    const newTransaction = new BuyManualTransaction({ coinId, quantity, buyPrice, type });
+                    await newTransaction.save();
+                    return "Buy Transaction add successfully" 
+                }
+                
+            }catch{
+                return "Manual Transaction Error"
+            }
+        },
+
+        async transferTransaction(_, {input}){
+            const {userId, from, to, quantity} = input;
+            const user = await User.findOne({userId});
+
+            if(from === 'myexchange' || from === 'mywallet'){
+                const newBalance = user.balence - quantity;
+                await user.updateOne({balence: newBalance});
+                const transfer = new TransferTransaction({from, to, quantity});
+                await transfer.save();
+            }else{
+                const newBalance = user.balence + quantity;
+                await user.updateOne({balence: newBalance});
+                const transfer = new TransferTransaction({from, to, quantity});
+                await transfer.save();
+            }
         }
     }
-
 }
