@@ -56,13 +56,13 @@ export const resolvers = {
                 throw new Error("User this email already exists.");
             }
         
-            const token = await sendConfirmationEmail({ email, password });
+            const otpCode = await sendConfirmationEmail({ email, password});
 
-            let newUser = new User({ email, password,  activateCode: token});
+            let newUser = new User({ email, password,  activateCode: otpCode});
             console.log("newUser", newUser)
             newUser.save();
 
-            return { token };
+            return { otpCode };
         },
 
         async emailActivate(_, { otpCode }) {
