@@ -79,6 +79,7 @@ const typeDefs = `
         resetPassword(input: ResetPasswordInput): String!
         addManualTransaction(input: AddManualTransactionInput) : String!
         transferTransaction(input: AddTransferTransactionInput) : String!
+        newCode(email: String): MessageSignin
     }
   
     input UserInput{

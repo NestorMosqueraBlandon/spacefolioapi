@@ -42,7 +42,8 @@ export const resolvers = {
             const transaction = await SellManualTransaction.find({userId})
             console.log(transaction)
             return transaction;
-        }
+        },
+
     },
     
     Mutation: {
@@ -143,6 +144,18 @@ export const resolvers = {
                 return "Reset password error"
             }
         },
+
+        async newCode(_, {email}){
+            
+            const user = await User.findOne({ email });
+            const otpCode = await sendConfirmationEmail({ email });
+
+            user.updateOne({activateCode: otpCode});
+
+            return { otpCode };
+
+        },
+
 
         // TRANSACTION
         async addManualTransaction(_, {input}){
