@@ -63,19 +63,18 @@ const typeDefs = `
         
     }
     type MessageSignin {
-        token: String
-        userId: String
+        otpCode: String
     }
 
     type ActivateEmail {
-        user: User
+        userId: String
         token: String
     }
 
     type Mutation{
         signup(input: UserInput): MessageSignin
         signin(input: UserInput): MessageSignin
-        emailActivate(token: String): ActivateEmail
+        emailActivate(otpCode: String): ActivateEmail
         forgotPassword(email: String): String!
         resetPassword(input: ResetPasswordInput): String!
         addManualTransaction(input: AddManualTransactionInput) : String!

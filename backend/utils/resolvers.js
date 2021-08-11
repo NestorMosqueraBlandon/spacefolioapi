@@ -64,9 +64,9 @@ export const resolvers = {
             return { token };
         },
 
-        async emailActivate(_, { token }) {
+        async emailActivate(_, { otpCode }) {
             try {
-                const activateCode = token;
+                const activateCode = otpCode;
                 const user = await User.findOne({ activateCode });
                 const userId = user._id; 
                 if (user) {
