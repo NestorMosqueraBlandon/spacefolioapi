@@ -13,7 +13,7 @@ export const sendConfirmationEmail = async (user) => {
     const email = user.email;
     const password = user.password;
 
-    const otpCode = otpGenerator.generate(6, {upperCase: false, specialChars: false});
+    const otpCode = otpGenerator.generate(6, {alphabets: false, upperCase: false, specialChars: false});
     
     // const token = await jwt.sign({email, password }, config.JWT_ACC_ACTIVATE, { expiresIn: '20m' });
     const token = otpCode;

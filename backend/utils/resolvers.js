@@ -17,7 +17,6 @@ export const resolvers = {
     Query: {
         async users() {
             const users = await User.find();
-            console.log(users);
             return users;
         },
         
@@ -37,6 +36,12 @@ export const resolvers = {
                 //
             }
             return exchange[e];
+        },
+
+        async getSellTransaction(_, {userId}){
+            const transaction = await SellManualTransaction.find({userId})
+            console.log(transaction)
+            return transaction;
         }
     },
     
@@ -62,11 +67,12 @@ export const resolvers = {
         async emailActivate(_, { token }) {
             try {
                 const activateCode = token;
-                const user = await User.findOne({ activateCode }); 
+                const user = await User.findOne({ activateCode });
+                const userId = user._id; 
                 if (user) {
                     await user.updateOne({activate: true});
                     const token = jwt.sign({ _id: user._id }, config.JWT_SIGNIN_KEY, {});
-                    return {user,token};
+                    return {userId, token};
                 }
             } catch (err) {
                 return false
@@ -76,7 +82,8 @@ export const resolvers = {
         async signin(_, { input }) {
             const email = input.email;
             const user = await User.findOne({ email });
-            
+            console.log(user);
+            const userId = user._id;
             if (!user ) {
                 throw new Error('This user doesnt exist, signup first')
             } else {
@@ -84,11 +91,12 @@ export const resolvers = {
                     throw new Error("Email or password incorrect")
                 }
                 else {
-                    if(user.activate){   
+                    console.log(user.activete)
+                    if(user){   
                         const token = jwt.sign({ _id: user._id }, config.JWT_SIGNIN_KEY, {});
                         return ({
                             token,
-                            user
+                            userId
                         });
                     }else{
                         throw new Error("User don't activate")
@@ -140,15 +148,15 @@ export const resolvers = {
         async addManualTransaction(_, {input}){
 
             try {
-                const {coinId, quantity, buyPrice, type} = input;
+                const {userId, coinId, quantity, buyPrice, type} = input;
 
                 if(type === 'sell'){
-                    const newTransaction = new SellManualTransaction({ coinId, quantity, buyPrice, type });
+                    const newTransaction = new SellManualTransaction({ userId, coinId, quantity, buyPrice, type });
                     await newTransaction.save();
                     return "Sell Transaction add successfully" 
                 }else
                 {
-                    const newTransaction = new BuyManualTransaction({ coinId, quantity, buyPrice, type });
+                    const newTransaction = new BuyManualTransaction({ userId, coinId, quantity, buyPrice, type });
                     await newTransaction.save();
                     return "Buy Transaction add successfully" 
                 }
@@ -160,7 +168,9 @@ export const resolvers = {
 
         async transferTransaction(_, {input}){
             const {userId, from, to, quantity} = input;
-            const user = await User.findOne({userId});
+
+            const user = await User.findOne({_id: userId});
+            console.log(user)
 
             if(from === 'myexchange' || from === 'mywallet'){
                 const newBalance = user.balence - quantity;
@@ -168,10 +178,11 @@ export const resolvers = {
                 const transfer = new TransferTransaction({from, to, quantity});
                 await transfer.save();
             }else{
-                const newBalance = user.balence + quantity;
-                await user.updateOne({balence: newBalance});
+                const newBalance = parseFloat(user.balence) + parseFloat(quantity);
+                await user.updateOne({balence: parseFloat(newBalance)});
                 const transfer = new TransferTransaction({from, to, quantity});
                 await transfer.save();
+                return "Transfer Transaction successfully"
             }
         }
     }

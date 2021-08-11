@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
 
 const transferTransactionSchema = new mongoose.Schema({
-    coinId: {type: String, required: true},
+    userId: {type: String},
+    from: {type: String},
+    to: {type: String},
     quantity: {type: Number, required: true},
-    buyPrice: {type: Number, required: true},
     exchangue: {type: Boolean},
     tradingPair:{ data: String},
     feeId:{ data: String},

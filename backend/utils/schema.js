@@ -8,6 +8,8 @@ const typeDefs = `
         users: [User]
         coinList: [Coin]
         exchangeList: [Exchange]
+        getSellTransaction(userId: String): [SellTransaction]
+        getBuyTransaction(userId: String): [BuyTransaction]
     }
 
     type User{
@@ -22,6 +24,33 @@ const typeDefs = `
         image: String
     }
 
+    type SellTransaction{
+        userId: String
+        coinId: String
+        quantity: String
+        buyPrice: String 
+        exchangue: Boolean
+        tradingPair: String
+        feeId: String
+        date: String
+        time: String
+        note: String
+        type: String
+    }
+    type BuyTransaction{
+        userId: String
+        coinId: String
+        quantity: String
+        buyPrice: String 
+        exchangue: Boolean
+        tradingPair: String
+        feeId: String
+        date: String
+        time: String
+        note: String
+        type: String
+    }
+
     type Coin{
         id: String
         name: String
@@ -29,17 +58,18 @@ const typeDefs = `
     }
 
     type MessageSignup {
-        token: String!
+        otpCode: String!
         user: User
         
     }
     type MessageSignin {
         token: String
-        user: User
+        userId: String
     }
 
     type ActivateEmail {
         user: User
+        token: String
     }
 
     type Mutation{
@@ -58,6 +88,7 @@ const typeDefs = `
     }
   
     input AddManualTransactionInput{
+        userId: String!
         type: String!
         coinId: String!
         quantity: String!
@@ -71,6 +102,7 @@ const typeDefs = `
     }
     
     input AddTransferTransactionInput{
+        userId: String!
         from: String!
         to: String!
         quantity: String!
