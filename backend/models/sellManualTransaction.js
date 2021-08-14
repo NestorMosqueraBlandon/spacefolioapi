@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const sellManualTransactionSchema = new mongoose.Schema({
-    userId: {type: String, required: true},
+    userId: {type: String},
     coinId: {type: String, required: true},
     quantity: {type: Number, required: true},
     buyPrice: {type: Number, required: true},

@@ -1,13 +1,15 @@
 import mongoose from 'mongoose';
 import config from '../utils/config.js';
 
- const connectDB = () => {
-    mongoose.connect(config.MONGODB_URL, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useCreateIndex: true,
-    }).then(() => console.log('Database connected established'))
-    .catch(err => console.log('Database connection error: ', err));
-}
-
-export default connectDB;
+(async () => {
+    try{
+        const db = await mongoose.connect(config.MONGODB_URL, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useCreateIndex: true,
+        });
+        console.log('Database is connected to:', db.connection.name)
+    }catch(err){
+        console.error(err);
+    }
+})();
