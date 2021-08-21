@@ -2,16 +2,16 @@ export const validateSignupInput = (email, password) => {
     const errors = {};
 
     if(email.trim() == ''){
-        errors.email = 'Email must not be empty';
+        errors.email = 101;
     }else{
         const regEx = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/
         if(!email.match(regEx)){
-            errors.email = 'Email must be a valid email address'
+            errors.email = 102
         }
     }
 
     if(password === ''){
-        errors.password = 'Password must not be empty';
+        errors.password = 103;
     }
 
     return {
@@ -24,15 +24,15 @@ export const validateSigninInput = (email, password) => {
 
     const errors = {};
     if(email.trim() == ''){
-        errors.email = 'Email must not be empty';
+        errors.email = 101;
     }else{
         const regEx = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/
         if(!email.match(regEx)){
-            errors.email = 'Email must be a valid email address'
+            errors.email = 102
         }
     }
     if(password === ''){
-        errors.password = 'Password must not be empty';
+        errors.password = 104;
     }
     
     return {

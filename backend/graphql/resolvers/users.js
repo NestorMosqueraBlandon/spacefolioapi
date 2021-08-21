@@ -26,9 +26,9 @@ export default {
             // Sure user doesn't already exist
             const user = await User.findOne({email});
             if(user){
-                throw new Error('email is taken', {
+                throw new Error('Error', {
                     errors: {
-                        email: 'email is taken'
+                        email: 104
                     }
                 })
             }
@@ -74,7 +74,7 @@ export default {
             const user = await User.findOne({ email });
             
             if(!user){
-                errors.general = 'User not found';
+                errors.general = 105;
                 throw new Error('Wrong credentials', {errors});
             }
             
@@ -96,13 +96,13 @@ export default {
             const user = await User.findOne({email});
             console.log(user);
             if(!user){
-                return "User with this email does not exists."
+                return 106
             }
             else{
                 const token  = await sendResetPassword( user );
                 await user.updateOne({token: token});
                 console.log(token);
-                return "Email has been sent, kindly activate follow the instrutions"
+                return 501
             }
         },
 
@@ -119,15 +119,15 @@ export default {
                     const user = await User.findOne({token});
                     console.log('OldUser', user)
                     if(!user){
-                        return "User with this token does not exists."
+                        return 107
                     }else{
                         await user.updateOne({password: newPassword});
-                        return "Your password has been changed"
+                        return 502
                     }
                 }
             }catch{
 
-                return "Reset password error"
+                return 108
             }
         },
 

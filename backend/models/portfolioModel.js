@@ -1,15 +1,60 @@
 import mongoose from 'mongoose';
 
 const portfolioSchema = new mongoose.Schema({
-    name: {type: String, required: true, unique:true, trim:true},
-    balance: {type: String, required: true},
-    dfCurrency: {type: String, required: true},
-    transanctions:[
+    name: {type: String, unique:true, trim:true},
+    balance: {type: Number, default: 0},
+    dfCurrency: {type: String, },
+    sellTransactions:[
         {
-            type: {type: String},
-            transactionId: {type:String}
+            userId:  String,
+            coinId: String,
+            quantity:  Number,
+            buyPrice:  Number,
+            exchangue:  Boolean,
+            tradingPair: String,
+            feeId: String,
+            date: String,
+            time: String,
+            note: String,
+            model: Number,
+            createdAt: String
         }
-    ]
+    ],
+    buyTransactions:[
+        {
+            userId:  String,
+            coinId: String,
+            quantity:  Number,
+            buyPrice:  Number,
+            exchangue:  Boolean,
+            tradingPair: String,
+            feeId: String,
+            date: String,
+            time: String,
+            note: String,
+            model: Number,
+            createdAt: String
+        }
+    ],
+    transferTransactions:[
+        {
+            from:  String,
+            to: String,
+            quantity:  Number,
+            buyPrice:  Number,
+            exchangue:  Boolean,
+            tradingPair: String,
+            feeId: String,
+            date: String,
+            time: String,
+            note: String,
+            createdAt: String
+        }
+    ],
+    user:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }
 },{
     timestamps: true
 });

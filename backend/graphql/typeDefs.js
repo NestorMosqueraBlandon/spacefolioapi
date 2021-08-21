@@ -1,12 +1,28 @@
 const typeDefs = `
 
 type Query{
+ 
     users: [User]
     coinList: [Coin]
     exchangeList: [Exchange]
     getSellTransaction(userId: String): [SellTransaction]
     getBuyTransaction(userId: String): [BuyTransaction]
     getTransferTransaction(userId: String): [TransferTransaction]
+    currencyList: [Coin]
+    getPortfolios: [Portfolio]
+    getPortfolio(portfolioId: ID!): Portfolio
+}
+
+type Portfolio {
+    id: ID!
+    name: String!
+    dfCurrency: String!
+    sellTransanctions: [SellTransaction]!
+    buyTransanctions: [SellTransaction]!
+    transferTransanctions: [TransferTransaction]!
+    tranferCount: Int!
+    sellCount: Int!
+    createdAt: String!
 }
 
 type User{
@@ -90,7 +106,8 @@ input UserInput{
 }
 
 input AddManualTransactionInput{
-    type: String!
+    portfolioId: String
+    model: String!
     coinId: String!
     quantity: String!
     buyPrice: String!
@@ -103,7 +120,7 @@ input AddManualTransactionInput{
 }
 
 input AddTransferTransactionInput{
-    userId: String!
+    portfolioId: String!
     from: String!
     to: String!
     quantity: String!
@@ -135,6 +152,7 @@ type Mutation{
     transferTransaction(input: AddTransferTransactionInput) : String!
     newCode(email: String): MessageSignin
     createPortfolio(input: CreatePortfolioInput) : String!
+    deleteBuySellTransaction(portfolioId: ID!, transactionId: ID!): SellTransaction!
 }
 `;
 

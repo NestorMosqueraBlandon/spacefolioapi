@@ -4,6 +4,8 @@ import BuyManualTransaction from '../../models/buyManualTransaction.js';
 import SellManualTransaction from '../../models/sellManualTransaction.js';
 import TransferTransaction from '../../models/transferTransaction.js';
 import checkAuth from "../../utils/checkAuth.js";
+import User from '../../models/userModel.js'
+import Portfolio from "../../models/portfolioModel.js";
 
 const CoinGeckoClient = new CoinGecko();
 export default {
@@ -65,43 +67,96 @@ export default {
 
     Mutation:{
         async addManualTransaction(_, {input}, context){
-            try {
-                const user = checkAuth(context);
-                const  {coinId, quantity, buyPrice, type} = input;
-                console.log(quantity);
-                if(type === 'sell'){
-                    const newTransaction = new SellManualTransaction({ userId: user.id, coinId, quantity, buyPrice, type });
-                    await newTransaction.save();
-                    return "Sell Transaction add successfully" 
-                }else
-                {
-                    const newTransaction = new BuyManualTransaction({userId: user.id, coinId, quantity, buyPrice, type });
-                    await newTransaction.save();
-                    return "Buy Transaction add successfully" 
+            const user = checkAuth(context);
+            const  {portfolioId, coinId, quantity, buyPrice, model} = input;
+            const portfolio = await Portfolio.findById(portfolioId);
+
+            if(portfolio){
+                if(model === 0){
+
+                    
+                    portfolio.sellTransactions.unshift({
+                        coinId, 
+                        quantity, 
+                        buyPrice, 
+                        model, 
+                        createdAt: new Date().toISOString()
+                    });
+                    
+                    await portfolio.save();
+                    return 301 
+                }else{
+
+                    portfolio.buyTransactions.unshift({
+                        coinId, 
+                        quantity, 
+                        buyPrice, 
+                        model, 
+                        createdAt: new Date().toISOString()
+                    });
+                    
+                    await portfolio.save();
+                    return 301 
                 }
-                
-            }catch{
-                return "Manual Transaction Error"
+            }else{
+                throw new Error(701)
             }
         },
 
-        async transferTransaction(_, {input}){
-            const {userId, from, to, quantity} = input;
+        async transferTransaction(_, {input}, context){
+            const user = checkAuth(context);
+            const {from, to, quantity, portfolioId} = input;
 
-            const user = await User.findOne({_id: userId});
+            const portfolio = await Portfolio.findById(portfolioId);
 
-            if(from === 'myexchange' || from === 'mywallet'){
-                const newBalance = user.balence - quantity;
-                await user.updateOne({balence: newBalance});
-                const transfer = new TransferTransaction({from, to, quantity});
-                await transfer.save();
+            if(portfolio){
+                if(from === "2" || from === "3"){
+                    
+                    portfolio.transferTransactions.unshift({
+                        from, 
+                        to, 
+                        quantity,  
+                        createdAt: new Date().toISOString()
+                    });
+                    
+                    portfolio.balance = parseInt(portfolio.balance) - parseInt(quantity);
+                    
+                    await portfolio.save();
+                    return 303 
+                }else{
+                    
+                    portfolio.transferTransactions.unshift({
+                        from, 
+                        to, 
+                        quantity,  
+                        createdAt: new Date().toISOString()
+                    });
+                    
+                    portfolio.balance =  parseInt(portfolio.balance) + parseInt(quantity);
+                    await portfolio.save();
+                    return 303 
+                }
             }else{
-                const newBalance = parseFloat(user.balence) + parseFloat(quantity);
-                await user.updateOne({balence: parseFloat(newBalance)});
-                const transfer = new TransferTransaction({from, to, quantity});
-                await transfer.save();
-                return "Transfer Transaction successfully"
+                throw new Error(701)
             }
+        },
+
+        async deleteBuySellTransaction(_, { portfolioId, transactionId }, context) {
+            const user = checkAuth(context);
+      
+            const portfolio = await Portfolio.findById(portfolioId);
+      
+            if (portfolio) {
+              const transactionIndex = portfolio.buyTransactions.findIndex((c) => c.id === transactionId);
+      
+             
+                portfolio.transactionIndex.splice(transactionIndex, 1);
+                await portfolio.save();
+                return portfolio;
+             
+            } else {
+              throw new Error(701);
+            }
+          }
         }
     }
-}

@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
 import config from './config.js';
+import { AuthenticationError } from 'apollo-server-errors';
+
 
 export default (context) => {
     // context = { ... headers }
@@ -9,14 +11,14 @@ export default (context) => {
         const token = authHeader.split('Bearer ')[1];
         if(token){
             try{
-                const user = jwt.verify(token, config.SECRET_KEY);
+                const user = jwt.verify(token, config.JWT_SIGNIN_KEY);
                 return user;
             }catch(err){
-                throw new Error('Invalid/Expired token');
+                throw new Error(601);
             }
         }
 
-        throw new Error('Authentication token must be \' Bearer [token]')
+        throw new Error(602)
     }
-    throw new Error('Authorization token must be provided')
+    throw new Error(603)
 }
