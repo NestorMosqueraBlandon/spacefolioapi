@@ -1,4 +1,4 @@
-const errorCode = {
+ const errorCode = {
     601: 'Invalid/Expired token',
     602: 'Authentication token must be \' Bearer [token]',
     603: 'Authorization token must be provided',
@@ -22,6 +22,7 @@ const succesCode = {
     302: 'Buy Transaction add successfully',
     303: 'Transfer Transaction successfully',
     401: 'Portfolio created successfully',
+    402: 'Portfolio deleted successfully',
     501: 'Email has been sent, kindly activate follow the instrutions',
     502: 'Your password has been changed'
 }
@@ -34,3 +35,4 @@ const genetalCode ={
     2: 'For myexchange',
     3: 'For mywallet',
 }
+

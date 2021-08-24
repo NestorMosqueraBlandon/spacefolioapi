@@ -83,6 +83,7 @@ type Coin{
     id: String
     name: String
     image: String
+    symbol: String
 }
 
 type MessageSignup {
@@ -153,6 +154,7 @@ type Mutation{
     newCode(email: String): MessageSignin
     createPortfolio(input: CreatePortfolioInput) : String!
     deleteBuySellTransaction(portfolioId: ID!, transactionId: ID!): SellTransaction!
+    deletePortfolio(portfolioId : ID!) : String!
 }
 `;
 

@@ -18,6 +18,7 @@ export default {
                 for(e in data){
                     //
                 }
+                console.log(data[e])
                 return data[e];
             }catch(err){
                 throw new Error(err);
@@ -72,9 +73,7 @@ export default {
             const portfolio = await Portfolio.findById(portfolioId);
 
             if(portfolio){
-                if(model === 0){
-
-                    
+                if(model == 0){
                     portfolio.sellTransactions.unshift({
                         coinId, 
                         quantity, 
@@ -96,7 +95,7 @@ export default {
                     });
                     
                     await portfolio.save();
-                    return 301 
+                    return 302
                 }
             }else{
                 throw new Error(701)
@@ -150,7 +149,7 @@ export default {
               const transactionIndex = portfolio.buyTransactions.findIndex((c) => c.id === transactionId);
       
              
-                portfolio.transactionIndex.splice(transactionIndex, 1);
+                portfolio.buyTransactions.splice(transactionIndex, 1);
                 await portfolio.save();
                 return portfolio;
              

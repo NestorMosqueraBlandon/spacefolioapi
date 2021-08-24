@@ -48,26 +48,19 @@ export default{
             }
         },
 
-        // async addManualTransaction(_, {input}, context){
-        //     try {
-        //         const user = checkAuth(context);
-        //         const  {portfolioId, coinId, quantity, buyPrice, type} = input;
-        //         console.log(quantity);
-        //         if(type === 'sell'){
-        //             const newTransaction = new SellManualTransaction({ coinId, quantity, buyPrice, type });
-        //             const newPortfolioTransaction = new Portfolio({ coinId, quantity, buyPrice, type });
-        //             await newTransaction.save();
-        //             return 301 
-        //         }else
-        //         {
-        //             const newTransaction = new BuyManualTransaction({ coinId, quantity, buyPrice, type });
-        //             await newTransaction.save();
-        //             return 302 
-        //         }
-                
-        //     }catch{
-        //         return 321
-        //     }
-        // },
+        async deletePortfolio(_, {portfolioId}, context){
+          const user = checkAuth(context);
+
+          try{
+            if(user){
+              const portfolio = await Portfolio.findById(portfolioId);
+              await portfolio.delete();
+              return 402
+            }
+          }
+          catch(err){
+            throw new Error(err);
+          }
+        }
     }
 }

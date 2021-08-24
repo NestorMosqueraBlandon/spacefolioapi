@@ -10,3 +10,7 @@ export default makeExecutableSchema({
     typeDefs: typeDefs,
     resolvers: resolvers 
 });
+
+
+// Return el id de protfolio ald crearlo
+// Retrun code delete
