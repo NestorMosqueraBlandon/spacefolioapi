@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import config from './config.js';
-import { AuthenticationError } from 'apollo-server-errors';
+// import { AuthenticationError } from 'apollo-server-errors';
 
 
 export default (context) => {
