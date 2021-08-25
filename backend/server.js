@@ -1,4 +1,5 @@
-import { ApolloServer } from "apollo-server";
+import apollo  from "apollo-server";
+const { ApolloServer } = apollo;
 import './database/connectDB.js';
 
 // GRAPHQL
