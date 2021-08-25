@@ -42,7 +42,7 @@ export default{
 
                 await newPortfolio.save();
 
-                return 401
+                return 202
             }catch(err){
                 return err
             }
@@ -55,7 +55,7 @@ export default{
             if(user){
               const portfolio = await Portfolio.findById(portfolioId);
               await portfolio.delete();
-              return 402
+              return 202
             }
           }
           catch(err){

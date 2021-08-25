@@ -102,7 +102,7 @@ export default {
                 const token  = await sendResetPassword( user );
                 await user.updateOne({token: token});
                 console.log(token);
-                return 501
+                return 200
             }
         },
 
@@ -122,7 +122,7 @@ export default {
                         return 107
                     }else{
                         await user.updateOne({password: newPassword});
-                        return 502
+                        return 200
                     }
                 }
             }catch{

@@ -18,12 +18,8 @@
 }
 
 const succesCode = {
-    301: 'Sell Transaction add successfully',
-    302: 'Buy Transaction add successfully',
-    303: 'Transfer Transaction successfully',
-    401: 'Portfolio created successfully',
-    402: 'Portfolio deleted successfully',
-    501: 'Email has been sent, kindly activate follow the instrutions',
+    200: 'successfully',
+    202: 'Created successfully',
     502: 'Your password has been changed'
 }
 

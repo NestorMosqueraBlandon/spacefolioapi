@@ -83,7 +83,7 @@ export default {
                     });
                     
                     await portfolio.save();
-                    return 301 
+                    return 200 
                 }else{
 
                     portfolio.buyTransactions.unshift({
@@ -95,7 +95,7 @@ export default {
                     });
                     
                     await portfolio.save();
-                    return 302
+                    return 200
                 }
             }else{
                 throw new Error(701)
@@ -121,7 +121,7 @@ export default {
                     portfolio.balance = parseInt(portfolio.balance) - parseInt(quantity);
                     
                     await portfolio.save();
-                    return 303 
+                    return 200
                 }else{
                     
                     portfolio.transferTransactions.unshift({
@@ -133,7 +133,7 @@ export default {
                     
                     portfolio.balance =  parseInt(portfolio.balance) + parseInt(quantity);
                     await portfolio.save();
-                    return 303 
+                    return 200
                 }
             }else{
                 throw new Error(701)
