@@ -26,11 +26,7 @@ export default {
             // Sure user doesn't already exist
             const user = await User.findOne({email});
             if(user){
-                throw new Error('Error', {
-                    errors: {
-                        email: 104
-                    }
-                })
+                throw new Error(104)
             }
             
             // Hast password and create an auth token
@@ -138,7 +134,7 @@ export default {
 
             user.updateOne({activateCode: otpCode});
 
-            return { otpCode };
+            return { otpCode, userId: user._id };
 
         },
 
