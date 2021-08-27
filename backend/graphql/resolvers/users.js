@@ -55,6 +55,7 @@ export default {
                     const userId = user._id;
 
                     await user.updateOne({activate: true});
+                    await user.updateOne({activateCode: '0'});
                     const token = jwt.sign({ _id: user._id }, config.JWT_SIGNIN_KEY, {});
                     return {userId, token};
                 }else{
