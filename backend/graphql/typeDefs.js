@@ -144,9 +144,9 @@ input CreatePortfolioInput{
 }
 
 type Mutation{
-    signup(signupInput: SignupInput): MessageSignup
+    signup(signupInput: SignupInput): String
     signin(email: String!, password: String!): MessageSignin
-    emailActivate(otpCode: String): ActivateEmail
+    emailActivate(otpCode: String): ActivateEmail!
     forgotPassword(email: String): String!
     resetPassword(input: ResetPasswordInput): String!
     addManualTransaction(input: AddManualTransactionInput) : String!

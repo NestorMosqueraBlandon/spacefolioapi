@@ -25,8 +25,11 @@ export default {
 
             // Sure user doesn't already exist
             const user = await User.findOne({email});
-            if(user){
+            if(user && user.activate){
                 throw new Error(104)
+            }else if(user && user.activate){
+                const otpCode = await sendConfirmationEmail({ email, password});    
+                return 200;
             }
             
             // Hast password and create an auth token
@@ -36,7 +39,7 @@ export default {
             const newUser = new User({email, password, activateCode: otpCode});
             await newUser.save();        
 
-            return { otpCode };
+            return 200;
         },
 
         async emailActivate(_, { otpCode }) {
@@ -44,17 +47,20 @@ export default {
 
                 // Validate otp code
                 const user = await User.findOne({ activateCode: otpCode });
-                const userId = user._id;
-                
+
                 // Validate and activate user
-                if (user) {
+                if (user != null) {
+                    const userId = user._id;
+
                     await user.updateOne({activate: true});
                     const token = jwt.sign({ _id: user._id }, config.JWT_SIGNIN_KEY, {});
                     return {userId, token};
+                }else{
+                    return new Error(603)
                 }
 
             } catch (err) {
-                return false
+                return new Error(err)
             }
         },
         
