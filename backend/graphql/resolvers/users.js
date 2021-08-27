@@ -27,19 +27,21 @@ export default {
             const user = await User.findOne({email});
             if(user && user.activate){
                 throw new Error(104)
-            }else if(user && user.activate){
+            }else if(user && !user.activate){
                 const otpCode = await sendConfirmationEmail({ email, password});    
                 return 200;
+            }else{
+
+                
+                // Hast password and create an auth token
+                password = bcrypt.hashSync(password, 8);
+                const otpCode = await sendConfirmationEmail({ email, password});
+                
+                const newUser = new User({email, password, activateCode: otpCode});
+                await newUser.save();        
+                return 200;
             }
-            
-            // Hast password and create an auth token
-            password = bcrypt.hashSync(password, 8);
-            const otpCode = await sendConfirmationEmail({ email, password});
 
-            const newUser = new User({email, password, activateCode: otpCode});
-            await newUser.save();        
-
-            return 200;
         },
 
         async emailActivate(_, { otpCode }) {
