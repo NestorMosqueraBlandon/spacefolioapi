@@ -15,7 +15,7 @@
     108: 'Reset password error',
     701: 'Porftolio not found',
 
-}
+} 
 
 const succesCode = {
     200: 'successfully',

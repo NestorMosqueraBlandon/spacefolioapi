@@ -9,14 +9,16 @@ type Query{
     getBuyTransaction(userId: String): [BuyTransaction]
     getTransferTransaction(userId: String): [TransferTransaction]
     currencyList: [Coin]
-    getPortfolios: [Portfolio]
-    getPortfolio(portfolioId: ID!): Portfolio
+    getPortfolios(userId: ID): [Portfolio]
+    getPortfolio(portfolioId: ID!, userId: ID): Portfolio
+    getWalletBalance: String
 }
 
 type Portfolio {
     id: ID!
     name: String!
     dfCurrency: String!
+    balance: String!
     sellTransanctions: [SellTransaction]!
     buyTransanctions: [SellTransaction]!
     transferTransanctions: [TransferTransaction]!

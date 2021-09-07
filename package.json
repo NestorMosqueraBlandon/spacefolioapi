@@ -27,6 +27,7 @@
     "mailgun-js": "^0.22.0",
     "messagebird": "^3.6.4",
     "mongoose": "^5.13.2",
+    "node-bitcoin-rpc": "^1.1.3",
     "node-fetch": "^2.6.1",
     "otp-generator": "^2.0.1",
     "path": "^0.12.7",
