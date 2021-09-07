@@ -20,13 +20,8 @@ export default {
     async getPortfolios(_, {userId}, context) {
       const user = checkAuth(context);
       try {
-        const portfolios = await Portfolio.find().sort({ createdAt: -1 });
-        if(userId === portfolios.user){
+        const portfolios = await Portfolio.find().sort({ createdAt: -1, user: userId });
           return portfolios;
-        }
-        else{
-          return 105
-        }
       } catch (err) {
         throw new Error(err);
       }
