@@ -9,6 +9,7 @@ export default (context) => {
     if(authHeader){
         // Bearer .....
         const token = authHeader.split('Bearer ')[1];
+        console.log(token)
         if(token){
             try{
                 const user = jwt.verify(token, config.JWT_SIGNIN_KEY);

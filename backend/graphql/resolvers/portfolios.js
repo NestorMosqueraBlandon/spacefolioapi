@@ -85,11 +85,12 @@ export default {
   Mutation: {
     async createPortfolio(_, { input: { name, dfCurrency } }, context) {
       const user = checkAuth(context);
+      console.log(user)
       try {
         const newPortfolio = new Portfolio({
           name,
           dfCurrency,
-          user: user.id
+          user: user._id
         })
 
         await newPortfolio.save();
