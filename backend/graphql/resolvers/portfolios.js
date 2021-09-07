@@ -17,7 +17,7 @@ function initBitcoinRpc() {
 export default {
 
   Query: {
-    async getPortfolios(_, {userId}) {
+    async getPortfolios(_, {userId}, context) {
       const user = checkAuth(context);
       try {
         const portfolios = await Portfolio.find().sort({ createdAt: -1 });
@@ -31,7 +31,7 @@ export default {
         throw new Error(err);
       }
     },
-    async getPortfolio(_, { portfolioId, userId }) {
+    async getPortfolio(_, { portfolioId, userId }, context) {
       const user = checkAuth(context);
       try {
         const portfolio = await Portfolio.findById(portfolioId);
