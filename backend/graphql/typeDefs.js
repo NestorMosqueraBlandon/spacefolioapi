@@ -1,7 +1,6 @@
 const typeDefs = `
 
 type Query{
- 
     users: [User]
     coinList: [Coin]
     exchangeList: [Exchange]
@@ -11,7 +10,9 @@ type Query{
     currencyList: [Coin]
     getPortfolios(userId: ID): [Portfolio]
     getPortfolio(portfolioId: ID!, userId: ID): Portfolio
-    getWalletBalance: String
+    getWalletBalance(address: String!): String
+    getTransaction(address: String!): String
+    getTransactions(account: String!): [Transaction]
 }
 
 type Portfolio {
@@ -19,9 +20,9 @@ type Portfolio {
     name: String!
     dfCurrency: String!
     balance: String!
-    sellTransanctions: [SellTransaction]!
-    buyTransanctions: [SellTransaction]!
-    transferTransanctions: [TransferTransaction]!
+    sellTransactions: [SellTransaction]
+    buyTransactions: [SellTransaction]
+    transferTransactions: [TransferTransaction]
     tranferCount: Int!
     sellCount: Int!
     createdAt: String!
@@ -37,6 +38,15 @@ type Exchange{
     id: String
     name: String
     image: String
+}
+
+type Balance{
+    incoming: String
+}
+
+type Transaction{
+    blockNumber: String,
+    fee: String
 }
 
 type SellTransaction{

@@ -20,4 +20,5 @@ export default {
     CLIENT_URL:'http://localhost:3000',
     RESET_PASSWORD_KEY:'passwordresetkey123456',
     JWT_SIGNIN_KEY:'signinkey1234',
+    
 }

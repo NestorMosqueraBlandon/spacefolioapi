@@ -1,27 +1,22 @@
 import Portfolio from "../../models/portfolioModel.js";
 import checkAuth from "../../utils/checkAuth.js";
+import Tatum from '@tatumio/tatum';
+import { btcGetBalance, btcGetTransaction, btcGetTxForAccount } from '@tatumio/tatum';
+
+
+const btcWallet = await Tatum.generateWallet(Tatum.Currency.BTC, true);
 
 import nbr from 'node-bitcoin-rpc'
 
-nbr.init()
-let host = 'localhost';
-let port = 8332;
-let user = 'bitcoinrpc';
-let pass = 'foo';
-
-function initBitcoinRpc() {
-  nbr.init(host, port, user, pass);
-  nbr.setTimeout(2000);
-}
 
 export default {
-
+  
   Query: {
     async getPortfolios(_, {userId}, context) {
       const user = checkAuth(context);
       try {
         const portfolios = await Portfolio.find({user: userId}).sort({ createdAt: -1});
-          return portfolios;
+        return portfolios;
       } catch (err) {
         throw new Error(err);
       }
@@ -45,41 +40,40 @@ export default {
     },
     // 1MzxJi4TsiyChnwvSTvWQgS5dyegnKjy9B
     // CONNECTION
-    async getWalletBalance() {
-      // await initBitcoinRpc();
+    async getWalletBalance(_, {address}, context) {
+      const user = checkAuth(context);
+      const balance = await btcGetBalance(address);
+      let e = null;
+      for(e in balance){
+          //
+      }
 
-      nbr.init(host, port, user, pass)
-      await nbr.call('getbalance', ['1F1tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX'], function (err, res) {
-        if (err !== null) {
-          console.log('I have an error :( ' + err + ' ' + res.error)
-        } else {
-          console.log('Yay! I need to do whatevere now with ' + res.result)
-        }
-      })
+      console.log(balance[e])
+      return balance[e];
     },
+    
+    async getTransaction(_, {address}, context) {
+      const user = checkAuth(context);
 
-  //   async getTransactions() {
-  //     await initBitcoinRpc();
+      try{
+        const transaction = await btcGetTransaction(address)
+        return transaction;
+      }
+      catch(err){
+        console.log(err)
+      }
+      
+    },
+    async getTransactions(_, {account}, context) {
+      const user = checkAuth(context);
+      try{
+        const transactions = await btcGetTxForAccount(account);
+        return transactions;
 
-  //     await nbr.call('listtranssactions', ['*', 1], (err, res) => {
-  //       if(err){
-  //         console.log(err)
-  //       }else{
-  //         console.log(res)
-  //       }
-  //     })
-  //   },
-  //   async getTransaction() {
-  //     await initBitcoinRpc();
-
-  //     await nbr.call('gettransaction', ['texid'], (err, res) => {
-  //       if(err){
-  //         console.log(err)
-  //       }else{
-  //         console.log(res)
-  //       }
-  //     })
-  //   },
+      }catch(err){
+        console.log(err)
+      }
+     },
    },
 
   Mutation: {
@@ -118,42 +112,10 @@ export default {
 
     // PORTFOLIOS CONNECTION
 
-    // async syncPortfolio(_, {name, portfolioId, address}){
-      
-    // },
 
-    // async generateAddress() {
-    //   await initBitcoinRpc();
-      
-    //   const address = await nbr.call('generatenewaddress', [], (err, res) => {
-    //     if (err) {
-    //       console.log(err);
-    //     } else {
-    //       console.log(res);
-    //     }
-    //   })
-    // },
+
+
     
-    // async sendMoneyToAddress(_, {address, amount}){
-    //   await initBitcoinRpc();
 
-    //   await nbr.call('getbalance', [], (err, res) => {
-    //     if(err){
-    //       reject(err);
-    //     }else if(res.result > amount){
-    //       nbr.call('sentdtoaddress', [address, amount], (err, res1) => {
-    //         try{
-    //           console.log(txid, res1.result);
-
-    //         }
-    //         catch(err){
-    //           console.log(err)
-    //         }
-    //       })
-    //     }else{
-    //       console.log('No amount in wallet')
-    //     }
-
-    //   })
     }
   }
