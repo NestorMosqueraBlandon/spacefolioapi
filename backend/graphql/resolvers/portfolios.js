@@ -1,8 +1,8 @@
 import Portfolio from "../../models/portfolioModel.js";
 import checkAuth from "../../utils/checkAuth.js";
 import Tatum from '@tatumio/tatum';
-import { btcGetBalance, btcGetTransaction, btcGetTxForAccount } from '@tatumio/tatum';
 
+const {btcGetBalance, btcGetTransaction, btcGetTxForAccount} = Tatum;
 
 
 export default {
