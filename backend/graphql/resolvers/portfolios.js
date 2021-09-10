@@ -4,10 +4,6 @@ import Tatum from '@tatumio/tatum';
 import { btcGetBalance, btcGetTransaction, btcGetTxForAccount } from '@tatumio/tatum';
 
 
-const btcWallet = await Tatum.generateWallet(Tatum.Currency.BTC, true);
-
-import nbr from 'node-bitcoin-rpc'
-
 
 export default {
   
