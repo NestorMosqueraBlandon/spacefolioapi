@@ -2,9 +2,9 @@ import apollo  from "apollo-server";
 const { ApolloServer } = apollo;
 import './database/connectDB.js';
 
-// import dotenv from 'dotenv'
+import dotenv from 'dotenv'
 
-// dotenv.config();
+dotenv.config();
 
 // GRAPHQL
 import typeDefs from './graphql/typeDefs.js';

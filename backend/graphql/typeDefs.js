@@ -167,6 +167,7 @@ type Mutation{
     createPortfolio(input: CreatePortfolioInput) : String!
     deleteBuySellTransaction(portfolioId: ID!, transactionId: ID!): SellTransaction!
     deletePortfolio(portfolioId : ID!) : String!
+    addWalletConnection(name: String, portfolioId: String, publicAddress: String): String
 }
 `;
 

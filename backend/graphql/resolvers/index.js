@@ -1,19 +1,22 @@
 import manualTransactionsResolvers from "./manualTransactions.js";
 import usersResolvers from "./users.js";
 import portfolioResolvers from "./portfolios.js";
+import connectionResolvers from "./portfoliosConnections.js";
 import general from "./general.js";
 
 export default {
-    Query:{
+    Query: {
         ...usersResolvers.Query,
         ...manualTransactionsResolvers.Query,
         ...portfolioResolvers.Query,
+        ...connectionResolvers.Query,
         ...general.Query
     },
-    
-    Mutation:{
+
+    Mutation: {
         ...usersResolvers.Mutation,
         ...manualTransactionsResolvers.Mutation,
-        ...portfolioResolvers.Mutation
+        ...portfolioResolvers.Mutation,
+        ...connectionResolvers.Mutation
     }
 }
