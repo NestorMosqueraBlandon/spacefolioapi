@@ -3,9 +3,7 @@ import checkAuth from '../../utils/checkAuth.js';
 
 export default {
   Query: {
-    async getPortfolios(_, {
-      userId
-    }, context) {
+    async getPortfolios(_, { userId }, context) {
       const user = checkAuth(context);
       try {
         const portfolios = await Portfolio.find({
@@ -19,10 +17,7 @@ export default {
       }
     },
 
-    async getPortfolio(_, {
-      portfolioId,
-      userId
-    }, context) {
+    async getPortfolio(_, { portfolioId, userId }, context) {
       const user = checkAuth(context);
       try {
         const portfolio = await Portfolio.findById(portfolioId);
@@ -44,32 +39,30 @@ export default {
   },
 
   Mutation: {
-    async createPortfolio(_, {
-      input: {
-        name,
-        dfCurrency
-      }
-    }, context) {
+    async createPortfolio(
+      _,
+      { input: { name, dfCurrency, initialValue } },
+      context
+    ) {
       const user = checkAuth(context);
       console.log(user);
       try {
         const newPortfolio = new Portfolio({
           name,
           dfCurrency,
+          balance: initialValue,
           user: user._id,
         });
 
-        await newPortfolio.save();
+        const portfolioCreated = await newPortfolio.save();
 
-        return 202;
+        return portfolioCreated._id;
       } catch (err) {
         return err;
       }
     },
 
-    async deletePortfolio(_, {
-      portfolioId
-    }, context) {
+    async deletePortfolio(_, { portfolioId }, context) {
       const user = checkAuth(context);
 
       try {

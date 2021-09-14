@@ -123,7 +123,10 @@ input AddManualTransactionInput{
     model: String!
     coinId: String!
     quantity: String!
-    buyPrice: String!
+    buyPriceValue: String!
+    buyPriceType: String!
+    feeValue: String!
+    feeType: String!
     exchange: String
     tradingPair: String
     fee: String
@@ -153,6 +156,7 @@ input SignupInput{
 input CreatePortfolioInput{
     name: String!
     dfCurrency: String!
+    initialValue: String!
 }
 
 type Mutation{
