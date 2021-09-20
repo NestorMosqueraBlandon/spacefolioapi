@@ -4,7 +4,7 @@ import Tatum from '@tatumio/tatum';
 import Binance from 'binance';
 import Coinbase from 'coinbase';
 import Kucoin from 'kucoin-node-api';
-import { Kraken } from 'node-kraken-api';
+// import { Kraken } from 'node-kraken-api';
 
 const { MainClient } = Binance;
 const { Client } = Coinbase;
