@@ -13,6 +13,13 @@ type Query{
     getWalletBalance(address: String!): String
     getTransaction(address: String!): String
     getTransactions(account: String!): [Transaction]
+    getExchangeInfo(key: String!, secret: String!): String
+    getExchangeBalance(key: String!, secret: String!): String
+    getCoinbaseAccounts(key: String!, secret: String!): String
+    getCoinbaseBalance(key: String!, secret: String!, accountId: String!): String
+    getCoinbaseTransactions(key: String!, secret: String!, accountId: String!): String
+    getKucoinAccounts(key: String!, secret: String!): String
+    getKucoinAccount(key: String!, secret: String!, accountId: String!): String
 }
 
 type Portfolio {
@@ -159,6 +166,14 @@ input CreatePortfolioInput{
     initialValue: String!
 }
 
+input ExchangeConnection {
+    name: String! 
+    portfolioId: String! 
+    key: String! 
+    secret: String!
+}
+
+
 type Mutation{
     signup(signupInput: SignupInput): String
     signin(email: String!, password: String!): MessageSignin
@@ -172,6 +187,7 @@ type Mutation{
     deleteBuySellTransaction(portfolioId: ID!, transactionId: ID!): SellTransaction!
     deletePortfolio(portfolioId : ID!) : String!
     addWalletConnection(name: String, portfolioId: String, publicAddress: String): String
+    addExchangeConnection(input: ExchangeConnection): String!
 }
 `;
 

@@ -58,6 +58,14 @@ const portfolioSchema = new mongoose.Schema(
         address: String,
       },
     ],
+    exchanges: [
+      {
+        name: String,
+        apiKey: String,
+        apiSecret: String,
+      },
+    ],
+
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
