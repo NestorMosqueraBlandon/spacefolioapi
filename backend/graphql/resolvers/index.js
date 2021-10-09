@@ -7,7 +7,7 @@ import general from "./general.js";
 export default {
     Query: {
         ...usersResolvers.Query,
-        ...manualTransactionsResolvers.Query,
+        // ...manualTransactionsResolvers.Query,
         ...portfolioResolvers.Query,
         ...connectionResolvers.Query,
         ...general.Query
@@ -15,7 +15,7 @@ export default {
 
     Mutation: {
         ...usersResolvers.Mutation,
-        ...manualTransactionsResolvers.Mutation,
+        // ...manualTransactionsResolvers.Mutation,
         ...portfolioResolvers.Mutation,
         ...connectionResolvers.Mutation
     }

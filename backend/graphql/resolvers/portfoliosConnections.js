@@ -47,6 +47,7 @@ export default {
         console.log(err);
       }
     },
+    
     async getTransactions(_, { account }, context) {
       const user = checkAuth(context);
       try {
@@ -156,7 +157,6 @@ export default {
 
       try {
         const data = await Kucoin.getAccounts();
-        console.log(data);
       } catch (err) {
         console.log(err);
       }
@@ -174,7 +174,7 @@ export default {
 
       try {
         const data = await Kucoin.getAccountById(accountId);
-        console.log(data);
+
       } catch (err) {
         console.log(err);
       }

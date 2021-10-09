@@ -35,6 +35,7 @@ const portfolioSchema = new mongoose.Schema(
         note: String,
         model: Number,
         createdAt: String,
+        type: String
       },
     ],
     transferTransactions: [
