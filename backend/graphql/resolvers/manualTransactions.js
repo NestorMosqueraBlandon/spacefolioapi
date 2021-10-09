@@ -13,16 +13,15 @@ export default {
     async coinList() {
       try {
         const data = await CoinGeckoClient.coins.all();
-        let e = null;
-        for (e in data) {
-          //
-        }
-        console.log(data[e]);
-        return data[e];
+            
+        const newData = data.data
+        return newData
+
       } catch (err) {
         throw new Error(err);
       }
     },
+
 
     async exchangeList() {
       try {

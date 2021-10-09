@@ -7,7 +7,7 @@ type Query{
     getSellTransaction(userId: String): [SellTransaction]
     getBuyTransaction(userId: String): [BuyTransaction]
     getTransferTransaction(userId: String): [TransferTransaction]
-    currencyList: [Coin]
+    fiatList: [Fiat]
     getPortfolios(userId: ID): [Portfolio]
     getPortfolio(portfolioId: ID!, userId: ID): Portfolio
     getWalletBalance(address: String!): String
@@ -98,10 +98,23 @@ type TransferTransaction{
     type: String
 }
 
+type Img{
+    thumb: String
+    small: String
+    large: String
+}
+
 type Coin{
     id: String
     name: String
-    image: String
+    image: Img
+    symbol: String
+}
+
+type Fiat{
+    id: String
+    name: String
+    sign: String
     symbol: String
 }
 
