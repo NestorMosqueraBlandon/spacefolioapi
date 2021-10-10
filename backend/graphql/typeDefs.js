@@ -4,6 +4,7 @@ type Query{
     users: [User]
     coinList: [Coin]
     exchangeList: [Exchange]
+    walletsList: [Wallet]
     getSellTransaction(userId: String): [SellTransaction]
     getBuyTransaction(userId: String): [BuyTransaction]
     getTransferTransaction(userId: String): [TransferTransaction]
@@ -42,6 +43,12 @@ type User{
 }
 
 type Exchange{
+    id: String
+    name: String
+    image: String
+}
+
+type Wallet{
     id: String
     name: String
     image: String
@@ -179,6 +186,11 @@ input CreatePortfolioInput{
     initialValue: String!
 }
 
+input CreateWalletInput{
+    name: String!
+    img: String
+}
+
 input ExchangeConnection {
     name: String! 
     portfolioId: String! 
@@ -197,6 +209,7 @@ type Mutation{
     transferTransaction(input: AddTransferTransactionInput) : String!
     newCode(email: String): MessageSignin
     createPortfolio(input: CreatePortfolioInput) : String!
+    
     deleteBuySellTransaction(portfolioId: ID!, transactionId: ID!): SellTransaction!
     deletePortfolio(portfolioId : ID!) : String!
     addWalletConnection(name: String, portfolioId: String, publicAddress: String): String

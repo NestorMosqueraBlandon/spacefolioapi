@@ -6,6 +6,7 @@ import TransferTransaction from '../../models/transferTransaction.js';
 import checkAuth from '../../utils/checkAuth.js';
 import User from '../../models/userModel.js';
 import Portfolio from '../../models/portfolioModel.js';
+import Wallet from '../../models/walletModel.js';
 
 const CoinGeckoClient = new CoinGecko();
 export default {
@@ -26,11 +27,24 @@ export default {
     async exchangeList() {
       try {
         const exchange = await CoinGeckoClient.exchanges.all();
+
+        console.log("hola mundo")
+        console.log(exchange)
         let e = null;
         for (e in exchange) {
           //
         }
         return exchange[e];
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+
+    async walletsList() {
+      try {
+        const wallets = await Wallet.find();
+
+        return wallets;
       } catch (err) {
         throw new Error(err);
       }
@@ -163,5 +177,23 @@ export default {
         throw new Error(701);
       }
     },
+    async createWallet(
+      _,
+      { input: { name, image } },
+    ) {
+      try {
+        const newWallet = new Wallet({
+          name
+        });
+
+        console.log(newWallet)
+        const walletCreated = await newWallet.save();
+
+        return 200;
+      } catch (err) {
+        return err;
+      }
+    },
+
   },
 };

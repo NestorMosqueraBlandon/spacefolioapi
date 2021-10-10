@@ -7,7 +7,7 @@ import general from "./general.js";
 export default {
     Query: {
         ...usersResolvers.Query,
-        // ...manualTransactionsResolvers.Query,
+        ...manualTransactionsResolvers.Query,
         ...portfolioResolvers.Query,
         ...connectionResolvers.Query,
         ...general.Query

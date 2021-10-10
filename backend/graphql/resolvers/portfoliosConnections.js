@@ -41,13 +41,13 @@ export default {
 
       try {
         const transaction = await btcGetTransaction(address);
-        console.log(transaction);
+        
         return transaction;
       } catch (err) {
         console.log(err);
       }
     },
-    
+
     async getTransactions(_, { account }, context) {
       const user = checkAuth(context);
       try {
