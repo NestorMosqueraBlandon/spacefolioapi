@@ -1,7 +1,5 @@
 import rp from "request-promise"
 
-const apiKey = "91f97ef8-bc4e-40f9-9d20-7e7e67af1776";
-
 export default {
   Query: {
     async fiatList() {

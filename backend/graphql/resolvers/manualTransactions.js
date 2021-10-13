@@ -186,7 +186,6 @@ export default {
           name
         });
 
-        console.log(newWallet)
         const walletCreated = await newWallet.save();
 
         return 200;

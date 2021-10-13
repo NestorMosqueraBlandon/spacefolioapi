@@ -34,8 +34,6 @@ export default {
         throw new Error(err);
       }
     },
-    // 1MzxJi4TsiyChnwvSTvWQgS5dyegnKjy9B
-    // CONNECTION
   },
 
   Mutation: {

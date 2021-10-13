@@ -11,7 +11,7 @@ type Query{
     fiatList: [Fiat]
     getPortfolios(userId: ID): [Portfolio]
     getPortfolio(portfolioId: ID!, userId: ID): Portfolio
-    getWalletBalance(address: String!): String
+    getWalletBalance(address: String!, type: String!): String
     getTransaction(address: String!): String
     getTransactions(account: String!): [Transaction]
     getExchangeInfo(key: String!, secret: String!): String
@@ -21,6 +21,19 @@ type Query{
     getCoinbaseTransactions(key: String!, secret: String!, accountId: String!): String
     getKucoinAccounts(key: String!, secret: String!): String
     getKucoinAccount(key: String!, secret: String!, accountId: String!): String
+    getWalletTransactionByAddress(address: String!): String
+    getMetadataPortfolio(portfolioId: String!): Metadata
+}
+
+type Metadata{
+    balance: String
+    cryptos: [Crypto]
+}
+
+type Crypto{
+    name: String
+    balance: String
+    image: String
 }
 
 type Portfolio {
