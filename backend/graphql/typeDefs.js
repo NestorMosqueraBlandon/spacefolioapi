@@ -23,6 +23,7 @@ type Query{
     getKucoinAccount(key: String!, secret: String!, accountId: String!): String
     getWalletTransactionByAddress(address: String!): String
     getMetadataPortfolio(portfolioId: String!): Metadata
+    getWalletsConnection(portfolioId: String!): [WalletConnection]
 }
 
 type Metadata{
@@ -59,6 +60,12 @@ type Exchange{
     id: String
     name: String
     image: String
+}
+
+type WalletConnection{
+    id: ID
+    name: String
+    address: String
 }
 
 type Wallet{
@@ -226,6 +233,8 @@ type Mutation{
     deleteBuySellTransaction(portfolioId: ID!, transactionId: ID!): SellTransaction!
     deletePortfolio(portfolioId : ID!) : String!
     addWalletConnection(name: String, portfolioId: String, publicAddress: String): String
+    updateWalletConnection(name: String, portfolioId: String!): String
+    deleteWalletConnection(portfolioId: String, walletId: String!): String
     addExchangeConnection(input: ExchangeConnection): String!
 }
 `;

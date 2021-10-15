@@ -36,4 +36,4 @@ $ npm start
 ## Support
 
 - Q/A: https://nestormosquera.co/
-- Contact: [Basir](mailto:contact@nestormosquer.co)
+- Contact: [Nestor Mosquera](mailto:contact@nestormosquer.co)

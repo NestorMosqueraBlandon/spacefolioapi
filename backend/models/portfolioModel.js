@@ -57,6 +57,7 @@ const portfolioSchema = new mongoose.Schema(
       {
         name: String,
         address: String,
+        active: {type: Boolean, default: true}
       },
     ],
     exchanges: [
