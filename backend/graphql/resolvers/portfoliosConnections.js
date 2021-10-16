@@ -36,7 +36,7 @@ export default {
   Mutation: {
     async addWalletConnection(
       _,
-      { name, portfolioId, publicAddress },
+      { name, portfolioId, publicAddress, network, image },
       context
     ) {
       const user = checkAuth(context);
@@ -47,6 +47,8 @@ export default {
           await portfolio.wallets.unshift({
             name,
             address: publicAddress,
+            network: network,
+            image: image
           });
 
           await portfolio.save();
@@ -60,7 +62,7 @@ export default {
     },
     async updateWalletConnection(
       _,
-      { name, portfolioId, publicAddress },
+      { name, portfolioId, publicAddress, active },
       context
     ) {
       const user = checkAuth(context);
@@ -71,6 +73,7 @@ export default {
           await portfolio.wallets.unshift({
             name,
             address: publicAddress,
+            active: active
           });
 
           await portfolio.save();

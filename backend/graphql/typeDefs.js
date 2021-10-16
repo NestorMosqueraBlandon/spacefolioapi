@@ -66,6 +66,9 @@ type WalletConnection{
     id: ID
     name: String
     address: String
+    active: String
+    network: String
+    image: String
 }
 
 type Wallet{
