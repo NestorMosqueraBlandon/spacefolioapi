@@ -3,6 +3,7 @@ import checkAuth from '../../utils/checkAuth.js';
 
 export default {
   Query: {
+    
     async getPortfolios(_, { userId }, context) {
       const user = checkAuth(context);
       try {

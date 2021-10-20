@@ -14,7 +14,7 @@ export default {
     async coinList() {
       try {
         const data = await CoinGeckoClient.coins.all();
-            
+                  
         const newData = data.data
         return newData
 

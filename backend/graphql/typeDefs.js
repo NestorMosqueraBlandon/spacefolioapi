@@ -69,6 +69,19 @@ type WalletConnection{
     active: String
     network: String
     image: String
+    tokens: [Token]
+}
+
+type Token{
+    id: ID
+    currency: Currency
+    value: String
+}
+
+type Currency{
+    address: String,
+    symbol: String,
+    name: String
 }
 
 type Wallet{

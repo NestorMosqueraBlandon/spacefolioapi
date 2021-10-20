@@ -1,0 +1,32 @@
+
+        // const requestOptionsToken = {
+        //   method: 'GET',
+        //   uri: `https://api.etherscan.io/api?module=account&action=txlist&address=${portfolio.wallets[1].address}&startblock=0&endblock=9999999&page=1&offset=10&sort=asc&apikey=PM9FSGD1K2AIR9ZMPUKJWVPED5EV1P9QY3`,
+        //   qs: {
+        //     'start': '1',
+        //     'limit': '5000',
+
+        //   },
+        //   // headers: {
+        //   //   'X-CMC_PRO_API_KEY': '91f97ef8-bc4e-40f9-9d20-7e7e67af1776'
+        //   // },
+        //   json: true,
+        //   gzip: true
+        // };
+
+ 
+        // const url = "https://graphql.bitquery.io/";
+        // const opts = {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //     "X-API-KEY": "BQYmmb3rW726zLmxE3Fd5aMSyr7AtWT5"
+        //   },
+        //   body: JSON.stringify({
+        //     query
+        //   })
+        // };
+        // fetch(url, opts)
+        //   .then(res => res.json())
+        //   .then(console.log)
+        //   .catch(console.error);
