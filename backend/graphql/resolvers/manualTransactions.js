@@ -7,14 +7,42 @@ import checkAuth from '../../utils/checkAuth.js';
 import User from '../../models/userModel.js';
 import Portfolio from '../../models/portfolioModel.js';
 import Wallet from '../../models/walletModel.js';
+import { printComment } from '@graphql-tools/merge';
 
 const CoinGeckoClient = new CoinGecko();
 export default {
   Query: {
     async coinList() {
       try {
-        const data = await CoinGeckoClient.coins.all();
+        const data = await CoinGeckoClient.coins.markets();
                   
+        const newData = data.data
+        return newData
+
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+
+    async coinListMarket() {
+      try {
+        
+        // id
+        // symbol
+        // name
+        // image
+        // currenct print
+        // marketcap
+        // marketcaprank
+        // totalvolume
+        // heigth 24h
+        // low24h
+        // change price
+        // changeprice eprcenage
+        // meketcap change 24h
+        // markecapchange perentage
+        const data = await CoinGeckoClient.coins.markets()
+        console.log(data)
         const newData = data.data
         return newData
 

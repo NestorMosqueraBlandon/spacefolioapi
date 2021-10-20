@@ -3,6 +3,7 @@ const typeDefs = `
 type Query{
     users: [User]
     coinList: [Coin]
+    coinListMarket: [Coin]
     exchangeList: [Exchange]
     walletsList: [Wallet]
     getSellTransaction(userId: String): [SellTransaction]
@@ -152,6 +153,9 @@ type Coin{
     name: String
     image: Img
     symbol: String
+    current_price: String
+    market_cap_rank: String
+    price_change_percentage_24h: String
 }
 
 type Fiat{
