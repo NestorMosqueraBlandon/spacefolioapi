@@ -158,8 +158,8 @@ type Data{
 }
 
 type Market{
-    prices: [Caps]
-    market_caps: [Caps]
+    prices: String
+    market_caps: String
 }
 
 type Caps{

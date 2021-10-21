@@ -46,25 +46,12 @@ export default {
         // markecapchange perentage
         const data = await CoinGeckoClient.coins.fetch( coinId, {});
 
-        // console.log(data)
         let dataMarket = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days});
-        // console.log(dataMarket.data)
         const coinData = data.data
         
         const values = dataMarket.data.market_caps;
-        const caps = []
-        const prices = []
-        for (var i = 0; i < dataMarket.data.market_caps.length; i++) {
-          caps.push({item1: values[i][0], item2: values[i][1]})
-        }
 
-        for (var i = 0; i < dataMarket.data.prices.length; i++) {
-          prices.push({item1: values[i][0], item2: values[i][1]})
-        }
-
-        // console.log({coin: coinData, market:dataMarket.data})
-        return {coin: {...coinData, image: coinData.image.large  }, market: {prices, market_caps: caps}}
-        // return dataMarket
+        return {coin: {...coinData, image: coinData.image.large  }, market: {prices: JSON.stringify(dataMarket.data.prices), market_caps: JSON.stringify(dataMarket.data.market_caps)}}
 
       } catch (err) {
         throw new Error(err);
