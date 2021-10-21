@@ -3,7 +3,7 @@ const typeDefs = `
 type Query{
     users: [User]
     coinList: [Coin]
-    coinMarket(coinId: String, day: String): Data
+    coinMarket(coinId: String, days: String): Data
     exchangeList: [Exchange]
     walletsList: [Wallet]
     getSellTransaction(userId: String): [SellTransaction]
@@ -32,10 +32,14 @@ type Metadata{
     cryptos: [Crypto]
 }
 
-type Crypto{
+type Currency{
     name: String
-    balance: String
-    image: String
+    symbol: String
+
+}
+type Crypto{    
+    currency: Currency
+    value: String
 }
 
 type Portfolio {
@@ -155,7 +159,15 @@ type Data{
 
 type Market{
     prices: [String]
-    market_caps: [String]
+    market_caps: Caps
+}
+
+type Caps{
+    caps: String
+}
+
+type Det{
+    value: [String]
 }
 
 type Coin{

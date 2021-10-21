@@ -36,12 +36,50 @@ export default {
 
       const portfolio = await Portfolio.findById(portfolioId);
 
+      // console.log(portfolio.wallets)
       if (portfolio) {
         try {
 
-          const wallets = portfolio.wallets.reduce() 
+          const wallets = [];
+          portfolio.wallets.forEach(function(wallet) {
+
+            if(!wallets[wallet.network]){
+              wallets[wallet.network] = {
+                network: wallet.network,
+                totalQuantity: 0,
+                totalTokens: wallet.tokens
+              }
+              wallets.push(wallets[wallet.network]);
+            };
+
+            // const tokens = wallet.tokens.reduce((a, d) => (a[d]? a[d].value += d.value : a[d] = d , a) ,{})
+
+            wallets[wallet.network].totalQuantity = parseFloat(wallet.quantity) + parseFloat(wallets[wallet.network].totalQuantity);
+            wallets[wallet.network].totalTokens.push(wallet.tokens);
+            
+            // wallets[wallet.network].tokens = tokens;
+          });
+
+          const tokens = wallets.bsc.totalTokens.reduce((a, d) => (a[d]? a[d].value += d.value : a[d] = d , a) ,{})
+
+          let metadata = {}
+
+          // console.log(tokens)
+          wallets.map((wallet) => {
+            // console.log(wallet.totalQuantity)
+            console.log(wallet.totalTokens[0])
+
+            metadata = {
+              balance:  wallet.totalQuantity,
+               cryptos:[]
+            }
+
+
+            metadata.cryptos = wallet.totalTokens.map((token) => {return token})
+          })
           
-          return wallets;
+          console.log(metadata)
+          return metadata;
         }
         catch (err) {
           console.log(err)
