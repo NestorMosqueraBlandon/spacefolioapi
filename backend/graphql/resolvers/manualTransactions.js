@@ -55,7 +55,7 @@ export default {
         
         
         // console.log({coin: coinData, market:dataMarket.data})
-        return {coin: coinData, market: {...dataMarket.data, values}}
+        return {coin: {...coinData, image: coinData.image.large  }, market: {...dataMarket.data, values}}
         // return dataMarket
 
       } catch (err) {
