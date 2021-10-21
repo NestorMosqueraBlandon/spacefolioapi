@@ -7,7 +7,6 @@ import checkAuth from '../../utils/checkAuth.js';
 import User from '../../models/userModel.js';
 import Portfolio from '../../models/portfolioModel.js';
 import Wallet from '../../models/walletModel.js';
-import { printComment } from '@graphql-tools/merge';
 
 const CoinGeckoClient = new CoinGecko();
 export default {
