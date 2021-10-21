@@ -48,14 +48,22 @@ export default {
 
         // console.log(data)
         let dataMarket = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days});
-        console.log(dataMarket.data)
+        // console.log(dataMarket.data)
         const coinData = data.data
         
-        const values = {caps: dataMarket.data.market_caps};
-        
-        
+        const values = dataMarket.data.market_caps;
+        const caps = []
+        const prices = []
+        for (var i = 0; i < dataMarket.data.market_caps.length; i++) {
+          caps.push({item1: values[i][0], item2: values[i][1]})
+        }
+
+        for (var i = 0; i < dataMarket.data.prices.length; i++) {
+          prices.push({item1: values[i][0], item2: values[i][1]})
+        }
+
         // console.log({coin: coinData, market:dataMarket.data})
-        return {coin: {...coinData, image: coinData.image.large  }, market: {...dataMarket.data, values}}
+        return {coin: {...coinData, image: coinData.image.large  }, market: {prices, market_caps: caps}}
         // return dataMarket
 
       } catch (err) {
