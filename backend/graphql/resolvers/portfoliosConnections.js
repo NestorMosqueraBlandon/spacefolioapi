@@ -36,25 +36,12 @@ export default {
 
       const portfolio = await Portfolio.findById(portfolioId);
 
-
-
-
-
       if (portfolio) {
-
-
-
         try {
 
-          const data = await rp(requestOptions);
-          // console.log(data)
-          // console.log(data.data.ethereum.address[0].balances)
-          await portfolio.wallets.unshift({
-            tokens: data.data.ethereum.address[0].balances.filter(balance => balance.value > 0)
-          });
-
-          // metadata.balance = data.result
-          return 200
+          const wallets = portfolio.wallets.reduce() 
+          
+          return wallets;
         }
         catch (err) {
           console.log(err)

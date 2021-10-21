@@ -24,7 +24,7 @@ export default {
       }
     },
 
-    async coinListMarket() {
+    async coinMarket(_, {coinId, day}) {
       try {
         
         // id
@@ -41,10 +41,15 @@ export default {
         // changeprice eprcenage
         // meketcap change 24h
         // markecapchange perentage
-        const data = await CoinGeckoClient.coins.markets()
-        console.log(data)
-        const newData = data.data
-        return newData
+        const data = await CoinGeckoClient.coins.fetch(coinId, {});
+
+        let dataMarket = await CoinGeckoClient.coins.fetchMarketChart(coinId, day);
+        const coinData = data.data
+
+        
+        console.log({coin: coinData, market:dataMarket.data})
+        return {coin: coinData, market: dataMarket.data}
+        // return dataMarket
 
       } catch (err) {
         throw new Error(err);
