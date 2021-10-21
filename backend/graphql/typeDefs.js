@@ -167,6 +167,9 @@ type Coin{
     market_cap_rank: String
     price_change_percentage_24h: String
     price_change_24h:String
+    sentiment_votes_up_percentage:String
+    sentiment_votes_down_percentage:String
+
     market_data: MarketData
     links: Links
 
@@ -183,6 +186,10 @@ type MarketData{
     price_change_percentage_60d:String
     price_change_percentage_200d:String
     price_change_percentage_1y: String
+    total_supply:String
+max_supply:String
+circulating_supply:String
+last_updated:String
 }
 
 type Fiat{
