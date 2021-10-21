@@ -161,7 +161,7 @@ type Market{
 type Coin{
     id: String
     name: String
-    image: Img
+    image: String
     symbol: String
     current_price: String
     market_cap_rank: String

@@ -16,6 +16,7 @@ export default {
         const data = await CoinGeckoClient.coins.markets();
                   
         const newData = data.data
+        console.log(newData)
         return newData
 
       } catch (err) {
