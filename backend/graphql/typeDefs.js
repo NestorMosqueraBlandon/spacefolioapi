@@ -176,7 +176,7 @@ type Coin{
     name: String
     image: String
     symbol: String
-    current_price: String
+
     market_cap_rank: String
     price_change_percentage_24h: String
     price_change_24h:String
@@ -193,6 +193,8 @@ type Links{
 }
 
 type MarketData{
+    current_price: String
+    price_change_percentage_24h: String
     price_change_percentage_7d:String
     price_change_percentage_14d:String
     price_change_percentage_30d:String
