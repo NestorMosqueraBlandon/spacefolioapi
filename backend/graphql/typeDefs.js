@@ -194,6 +194,8 @@ type Links{
 
 type MarketData{
     current_price: String
+    low_price_24h: String
+    high_price_24h: String
     price_change_percentage_24h: String
     price_change_percentage_7d:String
     price_change_percentage_14d:String

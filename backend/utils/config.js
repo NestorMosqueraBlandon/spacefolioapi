@@ -11,7 +11,7 @@ dotenv.config({
 
 export default {
     NODE_ENV: process.env.NODE_ENV || 'development',
-    PORT: process.env.PORT || 9005,
+    PORT: process.env.PORT || 9008,
     MONGODB_URL:'mongodb+srv://spacefolio:spacefolio@cluster0.thboz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
     // MONGODB_URL:'mongodb://localhost/spacefolio',
     SKIP_PREFLIGHT_CHECK:true,

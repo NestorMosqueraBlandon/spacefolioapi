@@ -49,8 +49,8 @@ export default {
         let dataMarket = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days});
         const coinData = data.data
         
-        console.log(data)
-        return {coin: {...coinData, market_data: {...coinData.market_data, current_price: coinData.market_data.current_price.usd}, image: coinData.image.large  }, 
+        // console.log(dataMarket.data.market_caps.low_24h)
+        return {coin: {...coinData, market_data: {...coinData.market_data, current_price: coinData.market_data.current_price.usd, low_price_24h: coinData.market_data.low_24h.usd, high_price_24h: coinData.market_data.high_24h.usd }, image: coinData.image.large  }, 
                 market: {prices: JSON.stringify(dataMarket.data.prices), 
                 market_caps: JSON.stringify(dataMarket.data.market_caps)}}
 
