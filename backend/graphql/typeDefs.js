@@ -176,7 +176,7 @@ type Coin{
     name: String
     image: String
     symbol: String
-
+    current_price: String
     market_cap_rank: String
     price_change_percentage_24h: String
     price_change_24h:String
@@ -202,9 +202,9 @@ type MarketData{
     price_change_percentage_200d:String
     price_change_percentage_1y: String
     total_supply:String
-max_supply:String
-circulating_supply:String
-last_updated:String
+    max_supply:String
+    circulating_supply:String
+    last_updated:String
 }
 
 type Fiat{
