@@ -2,9 +2,9 @@ const typeDefs = `
 
 type Query{
     users: [User]
-    coinList: [Coin]
-    coinMarket(coinId: String, days: String): Data
-    exchangeList: [Exchange]
+    coinList(page: String): [Coin]
+    coinMarket(coinId: String): Data
+    exchangeList(page: String): [Exchange]
     walletsList: [Wallet]
     getSellTransaction(userId: String): [SellTransaction]
     getBuyTransaction(userId: String): [BuyTransaction]
@@ -65,6 +65,11 @@ type Exchange{
     id: String
     name: String
     image: String
+    year_established: String
+    url: String
+    trust_score_rank: String
+    trade_volume_24h_btc: String
+
 }
 
 type WalletConnection{
@@ -154,12 +159,15 @@ type Img{
 
 type Data{
     coin: Coin
-    market: Market
+    marketall: Market
+    market24h: Market
+    market7d: Market
+    market1m: Market
+    market1y: Market
 }
 
 type Market{
     prices: String
-    market_caps: String
 }
 
 type Caps{
@@ -203,6 +211,8 @@ type MarketData{
     price_change_percentage_60d:String
     price_change_percentage_200d:String
     price_change_percentage_1y: String
+    market_cap_change_percentage_24h_in_currency: String
+    market_cap_change_24h_in_currency: String
     total_supply:String
     max_supply:String
     circulating_supply:String

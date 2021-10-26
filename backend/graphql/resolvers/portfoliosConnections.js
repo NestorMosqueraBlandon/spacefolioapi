@@ -1,10 +1,34 @@
 import Portfolio from "../../models/portfolioModel.js"
 import checkAuth from '../../utils/checkAuth.js';
 import rp from "request-promise"
+import Binance from 'binance';
+import Coinbase from 'coinbase';
+import Kucoin from 'kucoin-node-api';
+
+const { MainClient } = Binance;
+const { Client } = Coinbase;
 
 export default {
 
   Query: {
+
+    async getExchangeInfo(_, { key, secret }, context) {
+      // const user = checkAuth(context);
+
+      const client = new MainClient({
+        api_key: key,
+        api_secret: secret,
+      });
+
+      try {
+        const data = await client.getAccountInformation();
+        console.log(data.balances);
+        return data;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
     async getWalletsConnection(_, { portfolioId }, context) {
       // const user = checkAuth(context);
       try {
@@ -248,3 +272,4 @@ export default {
     },
   },
 };
+
