@@ -159,11 +159,11 @@ type Img{
 
 type Data{
     coin: Coin
-    marketall: Market
-    market24h: Market
-    market7d: Market
-    market1m: Market
-    market1y: Market
+    marketall: String
+    market24h: String
+    market7d: String
+    market1m: String
+    market1y: String
 }
 
 type Market{
