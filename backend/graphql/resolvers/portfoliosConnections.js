@@ -65,9 +65,9 @@ export default {
         try {
 
           const wallets = [];
-          portfolio.wallets.forEach(function(wallet) {
+          portfolio.wallets.forEach(function (wallet) {
 
-            if(!wallets[wallet.network]){
+            if (!wallets[wallet.network]) {
               wallets[wallet.network] = {
                 network: wallet.network,
                 totalQuantity: 0,
@@ -80,11 +80,11 @@ export default {
 
             wallets[wallet.network].totalQuantity = parseFloat(wallet.quantity) + parseFloat(wallets[wallet.network].totalQuantity);
             wallets[wallet.network].totalTokens.push(wallet.tokens);
-            
+
             // wallets[wallet.network].tokens = tokens;
           });
 
-          const tokens = wallets.bsc.totalTokens.reduce((a, d) => (a[d]? a[d].value += d.value : a[d] = d , a) ,{})
+          const tokens = wallets.bsc.totalTokens.reduce((a, d) => (a[d] ? a[d].value += d.value : a[d] = d, a), {})
 
           let metadata = {}
 
@@ -94,14 +94,14 @@ export default {
             console.log(wallet.totalTokens[0])
 
             metadata = {
-              balance:  wallet.totalQuantity,
-               cryptos:[]
+              balance: wallet.totalQuantity,
+              cryptos: []
             }
 
 
-            metadata.cryptos = wallet.totalTokens.map((token) => {return token})
+            metadata.cryptos = wallet.totalTokens.map((token) => { return token })
           })
-          
+
           console.log(metadata)
           return metadata;
         }
@@ -198,7 +198,7 @@ export default {
     },
     async updateWalletConnection(
       _,
-      { name, portfolioId, publicAddress, active },
+      { name, portfolioId, walletId, publicAddress, active },
       context
     ) {
       const user = checkAuth(context);
@@ -206,11 +206,21 @@ export default {
       try {
         const portfolio = await Portfolio.findById(portfolioId);
         if (portfolio) {
-          await portfolio.wallets.unshift({
-            name,
-            address: publicAddress,
-            active: active
-          });
+
+          const wallet = portfolio.wallets.findIndex(wallet => wallet.id === walletId)
+
+          if(portfolio.wallets[wallet].id === walletId)
+          {
+            portfolio.wallets[wallet] = ({
+              name: name? name : portfolio.wallets[wallet].name,
+              address: publicAddress? publicAddress : portfolio.wallets[wallet].address,
+              active: active? active : portfolio.wallets[wallet].active,
+              network: portfolio.wallets[wallet].network,
+              image: portfolio.wallets[wallet].image,
+              quantity: portfolio.wallets[wallet].quantity,
+              tokens: portfolio.wallets[wallet].tokens
+            })
+          }
 
           await portfolio.save();
           return 200;
@@ -220,6 +230,25 @@ export default {
       } catch (err) {
         console.log(err);
       }
+
+
+      // try {
+      //   const portfolio = await Portfolio.findById(portfolioId);
+      //   if (portfolio) {
+      //     await portfolio.wallets.unshift({
+      //       name,
+      //       address: publicAddress,
+      //       active: active
+      //     });
+
+      //     await portfolio.save();
+      //     return 200;
+      //   } else {
+      //     throw new Error(701);
+      //   }
+      // } catch (err) {
+      //   console.log(err);
+      // }
     },
     async deleteWalletConnection(
       _,
