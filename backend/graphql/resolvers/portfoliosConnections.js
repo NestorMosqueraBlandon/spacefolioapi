@@ -174,15 +174,14 @@ export default {
         const data = await rp(requestOptions);
         if (portfolio) {
 
-
-          console.log(data.data.ethereum.address[0].balance)
           await portfolio.wallets.unshift({
             name,
             address: publicAddress,
             network: network,
             image: image,
-            quantity: data.data.ethereum.address[0].balance * 3846,
-            tokens: data.data.ethereum.address[0].balances.filter((bal, index) => bal.value > 0 && index > 0)
+            quantity: 100
+            // quantity: data.data.ethereum.address[0].balance?data.data.ethereum.address[0].balance * 3846 : 0,
+            // tokens: data.data.ethereum.address[0].balances? data.data.ethereum.address[0].balances.filter((bal, index) => bal.value > 0 && index > 0): []
           });
 
           portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.wallets[0].quantity);
@@ -230,37 +229,20 @@ export default {
       } catch (err) {
         console.log(err);
       }
-
-
-      // try {
-      //   const portfolio = await Portfolio.findById(portfolioId);
-      //   if (portfolio) {
-      //     await portfolio.wallets.unshift({
-      //       name,
-      //       address: publicAddress,
-      //       active: active
-      //     });
-
-      //     await portfolio.save();
-      //     return 200;
-      //   } else {
-      //     throw new Error(701);
-      //   }
-      // } catch (err) {
-      //   console.log(err);
-      // }
     },
     async deleteWalletConnection(
       _,
       { portfolioId, walletId },
       context
     ) {
-      const user = checkAuth(context);
+      // const user = checkAuth(context);
 
       try {
         const portfolio = await Portfolio.findById(portfolioId);
         if (portfolio) {
-          portfolio.wallets = portfolio.wallets.filter((w) => w.id != walletId);
+          const walletIndex = portfolio.wallets.findIndex((w) => w.id === walletId);
+
+          portfolio.wallets.splice(walletIndex, 1)
 
           console.log(portfolio.wallets)
 
