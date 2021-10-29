@@ -4,9 +4,12 @@ import rp from "request-promise"
 import Binance from 'binance';
 import Coinbase from 'coinbase';
 import Kucoin from 'kucoin-node-api';
+import CoinGecko from 'coingecko-api';
 
 const { MainClient } = Binance;
 const { Client } = Coinbase;
+
+const CoinGeckoClient = new CoinGecko();
 
 export default {
 
@@ -91,18 +94,19 @@ export default {
           // console.log(tokens)
           wallets.map((wallet) => {
             // console.log(wallet.totalQuantity)
-            console.log(wallet.totalTokens[0])
+            // console.log(wallet.totalTokens[0])
 
             metadata = {
               balance: wallet.totalQuantity,
               cryptos: []
             }
 
-
-            metadata.cryptos = wallet.totalTokens.map((token) => { return token })
+            metadata.cryptos = [...wallet.totalTokens.map((token) => {
+              console.log(token.currency)
+              return token
+            })]
           })
 
-          console.log(metadata)
           return metadata;
         }
         catch (err) {
@@ -208,12 +212,11 @@ export default {
 
           const wallet = portfolio.wallets.findIndex(wallet => wallet.id === walletId)
 
-          if(portfolio.wallets[wallet].id === walletId)
-          {
+          if (portfolio.wallets[wallet].id === walletId) {
             portfolio.wallets[wallet] = ({
-              name: name? name : portfolio.wallets[wallet].name,
-              address: publicAddress? publicAddress : portfolio.wallets[wallet].address,
-              active: active? active : portfolio.wallets[wallet].active,
+              name: name ? name : portfolio.wallets[wallet].name,
+              address: publicAddress ? publicAddress : portfolio.wallets[wallet].address,
+              active: active ? active : portfolio.wallets[wallet].active,
               network: portfolio.wallets[wallet].network,
               image: portfolio.wallets[wallet].image,
               quantity: portfolio.wallets[wallet].quantity,

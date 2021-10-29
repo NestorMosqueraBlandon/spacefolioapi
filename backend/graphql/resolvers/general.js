@@ -28,5 +28,24 @@ export default {
         console.log(err)
       }
     },
+
+    async newsList(_, {page}){
+      const requestOptions = {
+        method: 'GET',
+        uri: `https://api.coinstats.app/public/v1/news?skip=${page}&limit=30`,
+        headers: {},
+        json: true,
+        gzip: true
+      };
+
+      try{
+        const {news}  = await rp(requestOptions);
+        return news
+      }
+      catch(err){
+        console.log(err)
+      }
+
+    }
   },
 };

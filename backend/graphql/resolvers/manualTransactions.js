@@ -55,7 +55,6 @@ export default {
                 market1m: JSON.stringify(dataMarket1m.data.prices),
                 market1y: JSON.stringify(dataMarket1y.data.prices),
                 marketall: JSON.stringify(dataMarketall.data.prices),
-              
               }
 
       } catch (err) {

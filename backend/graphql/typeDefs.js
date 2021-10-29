@@ -3,6 +3,7 @@ const typeDefs = `
 type Query{
     users: [User]
     coinList(page: String): [Coin]
+    newsList(page:String): [New]
     coinMarket(coinId: String): Data
     exchangeList(page: String): [Exchange]
     walletsList: [Wallet]
@@ -27,6 +28,13 @@ type Query{
     getWalletsConnection(portfolioId: String!): [WalletConnection]
 }
 
+type New{
+    feedDate: String
+    title: String
+    description: String
+    imgURL: String
+    link: String
+}
 type Metadata{
     balance: String
     cryptos: [Crypto]
@@ -35,11 +43,11 @@ type Metadata{
 type Currency{
     name: String
     symbol: String
-
 }
 type Crypto{    
     currency: Currency
     value: String
+    image: String
 }
 
 type Portfolio {
@@ -89,9 +97,10 @@ type Token{
 }
 
 type Currency{
-    address: String,
-    symbol: String,
+    address: String
+    symbol: String
     name: String
+    valueMarket: String
 }
 
 type Wallet{
