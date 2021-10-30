@@ -81,6 +81,12 @@ const portfolioSchema = new mongoose.Schema(
       },
     ],
 
+    coinBlacklist: [
+      {
+        name: String
+      }
+    ],
+
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

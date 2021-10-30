@@ -319,9 +319,11 @@ type Mutation{
     transferTransaction(input: AddTransferTransactionInput) : String!
     newCode(email: String): MessageSignin
     createPortfolio(input: CreatePortfolioInput) : String!
-    
     deleteBuySellTransaction(portfolioId: ID!, transactionId: ID!): SellTransaction!
     deletePortfolio(portfolioId : ID!) : String!
+    updatePortfolio(portfolioId: ID!, name: String, coinBlacklist: String) : String!
+    addCoinBlackList(portfolioId: ID!, coinBlacklist: String): String
+    deleteCoinBlackList(portfolioId: ID!, coinBlacklistId: ID): String
     addWalletConnection(name: String, portfolioId: String, publicAddress: String, network: String, image: String): String
     updateWalletConnection(name: String, portfolioId: String!, walletId: String): String
     deleteWalletConnection(portfolioId: String, walletId: String!): String

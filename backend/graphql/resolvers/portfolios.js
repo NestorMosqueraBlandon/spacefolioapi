@@ -61,6 +61,60 @@ export default {
       }
     },
 
+    async updatePortfolio(_, {portfolioId, name}){
+      const portfolio = await Portfolio.findById(portfolioId);
+
+      if(portfolio)
+        try{
+          portfolio.name = name;
+          await portfolio.save();
+          return 200;
+        }catch(err){
+          throw new Error(err);
+        }
+      }
+    },
+
+    async addCoinBlacklist(_, {portfolioId, coinBlacklist}){
+      try {
+        const portfolio = await Portfolio.findById(portfolioId);
+        if (portfolio) {
+          await portfolio.coinBlacklist.unshift({
+            coinBlacklist,
+          });
+          await portfolio.save();
+          return 200;
+        } else {
+          throw new Error(701);
+        }
+      } catch (err) {
+        throw new Error(701);
+      }
+    },
+
+    async deleteCoinBlackList(
+      _,
+      { portfolioId, coinBlacklistId },
+      context
+    ) {
+      // const user = checkAuth(context);
+
+      try {
+        const portfolio = await Portfolio.findById(portfolioId);
+        if (portfolio) {
+          const coinIndex = portfolio.coinBlacklist.findIndex((w) => w.id === coinBlacklistId);
+
+          portfolio.coinBlacklist.splice(coinIndex, 1)
+
+          await portfolio.save();
+          return 200;
+        } else {
+          throw new Error(701);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
     async deletePortfolio(_, { portfolioId }, context) {
       const user = checkAuth(context);
 
@@ -74,5 +128,4 @@ export default {
         throw new Error(err);
       }
     },
-  },
 };

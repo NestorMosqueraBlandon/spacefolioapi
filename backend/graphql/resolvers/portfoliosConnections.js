@@ -92,6 +92,8 @@ export default {
           let metadata = {}
 
           // console.log(tokens)
+          const {data} = await CoinGeckoClient.coins.markets();
+          console.log(data)
           wallets.map((wallet) => {
             // console.log(wallet.totalQuantity)
             // console.log(wallet.totalTokens[0])
@@ -102,7 +104,17 @@ export default {
             }
 
             metadata.cryptos = [...wallet.totalTokens.map((token) => {
-              console.log(token.currency)
+              // console.log(token.currency)
+              for(let i = 0; i < data.length; i++){
+                if(token.currency.symbol)
+                {
+                if(token.currency.symbol.toString().toLowerCase() == data[i].symbol){
+                  console.log(data[i].name)
+                  token.image = data[i].image
+                  token.currency.valueMarket = data[i].current_price
+                }
+              }
+              }
               return token
             })]
           })
