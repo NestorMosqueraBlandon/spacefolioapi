@@ -32,15 +32,19 @@ export default {
     async newsList(_, {page}){
       const requestOptions = {
         method: 'GET',
-        uri: `https://api.coinstats.app/public/v1/news?skip=${page}&limit=30`,
+        uri: `https://api.coinstats.app/public/v1/news`,
+        qs: {
+          'skip': Number(page) * 20,
+        },
         headers: {},
         json: true,
         gzip: true
       };
 
       try{
-        const {news}  = await rp(requestOptions);
-        return news
+        const news  = await rp(requestOptions);
+        console.log(news)
+        return news.news
       }
       catch(err){
         console.log(err)

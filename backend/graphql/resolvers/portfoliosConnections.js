@@ -13,11 +13,11 @@ const CoinGeckoClient = new CoinGecko();
 
 const coinMarket = async(coinId) => {
 
-  // let dataMarketall = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: "max"});
-  // let dataMarket24h = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 1});
-  // let dataMarket7d = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 7});
-  // let dataMarket1m = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 30});
-  let dataMarket1y = await CoinGeckoClient.coins.fetchMarketChart("ethereum", {days: 365});
+  let dataMarketall = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: "max"});
+  let dataMarket24h = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 1});
+  let dataMarket7d = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 7});
+  let dataMarket1m = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 30});
+  let dataMarket1y = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 365});
 
   // console.log(dataMarket1y.data.prices)
   return dataMarket1y.data.prices;
@@ -140,7 +140,8 @@ export default {
           let metadata = {}
 
           // console.log(tokens)
-          const { data } = await CoinGeckoClient.coins.markets();
+          const { data } = await CoinGeckoClient.coins.markets({per_page: 10000});
+
           console.log(data)
 
           wallets.map((wallet) => {

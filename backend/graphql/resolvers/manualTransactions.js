@@ -21,7 +21,7 @@ export default {
   Query: {
     async coinList(_, {page}) {
       try {
-        const data = await CoinGeckoClient.coins.markets({page: page? page: 1, per_page: 30});
+        const data = await CoinGeckoClient.coins.markets({page: page? page: 1, per_page: 50});
                   
         const newData = data.data
         // console.log(newData)
@@ -65,7 +65,7 @@ export default {
 
     async exchangeList(_, {page}) {
       try {
-        const exchangev3 = await client.exchanges({page:page? page: 1, per_page:30})
+        const exchangev3 = await client.exchanges({page:page? page: 1, per_page:50})
 
         return exchangev3;
       } catch (err) {
