@@ -44,7 +44,7 @@ export default {
       context
     ) {
       const user = checkAuth(context);
-      console.log(user);
+      // console.log(user);
       try {
         const newPortfolio = new Portfolio({
           name,

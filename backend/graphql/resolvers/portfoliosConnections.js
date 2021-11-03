@@ -11,6 +11,54 @@ const { Client } = Coinbase;
 
 const CoinGeckoClient = new CoinGecko();
 
+const coinMarket = async(coinId) => {
+
+  // let dataMarketall = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: "max"});
+  // let dataMarket24h = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 1});
+  // let dataMarket7d = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 7});
+  // let dataMarket1m = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 30});
+  let dataMarket1y = await CoinGeckoClient.coins.fetchMarketChart("ethereum", {days: 365});
+
+  // console.log(dataMarket1y.data.prices)
+  return dataMarket1y.data.prices;
+
+}
+
+const quantityMarket =  async(value, valueMarket) => {
+
+  const quantity = await valueMarket != null && value != null? Number(value) / Number(valueMarket) : 0
+
+  return  quantity;
+
+}
+
+const convertValue = async (amount, symbol) => {
+  
+    const requestOptions = {
+      method: 'GET',
+      uri: 'https://pro-api.coinmarketcap.com/v1/tools/price-conversion',
+      qs: {
+        "amount": amount,
+        "symbol": symbol,
+        "convert": "USD"
+      },
+      headers: {
+        'X-CMC_PRO_API_KEY': '91f97ef8-bc4e-40f9-9d20-7e7e67af1776'
+      },
+      json: true,
+      gzip: true
+    };
+
+    try{
+      const {data}  = await rp(requestOptions);
+      // console.log(data)
+      return data.quote.USD.price
+    }
+    catch(err){
+      console.log(err)
+    }
+}
+
 export default {
 
   Query: {
@@ -25,7 +73,7 @@ export default {
 
       try {
         const data = await client.getAccountInformation();
-        console.log(data.balances);
+        // console.log(data.balances);
         return data;
       } catch (err) {
         console.log(err);
@@ -92,8 +140,9 @@ export default {
           let metadata = {}
 
           // console.log(tokens)
-          const {data} = await CoinGeckoClient.coins.markets();
+          const { data } = await CoinGeckoClient.coins.markets();
           console.log(data)
+
           wallets.map((wallet) => {
             // console.log(wallet.totalQuantity)
             // console.log(wallet.totalTokens[0])
@@ -105,15 +154,29 @@ export default {
 
             metadata.cryptos = [...wallet.totalTokens.map((token) => {
               // console.log(token.currency)
-              for(let i = 0; i < data.length; i++){
-                if(token.currency.symbol)
-                {
-                if(token.currency.symbol.toString().toLowerCase() == data[i].symbol){
-                  console.log(data[i].name)
-                  token.image = data[i].image
-                  token.currency.valueMarket = data[i].current_price
+              for (let i = 0; i < data.length; i++) {
+                if (token.currency.symbol) {
+                  if (token.currency.symbol.toString().toLowerCase() == data[i].symbol) {
+                    console.log(data[i].name)
+                    token.image = data[i].image
+                    // console.log(convertValue(Number(token.value),s token.currency.symbol))
+                    // token.quantity = token.currency.valueMarket != null && token.value != null? Number(token.value) / Number(token.currency.valueMarket) : 0
+
+                              // convertValue(Number(data[i].current_price), token.currency.symbol)
+                    token.currency.valueMarket = data[i].current_price != null && token.currency.symbol != null ? data[i].current_price  : 0
+                    
+                    console.log(convertValue(token.value, token.currency.symbol));
+                    console.log("before", token.value)
+                    token.value = convertValue(token.value, token.currency.symbol)
+                    console.log("after", token.value)
+                    token.quantity = quantityMarket(token.value, token.currency.valueMarket)
+                    
+                    console.log(token.currency.valueMarket)
+                    // coinMarket(token.currency.symbol)
+                    token.value1y = coinMarket(token.currency.symbol)[0]? coinMarket(token.currency.symbol)[0] : 1 ;  
+
+                  }
                 }
-              }
               }
               return token
             })]
@@ -259,7 +322,7 @@ export default {
 
           portfolio.wallets.splice(walletIndex, 1)
 
-          console.log(portfolio.wallets)
+          // console.log(portfolio.wallets)
 
           await portfolio.save();
           return 200;

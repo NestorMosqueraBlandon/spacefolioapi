@@ -47,7 +47,13 @@ type Currency{
 type Crypto{    
     currency: Currency
     value: String
+    quantity: String
     image: String
+    value1y: String
+    value1m: String
+    value7d: String
+    value24h: String
+    valueall: String
 }
 
 type Portfolio {

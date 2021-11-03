@@ -24,7 +24,7 @@ export default {
         const data = await CoinGeckoClient.coins.markets({page: page? page: 1, per_page: 30});
                   
         const newData = data.data
-        console.log(newData)
+        // console.log(newData)
         return newData
 
       } catch (err) {
@@ -34,7 +34,7 @@ export default {
 
     async coinMarket(_, {coinId}) {
 
-      console.log(coinId)
+      // console.log(coinId)
       try {
         
         const data = await CoinGeckoClient.coins.fetch( coinId, {});
@@ -47,7 +47,7 @@ export default {
 
         const coinData = data.data
         
-        console.log(coinData.market_data)
+        // console.log(coinData.market_data)
         return {coin: {...coinData, market_data: {...coinData.market_data, market_cap_change_24h_in_currency: coinData.market_data.market_cap_change_24h_in_currency.usd, market_cap_change_percentage_24h_in_currency: coinData.market_data.market_cap_change_percentage_24h_in_currency.usd, current_price: coinData.market_data.current_price.usd,  low_price_24h: coinData.market_data.low_24h.usd, high_price_24h: coinData.market_data.high_24h.usd }, image: coinData.image.large  }, 
                 marketall: JSON.stringify(dataMarketall.data.prices), 
                 market24h: JSON.stringify(dataMarket24h.data.prices),

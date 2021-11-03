@@ -21,7 +21,7 @@ export default {
 
       try{
         const data  = await rp(requestOptions);
-        console.log(data.data)
+        // console.log(data.data)
         return data.data
       }
       catch(err){
