@@ -210,22 +210,5 @@ export default {
         throw new Error(701);
       }
     },
-    async createWallet(
-      _,
-      { input: { name, image } },
-    ) {
-      try {
-        const newWallet = new Wallet({
-          name
-        });
-
-        const walletCreated = await newWallet.save();
-
-        return 200;
-      } catch (err) {
-        return err;
-      }
-    },
-
   },
 };

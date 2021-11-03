@@ -12,14 +12,13 @@ export default {
         ...portfolioResolvers.Query,
         ...connectionResolvers.Query,
         ...general.Query,
-        ...walletTransactions.Query
     },
 
     Mutation: {
         ...usersResolvers.Mutation,
-        // ...manualTransactionsResolvers.Mutation,
+        ...manualTransactionsResolvers.Mutation,
         ...portfolioResolvers.Mutation,
         ...connectionResolvers.Mutation,
-        ...walletTransactions.Mutation
+        // ...walletTransactions.Mutation
     }
 }

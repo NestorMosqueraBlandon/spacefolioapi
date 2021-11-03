@@ -165,8 +165,9 @@ export default {
 
                               // convertValue(Number(data[i].current_price), token.currency.symbol)
                     token.currency.valueMarket = data[i].current_price != null && token.currency.symbol != null ? data[i].current_price  : 0
-                    
-                    console.log(convertValue(token.value, token.currency.symbol));
+                    if(token.currency.valueMarket)
+                    {
+                      console.log(convertValue(token.value, token.currency.symbol));
                     console.log("before", token.value)
                     token.value = convertValue(token.value, token.currency.symbol)
                     console.log("after", token.value)
@@ -176,11 +177,17 @@ export default {
                     // coinMarket(token.currency.symbol)
                     token.value1y = coinMarket(token.currency.symbol)[0]? coinMarket(token.currency.symbol)[0] : 1 ;  
 
+                    }
+                    
                   }
                 }
               }
-              return token
+                return token
             })]
+          })
+
+          metadata.cryptos = metadata.cryptos.filter(function(crypto) {
+            return crypto.currency.valueMarket != null
           })
 
           return metadata;
