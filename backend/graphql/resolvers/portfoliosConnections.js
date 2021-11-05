@@ -72,8 +72,12 @@ export default {
       });
 
       try {
-        const data = await client.getAccountInformation();
-        // console.log(data.balances);
+        const data = await client.getBalances();
+        const tokens =  data.filter((token) => token.free > 0)
+        const tokensQuantity = tokens.reduce((a, c) => a + Number(c.free), 0)
+        console.log(tokens)
+        console.log(tokensQuantity);
+        // console.log(data.balances.free > 0? data.balances.free : 0 );
         return data;
       } catch (err) {
         console.log(err);
@@ -116,6 +120,21 @@ export default {
         try {
 
           const wallets = [];
+          const exchanges = [];
+          portfolio.exchanges.forEach(function (exchange) {
+            if (!exchanges[exchange.network]) {
+              exchanges[exchange.network] = {
+                network: exchange.network,
+                totalQuantity: 0,
+                totalTokens: exchange.tokens
+              }
+              exchanges.push(exchanges[exchange.network]);
+          };
+
+          exchanges[exchange.network].totalQuantity = parseFloat(exchange.quantity) + parseFloat(exchanges[exchange.network].totalQuantity);
+          exchanges[exchange.network].totalTokens.push(exchange.tokens);
+        })
+
           portfolio.wallets.forEach(function (wallet) {
 
             if (!wallets[wallet.network]) {
@@ -139,21 +158,53 @@ export default {
 
           let metadata = {}
 
-          // console.log(tokens)
           const { data } = await CoinGeckoClient.coins.markets({per_page: 10000});
 
-          console.log(data)
+
+          let walletCryptos = []
 
           wallets.map((wallet) => {
-            // console.log(wallet.totalQuantity)
-            // console.log(wallet.totalTokens[0])
 
             metadata = {
               balance: wallet.totalQuantity,
               cryptos: []
             }
 
-            metadata.cryptos = [...wallet.totalTokens.map((token) => {
+            walletCryptos = [...wallet.totalTokens.map((token) => {
+              // console.log(token.currency)
+              for (let i = 0; i < data.length; i++) {
+                if (token.currency.symbol) {
+                  if (token.currency.symbol.toString().toLowerCase() == data[i].symbol) {
+                    // console.log(data[i].name)
+                    token.image = data[i].image
+                    // console.log(convertValue(Number(token.value),s token.currency.symbol))
+                    // token.quantity = token.currency.valueMarket != null && token.value != null? Number(token.value) / Number(token.currency.valueMarket) : 0
+
+                              // convertValue(Number(data[i].current_price), token.currency.symbol)
+                    token.currency.valueMarket = data[i].current_price != null && token.currency.symbol != null ? data[i].current_price  : 0
+                    if(token.currency.valueMarket)
+                    {
+                      // console.log(convertValue(token.value, token.currency.symbol));
+                    token.value = convertValue(token.value, token.currency.symbol)
+                    token.quantity = quantityMarket(token.value, token.currency.valueMarket)
+                    
+                    // console.log(token.currency.valueMarket)
+                    // coinMarket(token.currency.symbol)
+                    token.value1y = coinMarket(token.currency.symbol)[0]? coinMarket(token.currency.symbol)[0] : 1 ;  
+
+                    }
+                    
+                  }
+                }
+              }
+                return token
+            })]
+          })
+
+          exchanges.map((exchange) => {
+
+            console.log(exchange)
+            metadata.cryptos =  [...walletCryptos, ...exchange.totalTokens.map((token) => {
               // console.log(token.currency)
               for (let i = 0; i < data.length; i++) {
                 if (token.currency.symbol) {
@@ -167,10 +218,8 @@ export default {
                     token.currency.valueMarket = data[i].current_price != null && token.currency.symbol != null ? data[i].current_price  : 0
                     if(token.currency.valueMarket)
                     {
-                      console.log(convertValue(token.value, token.currency.symbol));
-                    console.log("before", token.value)
+                      // console.log(convertValue(token.value, token.currency.symbol));
                     token.value = convertValue(token.value, token.currency.symbol)
-                    console.log("after", token.value)
                     token.quantity = quantityMarket(token.value, token.currency.valueMarket)
                     
                     console.log(token.currency.valueMarket)
@@ -185,9 +234,10 @@ export default {
                 return token
             })]
           })
+          
 
-          metadata.cryptos = metadata.cryptos.filter(function(crypto) {
-            return crypto.currency.valueMarket != null
+          metadata.cryptos = metadata.cryptos.filter(function(crypto) {  
+            return crypto.currency.valueMarket != null 
           })
 
           return metadata;
@@ -200,6 +250,7 @@ export default {
   },
 
   Mutation: {
+    
     async addWalletConnection(
       _,
       { name, portfolioId, publicAddress, network, image },
@@ -343,19 +394,52 @@ export default {
     },
     async addExchangeConnection(
       _,
-      { input: { name, portfolioId, key, secret } },
+      { input: { name, image, portfolioId, key, secret } },
       context
     ) {
-      console.log('Entro');
-      const user = checkAuth(context);
+
+      // const user = checkAuth(context);
+
+      const client = new MainClient({
+        api_key: key,
+        api_secret: secret,
+      });
+
       try {
+        const data = await client.getBalances();
+        const tokens =  data.filter((token) => token.free > 0)
+        const tokensQuantity = tokens.reduce((a, c) => a + Number(c.free), 0)
+        console.log(tokensQuantity);
         const portfolio = await Portfolio.findById(portfolioId);
+
+        let portfolioTokens = [];
+        let newToken = {}
+
+        tokens.map((token) => {
+            newToken = {}
+            newToken.value = Number(token.free),
+            newToken.currency = {
+              symbol : token.coin,
+              name : token.name
+            }
+
+            
+            portfolioTokens.unshift(newToken)
+        })
+
+        console.log(portfolioTokens)
+      
         if (portfolio) {
           await portfolio.exchanges.unshift({
             name,
             apiKey: key,
+            image: image,
+            quantity: tokensQuantity,
             apiSecret: secret,
+            tokens: portfolioTokens
           });
+
+          portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.exchanges[0].quantity);
           await portfolio.save();
 
           return 200;
