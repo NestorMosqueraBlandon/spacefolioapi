@@ -292,6 +292,7 @@ export default {
 
         const portfolio = await Portfolio.findById(portfolioId);
         const data = await rp(requestOptions);
+        console.log(data)
         if (portfolio) {
 
           await portfolio.wallets.unshift({
@@ -301,7 +302,7 @@ export default {
             image: image,
             quantity: 100,
             // quantity: data.data.ethereum.address[0].balance?data.data.ethereum.address[0].balance * 3846 : 0,
-            tokens: data.data.bsc.address[0].balances? data.data.bsc.address[0].balances.filter((bal, index) => bal.value > 0 && index > 0): []
+            tokens: data.data.ethereum.address[0].balances? data.data.ethereum.address[0].balances.filter((bal, index) => bal.value > 0 && index > 0): []
           });
 
           portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.wallets[0].quantity);
