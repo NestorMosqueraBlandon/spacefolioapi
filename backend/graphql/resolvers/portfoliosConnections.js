@@ -6,8 +6,12 @@ import Coinbase from 'coinbase';
 import Kucoin from 'kucoin-node-api';
 import CoinGecko from 'coingecko-api';
 
+const {Client} = Coinbase;
+
+
+
 const { MainClient } = Binance;
-const { Client } = Coinbase;
+const coinbaseClient = new Coinbase.Client({accessToken: "638adf181444ba8972ce76b77246b3043891be3008ad8f06558207b0dad75acd"});
 
 const CoinGeckoClient = new CoinGecko();
 
@@ -167,6 +171,51 @@ export default {
           let walletCryptos = []
 
 
+          wallets.map((wallet) => {
+
+            metadata = {
+              balance: wallet.totalQuantity,
+              cryptos: []
+            }
+
+            walletCryptos = [...wallet.totalTokens.map((token) => {
+              // console.log(token.currency)
+              for (let i = 0; i < data.length; i++) {
+                if (token.currency.symbol) {
+                  if (token.currency.symbol.toString().toLowerCase() == data[i].symbol) {
+                    // console.log(data[i].name)
+                    token.image = data[i].image
+                    // console.log(convertValue(Number(token.value),s token.currency.symbol))
+                    // token.quantity = token.currency.valueMarket != null && token.value != null? Number(token.value) / Number(token.currency.valueMarket) : 0
+
+                    // convertValue(Number(data[i].current_price), token.currency.symbol)
+                    token.currency.valueMarket = data[i].current_price != null && token.currency.symbol != null ? data[i].current_price : 0
+                    if (token.currency.valueMarket) {
+                      // console.log(convertValue(token.value, token.currency.symbol));
+                      token.value = convertValue(Number(token.quantity), token.currency.symbol)
+                      token.quantity = quantityMarket(token.value, token.currency.valueMarket)
+
+                      // coinMarket(token.currency.symbol)
+                      // token.value1y = coinMarket(token.currency.symbol)[0]? coinMarket(token.currency.symbol)[0] : 1 ;  
+
+
+                      // const cm = coinMarket("bitcoin");
+
+                      // const convalue = cm.then(function (result) {
+                      //   return result
+                      // })
+
+                      // console.log("Conva", convalue)
+                      // token.value1y = Number(token.currency.valueMarket) / convalue;
+                    }
+
+                  }
+                }
+              }
+              return token
+            })]
+          })
+          
           
 
           exchanges.map((exchange) => {
@@ -383,59 +432,86 @@ export default {
 
       // const user = checkAuth(context);
 
-      const client = new MainClient({
-        api_key: key,
-        api_secret: secret,
-      });
-
-      client.getAccountInformation(key, function(err, account){
-        console.log(account.balance.amount)
-      })
-      try {
-        const data = await client.getBalances();
-        const tokens = data.filter((token) => token.free > 0)
-        const tokensQuantity = tokens.reduce((a, c) => a + Number(c.free), 0)
-        console.log(tokensQuantity);
-        const portfolio = await Portfolio.findById(portfolioId);
-
-        let portfolioTokens = [];
-        let newToken = {}
-
-        tokens.map((token) => {
-          newToken = {}
-          newToken.value = Number(token.free),
-            newToken.currency = {
-              symbol: token.coin,
-              name: token.name
-            }
+      // const client = new MainClient({
+      //   api_key: key,
+      //   api_secret: secret,
+      // });
+  
+      // const coinbaseClient = Client(
+      //   {
+      //     apiKey: key,
+      //     apiSecret: secret
+      //   }
+      // )
 
 
-          portfolioTokens.unshift(newToken)
-        })
+    const myClient = new Client({ 'apiKey':key, 'apiSecret':secret, 
+    strictSSL:false });
 
-        console.log(portfolioTokens)
+      myClient.getAccounts({}, function(err, accounts) {
+           accounts.forEach(function(acct) {
+             console.log('my bal: ' + acct + ' for ' + acct.name);
+           });
+         });
 
-        if (portfolio) {
-          await portfolio.exchanges.unshift({
-            name,
-            apiKey: key,
-            image: image,
-            quantity: tokensQuantity,
-            apiSecret: secret,
-            tokens: portfolioTokens
-          });
 
-          portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.exchanges[0].quantity);
-          await portfolio.save();
+      // coinbaseClient.getAccounts({}, function(err, accounts) {
+      //   accounts.forEach(function(acct) {
+      //     console.log('my bal: ' + acct.balance.amount + ' for ' + acct.name);
+      //   });
+      // });
 
-          return 200;
-        } else {
-          throw new Error(701);
-        }
-      } catch (err) {
-        console.log(err);
-        throw new Error(701);
-      }
+      // console.log(coinbaseClient)
+
+   
+
+      // try {
+      //   const data = await client.getBalances();
+      //   const tokens = data.filter((token) => token.free > 0)
+      //   const tokensQuantity = tokens.reduce((a, c) => a + Number(c.free), 0)
+      //   console.log(tokensQuantity);
+      //   const portfolio = await Portfolio.findById(portfolioId);
+
+      //   let portfolioTokens = [];
+      //   let newToken = {}
+
+      //   tokens.map((token) => {
+      //     newToken = {}
+      //     newToken.value = Number(token.free),
+      //       newToken.currency = {
+      //         symbol: token.coin,
+      //         name: token.name
+      //       }
+
+
+      //     portfolioTokens.unshift(newToken)
+      //   })
+
+      //   console.log(portfolioTokens)
+
+      //   if (portfolio) {
+      //     await portfolio.exchanges.unshift({
+      //       name,
+      //       apiKey: key,
+      //       image: image,
+      //       quantity: tokensQuantity,
+      //       apiSecret: secret,
+      //       tokens: portfolioTokens
+      //     });
+
+      //     portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.exchanges[0].quantity);
+      //     await portfolio.save();
+
+      //     return 200;
+      //   } else {
+      //     throw new Error(701);
+      //   }
+      // } catch (err) {
+      //   console.log(err);
+      //   throw new Error(701);
+      // }
+
+      return 200
     },
   },
 };
