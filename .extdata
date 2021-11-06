@@ -30,3 +30,59 @@
         //   .then(res => res.json())
         //   .then(console.log)
         //   .catch(console.error);
+
+
+
+
+
+
+
+
+
+
+
+
+        wallets.map((wallet) => {
+
+                metadata = {
+                  balance: wallet.totalQuantity,
+                  cryptos: []
+                }
+    
+                walletCryptos = [...wallet.totalTokens.map((token) => {
+                  // console.log(token.currency)
+                  for (let i = 0; i < data.length; i++) {
+                    if (token.currency.symbol) {
+                      if (token.currency.symbol.toString().toLowerCase() == data[i].symbol) {
+                        // console.log(data[i].name)
+                        token.image = data[i].image
+                        // console.log(convertValue(Number(token.value),s token.currency.symbol))
+                        // token.quantity = token.currency.valueMarket != null && token.value != null? Number(token.value) / Number(token.currency.valueMarket) : 0
+    
+                        // convertValue(Number(data[i].current_price), token.currency.symbol)
+                        token.currency.valueMarket = data[i].current_price != null && token.currency.symbol != null ? data[i].current_price : 0
+                        if (token.currency.valueMarket) {
+                          // console.log(convertValue(token.value, token.currency.symbol));
+                          token.value = convertValue(Number(token.quantity), token.currency.symbol)
+                          token.quantity = quantityMarket(token.value, token.currency.valueMarket)
+    
+                          // coinMarket(token.currency.symbol)
+                          // token.value1y = coinMarket(token.currency.symbol)[0]? coinMarket(token.currency.symbol)[0] : 1 ;  
+    
+    
+                          // const cm = coinMarket("bitcoin");
+    
+                          // const convalue = cm.then(function (result) {
+                          //   return result
+                          // })
+    
+                          // console.log("Conva", convalue)
+                          // token.value1y = Number(token.currency.valueMarket) / convalue;
+                        }
+    
+                      }
+                    }
+                  }
+                  return token
+                })]
+              })
