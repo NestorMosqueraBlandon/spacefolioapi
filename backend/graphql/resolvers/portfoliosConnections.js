@@ -197,10 +197,9 @@ export default {
                       }
 
                       setTimeout(() => {
+                        valueConver()
+                      }, 2000)
 
-                      })
-
-                      valueConver()
 
 
 
@@ -269,7 +268,7 @@ export default {
 
         const variables = `
     {
-      "network": "${netw}",
+      "network": "bsc",
       "address": "${adre}"
 
     }
