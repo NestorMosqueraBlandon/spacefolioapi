@@ -82,6 +82,7 @@ const portfolioSchema = new mongoose.Schema(
         active: {type: Boolean, default: true},
         image: String,
         quantity: String,
+        inusd: {type: String, default: "no" },
         tokens: [
           {
             currency:{

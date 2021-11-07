@@ -309,7 +309,8 @@ input CreateWalletInput{
 
 input ExchangeConnection {
     name: String! 
-    portfolioId: String! 
+    portfolioId: String!
+    network: String! 
     key: String! 
     secret: String!
 }

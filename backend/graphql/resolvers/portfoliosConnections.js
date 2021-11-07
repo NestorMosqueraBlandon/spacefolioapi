@@ -6,12 +6,12 @@ import Coinbase from 'coinbase';
 import Kucoin from 'kucoin-node-api';
 import CoinGecko from 'coingecko-api';
 
-const {Client} = Coinbase;
+const { Client } = Coinbase;
 
 
 
 const { MainClient } = Binance;
-const coinbaseClient = new Coinbase.Client({accessToken: "638adf181444ba8972ce76b77246b3043891be3008ad8f06558207b0dad75acd"});
+const coinbaseClient = new Coinbase.Client({ accessToken: "638adf181444ba8972ce76b77246b3043891be3008ad8f06558207b0dad75acd" });
 
 const CoinGeckoClient = new CoinGecko();
 
@@ -59,6 +59,7 @@ const convertValue = async (amount, symbol) => {
 
   try {
     const { data } = await rp(requestOptions);
+    console.log(data.quote["USD"].price)
     return data.quote["USD"].price
   }
   catch (err) {
@@ -149,9 +150,13 @@ export default {
                 network: wallet.network,
                 totalQuantity: 0,
                 totalTokens: wallet.tokens
+
               }
               wallets.push(wallets[wallet.network]);
+
             };
+
+
 
             // const tokens = wallet.tokens.reduce((a, d) => (a[d]? a[d].value += d.value : a[d] = d , a) ,{})
 
@@ -161,39 +166,65 @@ export default {
             // wallets[wallet.network].tokens = tokens;
           });
 
-          const tokens = wallets.bsc.totalTokens.reduce((a, d) => (a[d] ? a[d].value += d.value : a[d] = d, a), {})
+          // const tokens = wallets.bsc.totalTokens.reduce((a, d) => (a[d] ? a[d].value += d.value : a[d] = d, a), {})
 
           let metadata = {}
 
-          const { data } = await CoinGeckoClient.coins.markets({ per_page: 10000 });
+          let market = []
+
+          const { data } = await CoinGeckoClient.coins.markets({ page: 1, per_page: 250 });
+          const data1 = await CoinGeckoClient.coins.markets({ page: 2, per_page: 250 });
+          const data2 = await CoinGeckoClient.coins.markets({ page: 3, per_page: 250 });
+          const data3 = await CoinGeckoClient.coins.markets({ page: 4, per_page: 250 });
+          const data4 = await CoinGeckoClient.coins.markets({ page: 5, per_page: 250 });
+          const data5 = await CoinGeckoClient.coins.markets({ page: 6, per_page: 250 });
+          const data6 = await CoinGeckoClient.coins.markets({ page: 7, per_page: 250 });
+          const data7 = await CoinGeckoClient.coins.markets({ page: 8, per_page: 250 });
+          const data8 = await CoinGeckoClient.coins.markets({ page: 9, per_page: 250 });
+          const data9 = await CoinGeckoClient.coins.markets({ page: 10, per_page: 250 });
+          const data10 = await CoinGeckoClient.coins.markets({ page: 11, per_page: 250 });
+          const data11 = await CoinGeckoClient.coins.markets({ page: 12, per_page: 250 });
+          const data12 = await CoinGeckoClient.coins.markets({ page: 13, per_page: 250 });
+          const data13 = await CoinGeckoClient.coins.markets({ page: 14, per_page: 250 });
+          const data14 = await CoinGeckoClient.coins.markets({ page: 15, per_page: 250 });
+          const data15 = await CoinGeckoClient.coins.markets({ page: 16, per_page: 250 });
+          const data16 = await CoinGeckoClient.coins.markets({ page: 17, per_page: 250 });
+          const data17 = await CoinGeckoClient.coins.markets({ page: 18, per_page: 250 });
+          const data18 = await CoinGeckoClient.coins.markets({ page: 19, per_page: 250 });
+          const data19 = await CoinGeckoClient.coins.markets({ page: 20, per_page: 250 });
+          const data20 = await CoinGeckoClient.coins.markets({ page: 31, per_page: 250 });
+          market = [...data, ...data1.data, ...data2.data, ...data3.data, ...data4.data, ...data5.data, ...data6.data, ...data7.data, ...data8.data, ...data9.data, ...data10.data, ...data11.data, ...data12.data, ...data13.data, ...data14.data, ...data15.data, ...data16.data, ...data17.data, ...data18.data, ...data19.data, ...data20.data]
 
 
           let walletCryptos = []
 
 
-          wallets.map((wallet) => {
+          await wallets.map(async (wallet) => {
 
             metadata = {
               balance: wallet.totalQuantity,
               cryptos: []
             }
 
-            walletCryptos = [...wallet.totalTokens.map((token) => {
+            metadata.cryptos = [...wallet.totalTokens.map(async (token) => {
               // console.log(token.currency)
-              for (let i = 0; i < data.length; i++) {
+              for (let i = 0; i < market.length; i++) {
                 if (token.currency.symbol) {
-                  if (token.currency.symbol.toString().toLowerCase() == data[i].symbol) {
+                  if (token.currency.symbol.toString().toLowerCase() == market[i].symbol) {
                     // console.log(data[i].name)
-                    token.image = data[i].image
+                    token.image = market[i].image
                     // console.log(convertValue(Number(token.value),s token.currency.symbol))
                     // token.quantity = token.currency.valueMarket != null && token.value != null? Number(token.value) / Number(token.currency.valueMarket) : 0
 
                     // convertValue(Number(data[i].current_price), token.currency.symbol)
-                    token.currency.valueMarket = data[i].current_price != null && token.currency.symbol != null ? data[i].current_price : 0
+                    token.currency.valueMarket = market[i].current_price != null && token.currency.symbol != null ? market[i].current_price : 0
                     if (token.currency.valueMarket) {
                       // console.log(convertValue(token.value, token.currency.symbol));
-                      token.value = convertValue(Number(token.quantity), token.currency.symbol)
-                      token.quantity = quantityMarket(token.value, token.currency.valueMarket)
+                      token.quantity = token.value;
+
+                      token.value = await convertValue(Number(token.quantity), token.currency.symbol)
+                      console.log("initial value", token.value)
+                      // token.quantity = quantityMarket(token.value, token.currency.valueMarket)
 
                       // coinMarket(token.currency.symbol)
                       // token.value1y = coinMarket(token.currency.symbol)[0]? coinMarket(token.currency.symbol)[0] : 1 ;  
@@ -215,12 +246,11 @@ export default {
               return token
             })]
           })
-          
-          
 
-          exchanges.map((exchange) => {
 
-            metadata.cryptos = [...walletCryptos, ...exchange.totalTokens.map((token) => {
+
+          await exchanges.map(async (exchange) => {
+            metadata.cryptos = await [...walletCryptos, ...exchange.totalTokens.map((token) => {
               // console.log(token.currency)
               for (let i = 0; i < data.length; i++) {
                 if (token.currency.symbol) {
@@ -236,18 +266,9 @@ export default {
                       token.quantity = token.value;
                       const val = convertValue(Number(token.quantity), token.currency.symbol)
 
-                      function valueConver(){
-                        val.then( function(result) {
-                          token.value = result;                      
-                          console.log(result)
-                          return result
-                        });
 
-                      }
 
-                      setTimeout(() => {
-                        valueConver()
-                      }, 2000)
+
 
 
 
@@ -267,9 +288,16 @@ export default {
           })
 
 
-          metadata.cryptos = metadata.cryptos.filter(function (crypto) {
-            return crypto.currency.valueMarket != null
-          })
+
+          // metadata.cryptos = metadata.cryptos.filter((crypto) => {
+          //   return crypto.currency.image != null   
+          // })
+
+
+
+
+          console.log(metadata.cryptos)
+
 
           return metadata;
         }
@@ -351,7 +379,7 @@ export default {
             image: image,
             quantity: 100,
             // quantity: data.data.ethereum.address[0].balance?data.data.ethereum.address[0].balance * 3846 : 0,
-            tokens: data.data.ethereum.address[0].balances? data.data.ethereum.address[0].balances.filter((bal, index) => bal.value > 0 && index > 0): []
+            tokens: data.data.ethereum.address[0].balances ? data.data.ethereum.address[0].balances.filter((bal, index) => bal.value > 0 && index > 0) : []
           });
 
           portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.wallets[0].quantity);
@@ -426,7 +454,7 @@ export default {
     },
     async addExchangeConnection(
       _,
-      { input: { name, image, portfolioId, key, secret } },
+      { input: { name, image, portfolioId, network, key, secret } },
       context
     ) {
 
@@ -436,7 +464,7 @@ export default {
       //   api_key: key,
       //   api_secret: secret,
       // });
-  
+
       // const coinbaseClient = Client(
       //   {
       //     apiKey: key,
@@ -445,71 +473,110 @@ export default {
       // )
 
 
-    const myClient = new Client({ 'apiKey':key, 'apiSecret':secret, 
-    strictSSL:false });
+      const myClient = new Client({
+        'apiKey': key, 'apiSecret': secret,
+        strictSSL: false
+      });
 
-      myClient.getAccounts({}, function(err, accounts) {
-           accounts.forEach(function(acct) {
-             console.log('my bal: ' + acct + ' for ' + acct.name);
-           });
-         });
+      const portfolio = await Portfolio.findById(portfolioId);
 
+      let portfolioTokens = [];
+      let newToken = {}
 
-      // coinbaseClient.getAccounts({}, function(err, accounts) {
-      //   accounts.forEach(function(acct) {
-      //     console.log('my bal: ' + acct.balance.amount + ' for ' + acct.name);
-      //   });
-      // });
+      try {
 
-      // console.log(coinbaseClient)
+        if (network == "coinbase") {
+          let data = []
 
-   
+          let tokens =
+            myClient.getAccounts({}, async (err, accounts) => {
+              accounts.forEach(async (acct) => {
+                if (acct.balance.amount > 0) {
+                    newToken = {}
+                    newToken.value = Number( acct.native_balance.amount),
+                      newToken.currency = {
+                        symbol: acct.currency,
+                        name: acct.name
+                      }
 
-      // try {
-      //   const data = await client.getBalances();
-      //   const tokens = data.filter((token) => token.free > 0)
-      //   const tokensQuantity = tokens.reduce((a, c) => a + Number(c.free), 0)
-      //   console.log(tokensQuantity);
-      //   const portfolio = await Portfolio.findById(portfolioId);
-
-      //   let portfolioTokens = [];
-      //   let newToken = {}
-
-      //   tokens.map((token) => {
-      //     newToken = {}
-      //     newToken.value = Number(token.free),
-      //       newToken.currency = {
-      //         symbol: token.coin,
-      //         name: token.name
-      //       }
+                                  
+                    portfolioTokens.unshift(newToken)
 
 
-      //     portfolioTokens.unshift(newToken)
-      //   })
+                  console.log(portfolioTokens)
 
-      //   console.log(portfolioTokens)
+                
+                }
+              });
+              if (portfolio) {
+                const tokensQuantity = portfolioTokens.reduce((a, c) => a + Number(c.value), 0)
+                await portfolio.exchanges.unshift({
+                  name,
+                  apiKey: key,
+                  image: image,
+                  inusd: "ready",
+                  quantity: tokensQuantity,
+                  apiSecret: secret,
+                  tokens: portfolioTokens
+                });
 
-      //   if (portfolio) {
-      //     await portfolio.exchanges.unshift({
-      //       name,
-      //       apiKey: key,
-      //       image: image,
-      //       quantity: tokensQuantity,
-      //       apiSecret: secret,
-      //       tokens: portfolioTokens
-      //     });
+                portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.exchanges[0].quantity);
 
-      //     portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.exchanges[0].quantity);
-      //     await portfolio.save();
+                console.log(portfolio.exchanges)
 
-      //     return 200;
-      //   } else {
-      //     throw new Error(701);
-      //   }
-      // } catch (err) {
-      //   console.log(err);
-      //   throw new Error(701);
-      // }
+                await portfolio.save();
+              }
+
+
+            });
+
+
+        } else if (network == "binance") {
+
+          const data = await client.getBalances();
+          const tokens = data.filter((token) => token.free > 0)
+          const tokensQuantity = tokens.reduce((a, c) => a + Number(c.free), 0)
+          console.log(tokensQuantity);
+          
+
+          let portfolioTokens = [];
+          let newToken = {}
+
+          tokens.map((token) => {
+            newToken = {}
+            newToken.value = Number(token.free),
+              newToken.currency = {
+                symbol: token.coin,
+                name: token.name
+              }
+
+            portfolioTokens.unshift(newToken)
+          })
+
+          console.log(portfolioTokens)
+
+          if (portfolio) {
+            await portfolio.exchanges.unshift({
+              name,
+              apiKey: key,
+              image: image,
+              quantity: tokensQuantity,
+              apiSecret: secret,
+              tokens: portfolioTokens
+            });
+
+            portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.exchanges[0].quantity);
+            await portfolio.save();
+          }
+
+        } else {
+          // console.log(err);
+          throw new Error(701);
+        }
+      } catch (err) {
+        // console.log(err);
+        throw new Error(701);
+      }
 
       return 200
     },
