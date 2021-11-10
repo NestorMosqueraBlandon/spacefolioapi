@@ -81,14 +81,15 @@ const portfolioSchema = new mongoose.Schema(
         network: String,
         active: {type: Boolean, default: true},
         image: String,
-        quantity: String,
+        quantity: Number,
         inusd: {type: String, default: "no" },
         tokens: [
           {
             currency:{
               address: String,
               symbol: String,
-              name: String
+              name: String,
+              quantity: Number,
             },
             value: Number
           }

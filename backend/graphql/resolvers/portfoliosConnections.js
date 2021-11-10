@@ -59,7 +59,6 @@ const convertValue = async (amount, symbol) => {
 
   try {
     const { data } = await rp(requestOptions);
-    console.log(data.quote["USD"].price)
     return data.quote["USD"].price
   }
   catch (err) {
@@ -83,8 +82,6 @@ export default {
         const data = await client.getBalances();
         const tokens = data.filter((token) => token.free > 0)
         const tokensQuantity = tokens.reduce((a, c) => a + Number(c.free), 0)
-        console.log(tokens)
-        console.log(tokensQuantity);
         // console.log(data.balances.free > 0? data.balances.free : 0 );
         return data;
       } catch (err) {
@@ -119,6 +116,35 @@ export default {
         throw new Error(err);
       }
     },
+
+    async portfolioMarket(_, {portfolioId}) {
+
+      try {
+        
+        const data = await CoinGeckoClient.coins.fetch( coinId, {});
+
+        let dataMarketall = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: "max"});
+        let dataMarket24h = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 1});
+        let dataMarket7d = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 7});
+        let dataMarket1m = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 30});
+        let dataMarket1y = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 365});
+
+        return { 
+                marketall: JSON.stringify(dataMarketall.data.prices), 
+                market24h: JSON.stringify(dataMarket24h.data.prices),
+                market7d: JSON.stringify(dataMarket7d.data.prices),
+                market1m: JSON.stringify(dataMarket1m.data.prices),
+                market1y: JSON.stringify(dataMarket1y.data.prices),
+                marketall: JSON.stringify(dataMarketall.data.prices),
+              }
+
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+
+    
+
     async getMetadataPortfolio(_, { portfolioId }, context) {
 
       const portfolio = await Portfolio.findById(portfolioId);
@@ -172,6 +198,13 @@ export default {
 
           let market = []
 
+          const globalData = await CoinGeckoClient.global();
+
+          for(let i = 0; i <  globalData.data.data.active_cryptocurrencies; i++){
+
+          }
+
+          console.log(globalData.data.data.active_cryptocurrencies)
           const { data } = await CoinGeckoClient.coins.markets({ page: 1, per_page: 250 });
           const data1 = await CoinGeckoClient.coins.markets({ page: 2, per_page: 250 });
           const data2 = await CoinGeckoClient.coins.markets({ page: 3, per_page: 250 });
@@ -192,12 +225,37 @@ export default {
           const data17 = await CoinGeckoClient.coins.markets({ page: 18, per_page: 250 });
           const data18 = await CoinGeckoClient.coins.markets({ page: 19, per_page: 250 });
           const data19 = await CoinGeckoClient.coins.markets({ page: 20, per_page: 250 });
-          const data20 = await CoinGeckoClient.coins.markets({ page: 31, per_page: 250 });
-          market = [...data, ...data1.data, ...data2.data, ...data3.data, ...data4.data, ...data5.data, ...data6.data, ...data7.data, ...data8.data, ...data9.data, ...data10.data, ...data11.data, ...data12.data, ...data13.data, ...data14.data, ...data15.data, ...data16.data, ...data17.data, ...data18.data, ...data19.data, ...data20.data]
+          const data20 = await CoinGeckoClient.coins.markets({ page: 21, per_page: 250 });
+          const data21 = await CoinGeckoClient.coins.markets({ page: 22, per_page: 250 });
+          const data22 = await CoinGeckoClient.coins.markets({ page: 23, per_page: 250 });
+          const data23 = await CoinGeckoClient.coins.markets({ page: 24, per_page: 250 });
+          const data24 = await CoinGeckoClient.coins.markets({ page: 25, per_page: 250 });
+          const data25 = await CoinGeckoClient.coins.markets({ page: 26, per_page: 250 });
+          const data26 = await CoinGeckoClient.coins.markets({ page: 26, per_page: 250 });
+          const data27 = await CoinGeckoClient.coins.markets({ page: 28, per_page: 250 });
+          const data28 = await CoinGeckoClient.coins.markets({ page: 29, per_page: 250 });
+          const data29 = await CoinGeckoClient.coins.markets({ page: 30, per_page: 250 });
+          const data30 = await CoinGeckoClient.coins.markets({ page: 31, per_page: 250 });
+          const data31 = await CoinGeckoClient.coins.markets({ page: 32, per_page: 250 });
+          const data32 = await CoinGeckoClient.coins.markets({ page: 33, per_page: 250 });
+          const data33 = await CoinGeckoClient.coins.markets({ page: 34, per_page: 250 });
+          const data34 = await CoinGeckoClient.coins.markets({ page: 35, per_page: 250 });
+          const data35 = await CoinGeckoClient.coins.markets({ page: 36, per_page: 250 });
+          const data36 = await CoinGeckoClient.coins.markets({ page: 37, per_page: 250 });
+          const data37 = await CoinGeckoClient.coins.markets({ page: 38, per_page: 250 });
+          const data38 = await CoinGeckoClient.coins.markets({ page: 39, per_page: 250 });
+          const data39 = await CoinGeckoClient.coins.markets({ page: 40, per_page: 250 });
+          const data40 = await CoinGeckoClient.coins.markets({ page: 41, per_page: 250 });
+          const data41 = await CoinGeckoClient.coins.markets({ page: 42, per_page: 250 });
+          const data42 = await CoinGeckoClient.coins.markets({ page: 43, per_page: 250 });
+          const data43 = await CoinGeckoClient.coins.markets({ page: 44, per_page: 250 });
+          market = [...data, ...data1.data, ...data2.data, ...data3.data, ...data4.data, ...data5.data, ...data6.data, ...data7.data, ...data8.data, ...data9.data, ...data10.data, ...data11.data, ...data12.data, ...data13.data, ...data14.data, ...data15.data, ...data16.data, ...data17.data, ...data18.data, ...data19.data, ...data20.data, ...data21.data, ...data22.data, ...data23.data, ...data24.data, ...data25.data, ...data26.data, ...data27.data, ...data28.data, ...data29.data, ...data30.data, ...data31.data, ...data32.data, ...data33.data, ...data34.data, ...data35.data, ...data36.data, ...data37.data, ...data38.data, ...data39.data, ...data40.data, ...data41.data, ...data42.data, ...data43.data]
 
 
           let walletCryptos = []
+          let exchangueCryptos = []
 
+          // const coinList = await CoinGeckoClient.coins.all();
 
           await wallets.map(async (wallet) => {
 
@@ -206,7 +264,12 @@ export default {
               cryptos: []
             }
 
-            metadata.cryptos = [...wallet.totalTokens.map(async (token) => {
+            
+            walletCryptos = await [...wallet.totalTokens.map(async (token) => {
+              // const tokenId = await CoinGeckoClient.coins({token.})
+              // if(token.currency.address == )
+              // token.id = 
+              // const tokenAddress = await 
               // console.log(token.currency)
               for (let i = 0; i < market.length; i++) {
                 if (token.currency.symbol) {
@@ -217,13 +280,12 @@ export default {
                     // token.quantity = token.currency.valueMarket != null && token.value != null? Number(token.value) / Number(token.currency.valueMarket) : 0
 
                     // convertValue(Number(data[i].current_price), token.currency.symbol)
-                    token.currency.valueMarket = market[i].current_price != null && token.currency.symbol != null ? market[i].current_price : 0
+                    token.currency.valueMarket = market[i].current_price != null && token.currency.symbol != null ? market[i].current_price.toFixed(9) : 0
                     if (token.currency.valueMarket) {
                       // console.log(convertValue(token.value, token.currency.symbol));
                       token.quantity = token.value;
 
-                      token.value = await convertValue(Number(token.quantity), token.currency.symbol)
-                      console.log("initial value", token.value)
+                      token.value = await convertValue(Number(token.quantity).toFixed(6), token.currency.symbol)
                       // token.quantity = quantityMarket(token.value, token.currency.valueMarket)
 
                       // coinMarket(token.currency.symbol)
@@ -250,8 +312,7 @@ export default {
 
 
           await exchanges.map(async (exchange) => {
-            metadata.cryptos = await [...walletCryptos, ...exchange.totalTokens.map((token) => {
-              // console.log(token.currency)
+            exchangueCryptos = await [...exchange.totalTokens.map((token) => {
               for (let i = 0; i < data.length; i++) {
                 if (token.currency.symbol) {
                   if (token.currency.symbol.toString().toLowerCase() == data[i].symbol) {
@@ -260,18 +321,11 @@ export default {
                     // token.quantity = token.currency.valueMarket != null && token.value != null? Number(token.value) / Number(token.currency.valueMarket) : 0
 
                     // convertValue(Number(data[i].current_price), token.currency.symbol)
-                    token.currency.valueMarket = data[i].current_price != null && token.currency.symbol != null ? data[i].current_price : 0
+                    token.currency.valueMarket = data[i].current_price != null && token.currency.symbol != null ? data[i].current_price.toFixed(6) : 0
                     if (token.currency.valueMarket) {
                       // console.log(convertValue(token.value, token.currency.symbol));
-                      token.quantity = token.value;
-                      const val = convertValue(Number(token.quantity), token.currency.symbol)
-
-
-
-
-
-
-
+                      token.quantity = token.currency.quantity
+                      // const val = convertValue(Number(token.quantity).toFixed(6), token.currency.symbol)
 
                       // coinMarket(token.currency.symbol)
                       // token.value1y =  ((Number(token.currency.valueMarket) / coinMarket("bitcoin")) - 1) * 100;  
@@ -283,12 +337,14 @@ export default {
                   }
                 }
               }
+              console.log(token)
               return token
             })]
           })
 
 
 
+          metadata.cryptos = [...exchangueCryptos, ...walletCryptos]
           // metadata.cryptos = metadata.cryptos.filter((crypto) => {
           //   return crypto.currency.image != null   
           // })
@@ -296,7 +352,6 @@ export default {
 
 
 
-          console.log(metadata.cryptos)
 
 
           return metadata;
@@ -496,16 +551,12 @@ export default {
                     newToken.value = Number( acct.native_balance.amount),
                       newToken.currency = {
                         symbol: acct.currency,
-                        name: acct.name
+                        name: acct.name,
+                        quantity: Number(acct.balance.amount)
                       }
 
-                                  
-                    portfolioTokens.unshift(newToken)
-
-
-                  console.log(portfolioTokens)
-
-                
+                       console.log(newToken)           
+                    portfolioTokens.unshift(newToken)   
                 }
               });
               if (portfolio) {
@@ -522,7 +573,6 @@ export default {
 
                 portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.exchanges[0].quantity);
 
-                console.log(portfolio.exchanges)
 
                 await portfolio.save();
               }
@@ -536,7 +586,6 @@ export default {
           const data = await client.getBalances();
           const tokens = data.filter((token) => token.free > 0)
           const tokensQuantity = tokens.reduce((a, c) => a + Number(c.free), 0)
-          console.log(tokensQuantity);
           
 
           let portfolioTokens = [];
@@ -553,7 +602,6 @@ export default {
             portfolioTokens.unshift(newToken)
           })
 
-          console.log(portfolioTokens)
 
           if (portfolio) {
             await portfolio.exchanges.unshift({

@@ -5,6 +5,7 @@ type Query{
     coinList(page: String): [Coin]
     newsList(page:String): [New]
     coinMarket(coinId: String): Data
+    portfolioMarket(portfolioId: String): PotfolioMarket
     exchangeList(page: String): [Exchange]
     walletsList: [Wallet]
     getSellTransaction(userId: String): [SellTransaction]
@@ -173,6 +174,15 @@ type Img{
 }
 
 type Data{
+    coin: Coin
+    marketall: String
+    market24h: String
+    market7d: String
+    market1m: String
+    market1y: String
+}
+
+type PotfolioMarket{
     coin: Coin
     marketall: String
     market24h: String

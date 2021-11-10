@@ -62,6 +62,8 @@ export default {
       }
     },
 
+    
+
 
     async exchangeList(_, {page}) {
       try {
