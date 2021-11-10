@@ -515,10 +515,10 @@ export default {
 
       // const user = checkAuth(context);
 
-      // const client = new MainClient({
-      //   api_key: key,
-      //   api_secret: secret,
-      // });
+      const client = new MainClient({
+        api_key: key,
+        api_secret: secret,
+      });
 
       // const coinbaseClient = Client(
       //   {
@@ -618,11 +618,11 @@ export default {
           }
 
         } else {
-          // console.log(err);
+          console.log(err);
           throw new Error(701);
         }
       } catch (err) {
-        // console.log(err);
+        console.log(err);
         throw new Error(701);
       }
 
