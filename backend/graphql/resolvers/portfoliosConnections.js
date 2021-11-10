@@ -286,7 +286,10 @@ export default {
                       token.quantity = token.value;
 
                       token.value = await convertValue(Number(token.quantity).toFixed(6), token.currency.symbol)
-                      // token.quantity = quantityMarket(token.value, token.currency.valueMarket)
+                      if(!token.currency.quantity)
+                      {
+                        token.quantity = quantityMarket(token.value, token.currency.valueMarket)
+                      }
 
                       // coinMarket(token.currency.symbol)
                       // token.value1y = coinMarket(token.currency.symbol)[0]? coinMarket(token.currency.symbol)[0] : 1 ;  
