@@ -35,6 +35,7 @@
 
 
 
+        createWallet(name: String, image: String, network:String): String
 
 
 
