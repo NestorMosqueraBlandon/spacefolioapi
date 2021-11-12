@@ -1,4 +1,8 @@
+import { cancelExistingSubscription } from "@tatumio/tatum";
+import { response } from "express";
 import rp from "request-promise"
+import Stripe from "stripe";
+const stripe = Stripe("sk_test_51JQIemFkdOhFel1fusJiZze5dFbv1OD75min6QFSX8LwTSsnGcMoTnU86sIHcWuINEj1UgP4jGcw9KapU7sY9eY200o59GjBm1")
 
 export default {
   Query: {
@@ -52,4 +56,76 @@ export default {
 
     }
   },
+
+  Mutation: {
+
+    async handlePayment(_, {email, paymentMethod}, context){
+      
+      const priceId = "price_1JuOneFkdOhFel1fNi9rSVuB"
+  
+      const customer = await stripe.customers.create({
+        payment_method: paymentMethod,
+        email: email
+      })
+
+      try{
+        const subscription = await stripe.subscriptions.create({
+          customer: customer.id,
+          items: [{
+            price: priceId,
+          }],
+          payment_behavior: "default_incomplete",
+          expand: ["latest_invoice.payment_intent"],
+        });
+
+        console.log(subscription.id, subscription)
+      }catch(err)
+      {
+        console.log(err)
+      }  
+    },
+
+    async cancelSubscription(_, {subscriptionId}, context){
+      const deletedSubscription = await stripe.subscriptions.del(subscriptionId);
+
+      return 200
+    }
+  },
+
+  Subscription: {
+    async chackPayment(){
+      let event;
+
+      try{
+        event = stripe.webhooks.constructEvent()
+      }catch(err){
+        console.log(err)
+        return 700
+      }
+
+      const dataObject = event.data.object;
+
+      switch (event.type) {
+        case "invoice.paid":
+          break;
+        case "invoice.payment_failed":
+            break;
+        case "customer.subscription.deleted":
+          if(event.request != null){
+
+          }else
+          {
+
+          }
+          break;
+        default:
+          break;
+      }
+
+      return 200
+    }
+
+   
+  }
+  
 };

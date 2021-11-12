@@ -182,8 +182,6 @@ export default {
 
             };
 
-
-
             // const tokens = wallet.tokens.reduce((a, d) => (a[d]? a[d].value += d.value : a[d] = d , a) ,{})
 
             wallets[wallet.network].totalQuantity = parseFloat(wallet.quantity) + parseFloat(wallets[wallet.network].totalQuantity);
@@ -274,7 +272,7 @@ export default {
               for (let i = 0; i < market.length; i++) {
                 if (token.currency.symbol) {
                   if (token.currency.symbol.toString().toLowerCase() == market[i].symbol) {
-                    // console.log(data[i].name)
+                    console.log("DATA", data[i])
                     token.image = market[i].image
                     // console.log(convertValue(Number(token.value),s token.currency.symbol))
                     // token.quantity = token.currency.valueMarket != null && token.value != null? Number(token.value) / Number(token.currency.valueMarket) : 0
@@ -589,6 +587,39 @@ export default {
           const data = await client.getBalances();
           const tokens = data.filter((token) => token.free > 0)
           const tokensQuantity = tokens.reduce((a, c) => a + Number(c.free), 0)
+
+
+
+          const requestOptions = {
+            method: 'GET',
+            uri: 'https://testnet.binancefuture.com/fapi/v1/account',
+            qs: {
+              timestamp: "1499827319559"
+            },
+            headers: {
+              "X-MBX-APIKEY": key,
+              "X-MBX-SECRETKEY": secret
+            },
+            json: true,
+            gzip: true
+          };
+    
+          try{
+            const data  = await rp(requestOptions);
+            console.log(data)
+            return data
+          }
+          catch(err){
+            console.log(err)
+          }
+          
+
+          // const account = await client.getAccountInformation();
+          // console.log(account)
+          
+        
+          // console.log(account)
+          // tokens.map((token) => console.log(token.networkList))
           
 
           let portfolioTokens = [];
@@ -617,7 +648,7 @@ export default {
             });
 
             portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.exchanges[0].quantity);
-            await portfolio.save();
+            // await portfolio.save();
           }
 
         } else {

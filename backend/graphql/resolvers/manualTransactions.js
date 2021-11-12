@@ -7,6 +7,7 @@ import checkAuth from '../../utils/checkAuth.js';
 import User from '../../models/userModel.js';
 import Portfolio from '../../models/portfolioModel.js';
 import Wallet from '../../models/walletModel.js';
+import Exchange from '../../models/exchangeModel.js';
 import * as timeago from "timeago.js"
 
 const Client = CoinGeckoV3.CoinGeckoClient;
@@ -85,6 +86,16 @@ export default {
       }
     },
 
+    async exchangeListAvailable() {
+      try {
+        const exchanges = await Exchange.find();
+
+        return exchanges;
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+
     async getSellTransaction(_, { userId }) {
       try {
         const transaction = await SellManualTransaction.find({ userId });
@@ -114,6 +125,25 @@ export default {
   },
 
   Mutation: {
+    async createWallet(
+      _,
+      { name, image, network },
+  ) {
+      try {
+          const newWallet = new Exchange({
+              name,
+              network,
+              image,
+          });
+
+          await newWallet.save();
+
+          return 200;
+      } catch (err) {
+          return err;
+      }
+  },
+
     async addManualTransaction(_, { input }, context) {
       const user = checkAuth(context);
       const {

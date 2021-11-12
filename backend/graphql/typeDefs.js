@@ -8,6 +8,7 @@ type Query{
     portfolioMarket(portfolioId: String): PotfolioMarket
     exchangeList(page: String): [Exchange]
     walletsList: [Wallet]
+    exchangeListAvailable: [Wallet]
     getSellTransaction(userId: String): [SellTransaction]
     getBuyTransaction(userId: String): [BuyTransaction]
     getTransferTransaction(userId: String): [TransferTransaction]
@@ -114,6 +115,7 @@ type Wallet{
     id: String
     name: String
     image: String
+    network: String
 }
 
 type Balance{
@@ -345,6 +347,14 @@ type Mutation{
     updateWalletConnection(name: String, portfolioId: String!, walletId: String): String
     deleteWalletConnection(portfolioId: String, walletId: String!): String
     addExchangeConnection(input: ExchangeConnection): String!
+    handlePayment(email: String): String
+    cancelSubscription(subscriptionId: String): String
+    createWallet(name: String, image: String, network:String): String
+
+}
+
+type Subscription{
+    checkPayment: String
 }
 `;
 

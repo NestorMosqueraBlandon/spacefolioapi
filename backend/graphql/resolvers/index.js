@@ -19,6 +19,7 @@ export default {
         ...manualTransactionsResolvers.Mutation,
         ...portfolioResolvers.Mutation,
         ...connectionResolvers.Mutation,
+        ...general.Mutation,
         // ...walletTransactions.Mutation
     }
 }
