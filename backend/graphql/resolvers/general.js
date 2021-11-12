@@ -1,8 +1,8 @@
-import { cancelExistingSubscription } from "@tatumio/tatum";
-import { response } from "express";
 import rp from "request-promise"
 import Stripe from "stripe";
 const stripe = Stripe("sk_test_51JQIemFkdOhFel1fusJiZze5dFbv1OD75min6QFSX8LwTSsnGcMoTnU86sIHcWuINEj1UgP4jGcw9KapU7sY9eY200o59GjBm1")
+import checkAuth from '../../utils/checkAuth.js';
+import User from "../../models/userModel.js"
 
 export default {
   Query: {
@@ -61,6 +61,8 @@ export default {
 
     async handlePayment(_, {email, paymentMethod}, context){
       
+      const user = checkAuth(context);
+      
       const priceId = "price_1JuOneFkdOhFel1fNi9rSVuB"
   
       const customer = await stripe.customers.create({
@@ -69,6 +71,9 @@ export default {
       })
 
       try{
+        const userId = user._id
+        const userData = await User.findById(userId);
+
         const subscription = await stripe.subscriptions.create({
           customer: customer.id,
           items: [{
@@ -78,7 +83,12 @@ export default {
           expand: ["latest_invoice.payment_intent"],
         });
 
-        console.log(subscription.id, subscription)
+        userData.subscriptionStatus = subscription.status;
+        userData.subscriptionId = subscription.id;
+
+        await userData.save();
+
+        console.log(subscription.id, subscription.status)
       }catch(err)
       {
         console.log(err)

@@ -349,7 +349,6 @@ type Mutation{
     addExchangeConnection(input: ExchangeConnection): String!
     handlePayment(email: String): String
     cancelSubscription(subscriptionId: String): String
-    createWallet(name: String, image: String, network:String): String
 
 }
 

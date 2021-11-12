@@ -125,24 +125,7 @@ export default {
   },
 
   Mutation: {
-    async createWallet(
-      _,
-      { name, image, network },
-  ) {
-      try {
-          const newWallet = new Exchange({
-              name,
-              network,
-              image,
-          });
 
-          await newWallet.save();
-
-          return 200;
-      } catch (err) {
-          return err;
-      }
-  },
 
     async addManualTransaction(_, { input }, context) {
       const user = checkAuth(context);

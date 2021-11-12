@@ -33,9 +33,27 @@
 
 
 
+      //   async createWallet(
+      //     _,
+      //     { name, image, network },
+      // ) {
+      //     try {
+      //         const newWallet = new Exchange({
+      //             name,
+      //             network,
+      //             image,
+      //         });
+    
+      //         await newWallet.save();
+    
+      //         return 200;
+      //     } catch (err) {
+      //         return err;
+      //     }
+      // },
 
 
-        createWallet(name: String, image: String, network:String): String
+        // createWallet(name: String, image: String, network:String): String
 
 
 
