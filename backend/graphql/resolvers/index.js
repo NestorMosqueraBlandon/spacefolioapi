@@ -3,7 +3,6 @@ import usersResolvers from "./users.js";
 import portfolioResolvers from "./portfolios.js";
 import connectionResolvers from "./portfoliosConnections.js";
 import general from "./general.js";
-import walletTransactions from "./walletTransactions.js";
 
 export default {
     Query: {
@@ -20,6 +19,5 @@ export default {
         ...portfolioResolvers.Mutation,
         ...connectionResolvers.Mutation,
         ...general.Mutation,
-        // ...walletTransactions.Mutation
     }
 }

@@ -25,7 +25,6 @@ export default {
 
       try{
         const data  = await rp(requestOptions);
-        // console.log(data.data)
         return data.data
       }
       catch(err){
@@ -121,12 +120,6 @@ export default {
         case "invoice.payment_failed":
             break;
         case "customer.subscription.deleted":
-          if(event.request != null){
-
-          }else
-          {
-
-          }
           break;
         default:
           break;

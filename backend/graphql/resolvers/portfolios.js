@@ -44,7 +44,6 @@ export default {
       context
     ) {
       const user = checkAuth(context);
-      // console.log(user);
       try {
         const newPortfolio = new Portfolio({
           name,
@@ -97,7 +96,7 @@ export default {
       { portfolioId, coinBlacklistId },
       context
     ) {
-      // const user = checkAuth(context);
+      const user = checkAuth(context);
 
       try {
         const portfolio = await Portfolio.findById(portfolioId);

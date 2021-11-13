@@ -16,23 +16,6 @@ const coinbaseClient = new Coinbase.Client({ accessToken: "638adf181444ba8972ce7
 
 const CoinGeckoClient = new CoinGecko();
 
-const coinMarket = async (coinId) => {
-
-  // let dataMarketall = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: "max"});
-  // let dataMarket24h = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 1});
-  // let dataMarket7d = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 7});
-  // let dataMarket1m = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 30});
-  let dataMarket1y = await CoinGeckoClient.coins.fetchMarketChart(coinId, { days: 365 });
-
-  // console.log(dataMarket1y.data.prices[0][1])
-  // console.log(dataMarketall.data.prices)
-  // console.log(dataMarket24h.data.prices)
-  // console.log(dataMarket7d.data.prices)
-  // console.log(dataMarket1m.data.prices)
-  return dataMarket1y.data.prices[0][1];
-
-}
-
 const quantityMarket = async (value, valueMarket) => {
 
   const quantity = await valueMarket != null && value != null ? Number(value) / Number(valueMarket) : 0
@@ -71,27 +54,8 @@ export default {
 
   Query: {
 
-    async getExchangeInfo(_, { key, secret }, context) {
-      // const user = checkAuth(context);
-
-      const client = new MainClient({
-        api_key: key,
-        api_secret: secret,
-      });
-
-      try {
-        const data = await client.getBalances();
-        const tokens = data.filter((token) => token.free > 0)
-        const tokensQuantity = tokens.reduce((a, c) => a + Number(c.free), 0)
-        // console.log(data.balances.free > 0? data.balances.free : 0 );
-        return data;
-      } catch (err) {
-        console.log(err);
-      }
-    },
-
     async getWalletsConnection(_, { portfolioId }, context) {
-      // const user = checkAuth(context);
+      const user = checkAuth(context);
       try {
         const portfolio = await Portfolio.findById(portfolioId);
         return portfolio.wallets;
@@ -231,9 +195,9 @@ export default {
 
             };
 
-            const tokens = exchange.tokens.reduce((a, d) => (a[d]? a[d].value += d.value : a[d] = d , a) ,{})
+            let tokens = []; 
+            tokens = [...tokens, exchange.tokens.reduce((a, d) => (a[d]? a[d].value += d.value : a[d] = d , a) ,{})]
 
-            console.log(tokens)
             exchanges[exchange.network].totalQuantity = parseFloat(exchange.quantity) + parseFloat(exchanges[exchange.network].totalQuantity);
             exchanges[exchange.network].totalTokens.push(exchange.tokens);
 
@@ -242,14 +206,6 @@ export default {
     
 
           metadata.cryptos = [...exchangeCryptos, ...walletCryptos]
-          // metadata.cryptos = metadata.cryptos.filter((crypto) => {
-          //   return crypto.currency.image != null   
-          // })
-
-
-
-
-
 
           return metadata;
         }
@@ -267,11 +223,9 @@ export default {
       { name, portfolioId, publicAddress, network, image },
       context
     ) {
-      // const user = checkAuth(context);
+      const user = checkAuth(context);
 
       try {
-
-
         const query = `
       query ($network: EthereumNetwork!, $address: String!) {
         ethereum(network: $network) {
@@ -330,7 +284,6 @@ export default {
             network: network,
             image: image,
             quantity: 100,
-            // quantity: data.data.ethereum.address[0].balance?data.data.ethereum.address[0].balance * 3846 : 0,
             tokens: data.data.ethereum.address[0].balances ? data.data.ethereum.address[0].balances.filter((bal, index) => bal.value > 0 && index > 0) : []
           });
 
@@ -384,7 +337,7 @@ export default {
       { portfolioId, walletId },
       context
     ) {
-      // const user = checkAuth(context);
+      const user = checkAuth(context);
 
       try {
         const portfolio = await Portfolio.findById(portfolioId);
@@ -392,9 +345,6 @@ export default {
           const walletIndex = portfolio.wallets.findIndex((w) => w.id === walletId);
 
           portfolio.wallets.splice(walletIndex, 1)
-
-          // console.log(portfolio.wallets)
-
           await portfolio.save();
           return 200;
         } else {
@@ -410,20 +360,12 @@ export default {
       context
     ) {
 
-      // const user = checkAuth(context);
+      const user = checkAuth(context);
 
       const client = new MainClient({
         api_key: key,
         api_secret: secret,
       });
-
-      // const coinbaseClient = Client(
-      //   {
-      //     apiKey: key,
-      //     apiSecret: secret
-      //   }
-      // )
-
 
       const myClient = new Client({
         'apiKey': key, 'apiSecret': secret,

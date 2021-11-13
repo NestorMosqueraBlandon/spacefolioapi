@@ -9,23 +9,9 @@ type Query{
     exchangeList(page: String): [Exchange]
     walletsList: [Wallet]
     exchangeListAvailable: [Wallet]
-    getSellTransaction(userId: String): [SellTransaction]
-    getBuyTransaction(userId: String): [BuyTransaction]
-    getTransferTransaction(userId: String): [TransferTransaction]
     fiatList: [Fiat]
     getPortfolios(userId: ID): [Portfolio]
     getPortfolio(portfolioId: ID!, userId: ID): Portfolio
-    getWalletBalance(address: String!, type: String!): String
-    getTransaction(address: String!): String
-    getTransactions(account: String!): [Transaction]
-    getExchangeInfo(key: String!, secret: String!): String
-    getExchangeBalance(key: String!, secret: String!): String
-    getCoinbaseAccounts(key: String!, secret: String!): String
-    getCoinbaseBalance(key: String!, secret: String!, accountId: String!): String
-    getCoinbaseTransactions(key: String!, secret: String!, accountId: String!): String
-    getKucoinAccounts(key: String!, secret: String!): String
-    getKucoinAccount(key: String!, secret: String!, accountId: String!): String
-    getWalletTransactionByAddress(address: String!): String
     getMetadataPortfolio(portfolioId: String!): Metadata
     getWalletsConnection(portfolioId: String!): [WalletConnection]
 }
@@ -334,11 +320,8 @@ type Mutation{
     emailActivate(otpCode: String): ActivateEmail!
     forgotPassword(email: String): String!
     resetPassword(input: ResetPasswordInput): String!
-    addManualTransaction(input: AddManualTransactionInput) : String!
-    transferTransaction(input: AddTransferTransactionInput) : String!
     newCode(email: String): MessageSignin
     createPortfolio(input: CreatePortfolioInput) : String!
-    deleteBuySellTransaction(portfolioId: ID!, transactionId: ID!): SellTransaction!
     deletePortfolio(portfolioId : ID!) : String!
     updatePortfolio(portfolioId: ID!, name: String, coinBlacklist: String) : String!
     addCoinBlackList(portfolioId: ID!, coinBlacklist: String): String
