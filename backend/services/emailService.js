@@ -3,7 +3,6 @@ import mailgun from 'mailgun-js';
 import config from '../utils/config.js';
 import messagebird from 'messagebird';
 import otpGenerator from 'otp-generator';
-import { getMultiTokensBalance } from '@tatumio/tatum';
 
 //Mailgun configuration
 const DOMAIN = 'sandbox3ceb8a67548640459e759b3626d3565a.mailgun.org';
