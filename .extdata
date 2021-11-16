@@ -108,5 +108,24 @@
 
 
 
+    //           async addCoinBlacklist(_, {portfolioId, coinBlacklist}){
+    //             try {
+    //               const portfolio = await Portfolio.findById(portfolioId);
+    //               if (portfolio) {
+    //                 await portfolio.coinBlacklist.unshift({
+    //                   coinBlacklist,
+    //                 });
+    //                 await portfolio.save();
+    //                 return 200;
+    //               } else {
+    //                 throw new Error(701);
+    //               }
+    //             } catch (err) {
+    //               throw new Error(701);
+    //             }
+    //           },
+
 
               
+
+    // addCoinBlackList(portfolioId: ID!, coinBlacklist: String): String

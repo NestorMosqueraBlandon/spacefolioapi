@@ -14,6 +14,7 @@ type Query{
     getPortfolio(portfolioId: ID!, userId: ID): Portfolio
     getMetadataPortfolio(portfolioId: String!): Metadata
     getWalletsConnection(portfolioId: String!): [WalletConnection]
+    getExchangesConnection(portfolioId: String!): [WalletConnection]
 }
 
 type New{
@@ -324,15 +325,16 @@ type Mutation{
     createPortfolio(input: CreatePortfolioInput) : String!
     deletePortfolio(portfolioId : ID!) : String!
     updatePortfolio(portfolioId: ID!, name: String, coinBlacklist: String) : String!
-    addCoinBlackList(portfolioId: ID!, coinBlacklist: String): String
     deleteCoinBlackList(portfolioId: ID!, coinBlacklistId: ID): String
     addWalletConnection(name: String, portfolioId: String, publicAddress: String, network: String, image: String): String
-    updateWalletConnection(name: String, portfolioId: String!, walletId: String): String
+    updateWalletConnection(name: String, portfolioId: String!, walletId: String, active : String): String
+    updateExchangeConnection(name: String, portfolioId: String!, exchangeId: String, active: String): String
     deleteWalletConnection(portfolioId: String, walletId: String!): String
+    deleteExchangeConnection(portfolioId: String, exchangeId: String!): String
     addExchangeConnection(input: ExchangeConnection): String!
     handlePayment(email: String): String
     cancelSubscription(subscriptionId: String): String
-
+    deleteUser(userId: String): String
 }
 
 type Subscription{

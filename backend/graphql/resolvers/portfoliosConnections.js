@@ -64,6 +64,16 @@ export default {
       }
     },
 
+    async getExchangesConnection(_, { portfolioId }, context) {
+      const user = checkAuth(context);
+      try {
+        const portfolio = await Portfolio.findById(portfolioId);
+        return portfolio.exchanges;
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+
     async getPortfolio(_, { portfolioId, userId }, context) {
       const user = checkAuth(context);
       try {
@@ -114,7 +124,7 @@ export default {
 
       const portfolio = await Portfolio.findById(portfolioId);
 
-      if (portfolio) {
+      if (portfolio && portfolio.wallets && portfolio.exchanges) {
         try {
 
           const wallets = [];
@@ -332,6 +342,41 @@ export default {
         console.log(err);
       }
     },
+    async updateExchangeConnection(
+      _,
+      { name, portfolioId, exchangeId, key, secret, active },
+      context
+    ) {
+      const user = checkAuth(context);
+
+      try {
+        const portfolio = await Portfolio.findById(portfolioId);
+        if (portfolio) {
+
+          const exchange = portfolio.exchanges.findIndex(wallet => wallet.id === exchangeId)
+
+          if (portfolio.exchanges[exchange].id === exchangeId) {
+            portfolio.exchanges[exchange] = ({
+              name: name ? name : portfolio.exchanges[exchange].name,
+              key: key ? key : portfolio.exchanges[exchange].key,
+              secret : secret? secret : portfolio.exchanges[exchange].secret,
+              active: active ? active : portfolio.exchanges[exchange].active,
+              network: portfolio.exchanges[exchange].network,
+              image: portfolio.exchanges[exchange].image,
+              quantity: portfolio.exchanges[exchange].quantity,
+              tokens: portfolio.exchanges[exchange].tokens
+            })
+          }
+
+          await portfolio.save();
+          return 200;
+        } else {
+          throw new Error(701);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
     async deleteWalletConnection(
       _,
       { portfolioId, walletId },
@@ -345,6 +390,28 @@ export default {
           const walletIndex = portfolio.wallets.findIndex((w) => w.id === walletId);
 
           portfolio.wallets.splice(walletIndex, 1)
+          await portfolio.save();
+          return 200;
+        } else {
+          throw new Error(701);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async deleteExchangeConnection(
+      _,
+      { portfolioId, exchangeId },
+      context
+    ) {
+      const user = checkAuth(context);
+
+      try {
+        const portfolio = await Portfolio.findById(portfolioId);
+        if (portfolio) {
+          const exchangeIndex = portfolio.exchanges.findIndex((w) => w.id === exchangeId);
+
+          portfolio.exchanges.splice(exchangeIndex, 1)
           await portfolio.save();
           return 200;
         } else {

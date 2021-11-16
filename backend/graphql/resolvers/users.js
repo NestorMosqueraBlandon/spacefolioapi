@@ -147,6 +147,26 @@ export default {
 
         },
 
+        async deleteUser(
+            _,
+            { userId },
+            context
+          ) {
+            const user = checkAuth(context);
+      
+            try {
+              const user = await User.findById(userId);
+              if (user) {    
+                await user.delete();
+                return 200;
+              } else {
+                throw new Error(701);
+              }
+            } catch (err) {
+              console.log(err);
+            }
+          },
+
     }
 }
 

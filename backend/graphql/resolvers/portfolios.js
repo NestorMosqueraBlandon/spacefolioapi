@@ -44,6 +44,7 @@ export default {
       context
     ) {
       const user = checkAuth(context);
+
       try {
         const newPortfolio = new Portfolio({
           name,
@@ -60,34 +61,24 @@ export default {
       }
     },
 
-    async updatePortfolio(_, {portfolioId, name}){
+    async updatePortfolio(_, {portfolioId, name, coinBlacklist}){
       const portfolio = await Portfolio.findById(portfolioId);
 
       if(portfolio)
         try{
           portfolio.name = name;
+
+          if(coinBlacklist)
+          {
+            await portfolio.coinBlacklist.unshift({
+              coinBlacklist,
+            });
+          }
           await portfolio.save();
           return 200;
         }catch(err){
           throw new Error(err);
         }
-      }
-    },
-
-    async addCoinBlacklist(_, {portfolioId, coinBlacklist}){
-      try {
-        const portfolio = await Portfolio.findById(portfolioId);
-        if (portfolio) {
-          await portfolio.coinBlacklist.unshift({
-            coinBlacklist,
-          });
-          await portfolio.save();
-          return 200;
-        } else {
-          throw new Error(701);
-        }
-      } catch (err) {
-        throw new Error(701);
       }
     },
 

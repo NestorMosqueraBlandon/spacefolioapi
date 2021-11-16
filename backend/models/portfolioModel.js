@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const portfolioSchema = new mongoose.Schema(
   {
-    name: { type: String, unique: true, trim: true },
+    name: { type: String, trim: true },
     balance: { type: Number, default: 0 },
     dfCurrency: { type: String },
     sellTransactions: [
@@ -55,8 +55,8 @@ const portfolioSchema = new mongoose.Schema(
     ],
     wallets: [
       {
-        name: String,
-        address: String,
+        name: {type: String, unique: true},
+        address: {type: String, unique: true},
         network: String,
         active: {type: Boolean, default: true},
         image: String,
