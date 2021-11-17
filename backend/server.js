@@ -16,7 +16,7 @@ import config from './utils/config.js';
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: ({req}) => ({req})
+    context: ({req}) => ({req}),
 });
 
 const port = config.PORT;

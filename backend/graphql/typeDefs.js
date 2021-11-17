@@ -2,6 +2,7 @@ const typeDefs = `
 
 type Query{
     users: [User]
+    getUserInfo(userId: String!): User
     coinList(page: String): [Coin]
     newsList(page:String): [New]
     coinMarket(coinId: String): Data
@@ -15,6 +16,8 @@ type Query{
     getMetadataPortfolio(portfolioId: String!): Metadata
     getWalletsConnection(portfolioId: String!): [WalletConnection]
     getExchangesConnection(portfolioId: String!): [WalletConnection]
+    googleAuth: String
+    getExchangeOrWalletData(portfolioId: String, userId: String, exchangeOrWalletId: String, type: String): [ExchangeOrWallet]
 }
 
 type New{
@@ -62,6 +65,7 @@ type User{
     _id: ID
     email: String!
     password: String!
+    balance: String
 }
 
 type Exchange{
@@ -73,6 +77,17 @@ type Exchange{
     trust_score_rank: String
     trade_volume_24h_btc: String
 
+}
+
+type ExchangeOrWallet {
+    name: String
+    address : String
+    apiKey: String
+    apiSecret: String
+    network: String
+    image : String
+    quantity : String
+    tokens: [Token]
 }
 
 type WalletConnection{

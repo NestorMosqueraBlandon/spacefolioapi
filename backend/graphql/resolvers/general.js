@@ -3,7 +3,7 @@ import Stripe from "stripe";
 const stripe = Stripe("sk_test_51JQIemFkdOhFel1fusJiZze5dFbv1OD75min6QFSX8LwTSsnGcMoTnU86sIHcWuINEj1UgP4jGcw9KapU7sY9eY200o59GjBm1")
 import checkAuth from '../../utils/checkAuth.js';
 import User from "../../models/userModel.js"
-
+import {urlGoogle} from "../../utils/google.js"
 export default {
   Query: {
     async fiatList() {
@@ -53,7 +53,15 @@ export default {
         console.log(err)
       }
 
+    },
+
+    async googleAuth(_, {}){
+      const url = urlGoogle()
+
+      return url
     }
+
+
   },
 
   Mutation: {

@@ -75,11 +75,11 @@ export default {
     },
 
     async getPortfolio(_, { portfolioId, userId }, context) {
-      const user = checkAuth(context);
+      // const user = checkAuth(context);
       try {
         const portfolio = await Portfolio.findById(portfolioId);
         if (portfolio) {
-          if (userId === portfolio.user) {
+          if (userId == portfolio.user) {
             return portfolio;
           } else {
             return 105;

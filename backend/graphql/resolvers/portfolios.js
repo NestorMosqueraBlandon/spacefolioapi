@@ -19,12 +19,47 @@ export default {
     },
 
     async getPortfolio(_, { portfolioId, userId }, context) {
-      const user = checkAuth(context);
+      // const user = checkAuth(context);
       try {
         const portfolio = await Portfolio.findById(portfolioId);
         if (portfolio) {
-          if (userId === portfolio.user) {
+          if (userId == portfolio.user) {
             return portfolio;
+          } else {
+            return 105;
+          }
+        } else {
+          throw new Error(701);
+        }
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+
+    async getExchangeOrWalletData(_, { portfolioId, userId, exchangeOrWalletId, type }, context) {
+      // const user = checkAuth(context);
+      try {
+        const portfolio = await Portfolio.findById(portfolioId);
+        if (portfolio) {
+          console.log(userId)
+          console.log(portfolio.user)
+          if (userId == portfolio.user) {
+            if(type == 0){
+              const element = portfolio.wallets.filter((w) => w.id === exchangeOrWalletId? w : []);
+              if(element){
+                return element
+              }else{
+                return 105
+              }
+            }
+            if(type == 1){
+              const element = portfolio.exchanges.filter((w) => w.id === exchangeOrWalletId? w : []);
+              if(element){
+                return element
+              }else{
+                return 105
+              }
+            }
           } else {
             return 105;
           }
