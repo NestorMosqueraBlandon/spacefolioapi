@@ -1,5 +1,5 @@
-import { google } from "googleapis";
-
+import googleapis from "googleapis";
+const {google} = googleapis
 const googleConfig = {
     clientId: "566590860858-d81bgfoavgcb13e2laepv1ialomm6alb.apps.googleusercontent.com",
     clientSecret: "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",
