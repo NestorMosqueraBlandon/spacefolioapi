@@ -5,8 +5,8 @@ import messagebird from 'messagebird';
 import otpGenerator from 'otp-generator';
 
 //Mailgun configuration
-const DOMAIN = 'sandbox3ceb8a67548640459e759b3626d3565a.mailgun.org';
-const mg = mailgun({ apiKey: 'a5e2f6a88af9e5de3261717aa90f7df0-e31dc3cc-65a8594d', domain: DOMAIN });
+const DOMAIN = 'https://api.mailgun.net/v3/sandbox84c43a8b62434b1d913b0242a0770e15.mailgun.org';
+const mg = mailgun({ apiKey: 'e743b8a991c9c5be740accd07260bd95-adf6de59-c57926e6', domain: DOMAIN });
 
 
 export const sendConfirmationEmail = async (user) => {

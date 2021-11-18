@@ -8,10 +8,8 @@ import CoinGecko from 'coingecko-api';
 import api from '@marcius-capital/binance-api'
 
 const { Client } = Coinbase;
-
-
-
 const { MainClient } = Binance;
+
 const coinbaseClient = new Coinbase.Client({ accessToken: "638adf181444ba8972ce76b77246b3043891be3008ad8f06558207b0dad75acd" });
 
 const CoinGeckoClient = new CoinGecko();
@@ -92,39 +90,39 @@ export default {
       }
     },
 
-    async portfolioMarket(_, {portfolioId}) {
+    async portfolioMarket(_, { portfolioId }) {
 
       try {
-        
-        const data = await CoinGeckoClient.coins.fetch( coinId, {});
 
-        let dataMarketall = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: "max"});
-        let dataMarket24h = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 1});
-        let dataMarket7d = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 7});
-        let dataMarket1m = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 30});
-        let dataMarket1y = await CoinGeckoClient.coins.fetchMarketChart(coinId, {days: 365});
+        const data = await CoinGeckoClient.coins.fetch(coinId, {});
 
-        return { 
-                marketall: JSON.stringify(dataMarketall.data.prices), 
-                market24h: JSON.stringify(dataMarket24h.data.prices),
-                market7d: JSON.stringify(dataMarket7d.data.prices),
-                market1m: JSON.stringify(dataMarket1m.data.prices),
-                market1y: JSON.stringify(dataMarket1y.data.prices),
-                marketall: JSON.stringify(dataMarketall.data.prices),
-              }
+        const dataMarketall = await CoinGeckoClient.coins.fetchMarketChart(coinId, { days: "max" });
+        const dataMarket24h = await CoinGeckoClient.coins.fetchMarketChart(coinId, { days: 1 });
+        const dataMarket7d = await CoinGeckoClient.coins.fetchMarketChart(coinId, { days: 7 });
+        const dataMarket1m = await CoinGeckoClient.coins.fetchMarketChart(coinId, { days: 30 });
+        const dataMarket1y = await CoinGeckoClient.coins.fetchMarketChart(coinId, { days: 365 });
+
+        return {
+          marketall: JSON.stringify(dataMarketall.data.prices),
+          market24h: JSON.stringify(dataMarket24h.data.prices),
+          market7d: JSON.stringify(dataMarket7d.data.prices),
+          market1m: JSON.stringify(dataMarket1m.data.prices),
+          market1y: JSON.stringify(dataMarket1y.data.prices),
+          marketall: JSON.stringify(dataMarketall.data.prices),
+        }
 
       } catch (err) {
         throw new Error(err);
       }
     },
 
-    
+
 
     async getMetadataPortfolio(_, { portfolioId }, context) {
 
       const portfolio = await Portfolio.findById(portfolioId);
 
-      if (portfolio && portfolio.wallets && portfolio.exchanges) {
+      if (portfolio && portfolio.wallets.length > 0 && portfolio.exchanges.length > 0) {
         try {
 
           const wallets = [];
@@ -133,8 +131,8 @@ export default {
 
           const globalData = await CoinGeckoClient.global();
 
-          for(let i = 1; i <=  Math.round(globalData.data.data.active_cryptocurrencies / 250); i++){
-            const {data} = await CoinGeckoClient.coins.markets({ page: i, per_page: 250 });
+          for (let i = 1; i <= Math.round(globalData.data.data.active_cryptocurrencies / 250); i++) {
+            const { data } = await CoinGeckoClient.coins.markets({ page: i, per_page: 250 });
             market = [...market, ...data]
           }
 
@@ -148,13 +146,11 @@ export default {
                 network: wallet.network,
                 totalQuantity: 0,
                 totalTokens: wallet.tokens
-
               }
               wallets.push(wallets[wallet.network]);
-
             };
 
-            const tokens = wallet.tokens.reduce((a, d) => (a[d]? a[d].value += d.value : a[d] = d , a) ,{})
+            const tokens = wallet.tokens.reduce((a, d) => (a[d] ? a[d].value += d.value : a[d] = d, a), {})
 
             wallets[wallet.network].totalQuantity = parseFloat(wallet.quantity) + parseFloat(wallets[wallet.network].totalQuantity);
             wallets[wallet.network].totalTokens.push(wallet.tokens);
@@ -169,20 +165,20 @@ export default {
               cryptos: []
             }
 
-            
+
             walletCryptos = await [...wallet.totalTokens.map(async (token) => {
               for (let i = 0; i < market.length; i++) {
                 if (token.currency.symbol) {
-                  if (token.currency.symbol.toString().toLowerCase() == market[i].symbol) {
+
+                  if (market[i].symbol == token.currency.symbol.toString().toLowerCase()) {
                     token.image = await market[i].image
                     token.currency.valueMarket = await market[i].current_price != null && token.currency.symbol != null ? market[i].current_price.toFixed(9) : 0
                     if (token.currency.valueMarket) {
                       token.quantity = token.value;
 
-                      token.value = await convertValue(Number(token.quantity).toFixed(6), token.currency.symbol)
-                      if(!token.currency.quantity)
-                      {
-                        token.quantity = quantityMarket(token.value, token.currency.valueMarket)
+                      // token.value = await convertValue(Number(token.quantity).toFixed(6), token.currency.symbol)
+                      if (!token.currency.quantity) {
+                        // token.quantity = quantityMarket(token.value, token.currency.valueMarket)
                       }
                     }
                   }
@@ -205,15 +201,15 @@ export default {
 
             };
 
-            let tokens = []; 
-            tokens = [...tokens, exchange.tokens.reduce((a, d) => (a[d]? a[d].value += d.value : a[d] = d , a) ,{})]
+            let tokens = [];
+            tokens = [...tokens, exchange.tokens.reduce((a, d) => (a[d] ? a[d].value += d.value : a[d] = d, a), {})]
 
             exchanges[exchange.network].totalQuantity = parseFloat(exchange.quantity) + parseFloat(exchanges[exchange.network].totalQuantity);
             exchanges[exchange.network].totalTokens.push(exchange.tokens);
 
             exchanges[exchange.network].tokens = tokens;
           });
-    
+
 
           metadata.cryptos = [...exchangeCryptos, ...walletCryptos]
 
@@ -222,6 +218,8 @@ export default {
         catch (err) {
           console.log(err)
         }
+      } else {
+        return {}
       }
     },
   },
@@ -233,7 +231,7 @@ export default {
       { name, portfolioId, publicAddress, network, image },
       context
     ) {
-      const user = checkAuth(context);
+      // const user = checkAuth(context);
 
       try {
         const query = `
@@ -261,7 +259,7 @@ export default {
 
         const variables = `
     {
-      "network": "bsc",
+      "network": "${netw}",
       "address": "${adre}"
 
     }
@@ -285,7 +283,6 @@ export default {
 
         const portfolio = await Portfolio.findById(portfolioId);
         const data = await rp(requestOptions);
-        console.log(data)
         if (portfolio) {
 
           await portfolio.wallets.unshift({
@@ -294,7 +291,7 @@ export default {
             network: network,
             image: image,
             quantity: 100,
-            tokens: data.data.ethereum.address[0].balances ? data.data.ethereum.address[0].balances.filter((bal, index) => bal.value > 0 && index > 0) : []
+            tokens: data.data.ethereum.address[0].balances ? data.data.ethereum.address[0].balances.filter((bal, index) => bal.value > 0) : []
           });
 
           portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.wallets[0].quantity);
@@ -359,7 +356,7 @@ export default {
             portfolio.exchanges[exchange] = ({
               name: name ? name : portfolio.exchanges[exchange].name,
               key: key ? key : portfolio.exchanges[exchange].key,
-              secret : secret? secret : portfolio.exchanges[exchange].secret,
+              secret: secret ? secret : portfolio.exchanges[exchange].secret,
               active: active ? active : portfolio.exchanges[exchange].active,
               network: portfolio.exchanges[exchange].network,
               image: portfolio.exchanges[exchange].image,
@@ -453,16 +450,16 @@ export default {
             myClient.getAccounts({}, async (err, accounts) => {
               accounts.forEach(async (acct) => {
                 if (acct.balance.amount > 0) {
-                    newToken = {}
-                    newToken.value = Number( acct.native_balance.amount),
-                      newToken.currency = {
-                        symbol: acct.currency,
-                        name: acct.name,
-                        quantity: Number(acct.balance.amount)
-                      }
+                  newToken = {}
+                  newToken.value = Number(acct.native_balance.amount),
+                    newToken.currency = {
+                      symbol: acct.currency,
+                      name: acct.name,
+                      quantity: Number(acct.balance.amount)
+                    }
 
-                       console.log(newToken)           
-                    portfolioTokens.unshift(newToken)   
+                  console.log(newToken)
+                  portfolioTokens.unshift(newToken)
                 }
               });
               if (portfolio) {
@@ -490,7 +487,7 @@ export default {
         } else if (network == "binance") {
 
           const data = await client.getBalances();
-          
+
           const tokens = data.filter((token) => token.free > 0)
           const tokensQuantity = tokens.reduce((a, c) => a + Number(c.free), 0)
 
