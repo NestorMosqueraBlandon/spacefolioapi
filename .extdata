@@ -129,3 +129,137 @@
               
 
     // addCoinBlackList(portfolioId: ID!, coinBlacklist: String): String
+
+
+
+  //   try {
+
+  //     const wallets = [];
+  //     let metadata = {}
+  //     let market = []
+
+  //     const globalData = await CoinGeckoClient.global();
+
+  //     for (let i = 1; i <= Math.round(globalData.data.data.active_cryptocurrencies / 250); i++) {
+  //       const { data } = await CoinGeckoClient.coins.markets({ page: i, per_page: 250 });
+  //       market = [...market, ...data]
+  //     }
+
+  //     let walletCryptos = []
+  //     let exchangeCryptos = []
+
+
+  //     portfolio.wallets.forEach(function (wallet) {
+  //       if (!wallets[wallet.network]) {
+  //         wallets[wallet.network] = {
+  //           network: wallet.network,
+  //           totalQuantity: 0,
+  //           totalTokens: wallet.tokens
+  //         }
+  //         wallets.push(wallets[wallet.network]);
+  //       };
+
+  //       const tokens = wallet.tokens.reduce((a, d) => (a[d] ? a[d].value += d.value : a[d] = d, a), {})
+
+  //       wallets[wallet.network].totalQuantity = parseFloat(wallet.quantity) + parseFloat(wallets[wallet.network].totalQuantity);
+  //       wallets[wallet.network].totalTokens.push(wallet.tokens);
+
+  //       wallets[wallet.network].tokens = tokens;
+  //     });
+
+  //     await wallets.map(async (wallet) => {
+
+  //       metadata = {
+  //         balance: wallet.totalQuantity,
+  //         cryptos: []
+  //       }
+
+
+  //       walletCryptos = await [...wallet.totalTokens.map(async (token) => {
+  //         for (let i = 0; i < market.length; i++) {
+  //           if (token.currency.symbol) {
+
+  //             if (market[i].symbol == token.currency.symbol.toString().toLowerCase()) {
+  //               token.image = await market[i].image
+  //               token.currency.valueMarket = await market[i].current_price != null && token.currency.symbol != null ? market[i].current_price.toFixed(9) : 0
+  //               if (token.currency.valueMarket) {
+  //                 token.quantity = token.value;
+
+  //                 // token.value = await convertValue(Number(token.quantity).toFixed(6), token.currency.symbol)
+  //                 if (!token.currency.quantity) {
+  //                   // token.quantity = quantityMarket(token.value, token.currency.valueMarket)
+  //                 }
+  //               }
+  //             }
+  //           }
+  //         }
+  //         return token
+  //       })]
+  //     })
+
+  //     let exchanges = [];
+
+  //     portfolio.exchanges.forEach(function (exchange) {
+  //       if (!exchanges[exchange.network]) {
+  //         exchanges[exchange.network] = {
+  //           network: exchange.network,
+  //           totalQuantity: 0,
+  //           totalTokens: exchange.tokens
+  //         }
+  //         exchanges.push(exchanges[exchange.network]);
+
+  //       };
+
+  //       let tokens = [];
+  //       tokens = [...tokens, exchange.tokens.reduce((a, d) => (a[d] ? a[d].value += d.value : a[d] = d, a), {})]
+
+  //       exchanges[exchange.network].totalQuantity = parseFloat(exchange.quantity) + parseFloat(exchanges[exchange.network].totalQuantity);
+  //       exchanges[exchange.network].totalTokens.push(exchange.tokens);
+
+  //       exchanges[exchange.network].tokens = tokens;
+  //     });
+
+
+  //     metadata.cryptos = [...exchangeCryptos, ...walletCryptos]
+
+  //     return metadata;
+  //   }
+  //   catch (err) {
+  //     console.log(err)
+  //   }
+  // } else {
+  //   return {}
+  // }
+
+
+  // for (let i = 1; i <= Math.round(coinList.data.length / 250); i++) {
+  //   const { data } = await CoinGeckoClient.coins.markets({ page: i, per_page: 249 });
+
+  //   walletCoins.map((walletCoin) => {
+  //     walletCoinMarket.push(...data.filter((coin) => coin.symbol.toLowerCase() === walletCoin.symbol.toLowerCase()))
+  //   })
+    
+  //   if(walletCoinMarket.length == walletCoins.length){
+  //     break;
+  //   }
+  //   market = [...market, ...data]
+  // }
+
+
+
+
+        // for (let i = 0; i < portfolioTokens.length; i++) {
+        //   console.log(metadata.cryptos.filter((crypto) => crypto.symbol == portfolioTokens[i].symbol))
+        //   if (metadata.cryptos.filter((crypto) => crypto.symbol == portfolioTokens[i].symbol)) {
+        //     for (let i = 0; i < metadata.cryptos.length; i++) {
+        //       if (metadata.cryptos[i].symbol == portfolioTokens[i].symbol) {
+        //         metadata.cryptos[i].usd += portfolioTokens[i].usd
+        //       }
+        //     }
+        //   }
+        //   else {
+        //     metadata.cryptos.push(portfolioTokens[i])
+        //   }
+        // }
+
+        // console.log(portfolioTokens)

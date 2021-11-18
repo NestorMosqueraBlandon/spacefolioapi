@@ -5,7 +5,9 @@ import Binance from 'binance';
 import Coinbase from 'coinbase';
 import Kucoin from 'kucoin-node-api';
 import CoinGecko from 'coingecko-api';
-import api from '@marcius-capital/binance-api'
+import Enumerable from 'linq'
+
+const {from} = Enumerable; 
 
 const { Client } = Coinbase;
 const { MainClient } = Binance;
@@ -122,105 +124,97 @@ export default {
 
       const portfolio = await Portfolio.findById(portfolioId);
 
-      if (portfolio && portfolio.wallets.length > 0 && portfolio.exchanges.length > 0) {
-        try {
+      if (portfolio && (portfolio.wallets.length > 0 || portfolio.exchanges.length > 0)) {
 
-          const wallets = [];
-          let metadata = {}
-          let market = []
+        const coinList = await CoinGeckoClient.coins.list();
 
-          const globalData = await CoinGeckoClient.global();
+        let metadata = {}
+        let walletCoins = []
+        let walletCoinMarket = []
+        let portfolioTokens = []
 
-          for (let i = 1; i <= Math.round(globalData.data.data.active_cryptocurrencies / 250); i++) {
-            const { data } = await CoinGeckoClient.coins.markets({ page: i, per_page: 250 });
-            market = [...market, ...data]
-          }
-
-          let walletCryptos = []
-          let exchangeCryptos = []
+        portfolio.wallets.map((wallet) => {
+          wallet.tokens.forEach((token) => {
+            walletCoins.push(...coinList.data.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol.toLowerCase()))
+          })
+        })
 
 
-          portfolio.wallets.forEach(function (wallet) {
-            if (!wallets[wallet.network]) {
-              wallets[wallet.network] = {
-                network: wallet.network,
-                totalQuantity: 0,
-                totalTokens: wallet.tokens
-              }
-              wallets.push(wallets[wallet.network]);
-            };
-
-            const tokens = wallet.tokens.reduce((a, d) => (a[d] ? a[d].value += d.value : a[d] = d, a), {})
-
-            wallets[wallet.network].totalQuantity = parseFloat(wallet.quantity) + parseFloat(wallets[wallet.network].totalQuantity);
-            wallets[wallet.network].totalTokens.push(wallet.tokens);
-
-            wallets[wallet.network].tokens = tokens;
-          });
-
-          await wallets.map(async (wallet) => {
-
-            metadata = {
-              balance: wallet.totalQuantity,
-              cryptos: []
-            }
+        for (let i = 0; i < walletCoins.length; i++) {
+          const { data } = await CoinGeckoClient.coins.fetch(walletCoins[i].id)
+          const { symbol, name, image: { large }, contract_address, market_data: { current_price: { usd } } } = data
+          
+          walletCoinMarket.push({ symbol, name, large, contract_address, usd})
+        }
 
 
-            walletCryptos = await [...wallet.totalTokens.map(async (token) => {
-              for (let i = 0; i < market.length; i++) {
-                if (token.currency.symbol) {
+        portfolio.wallets.map((wallet) => {
+          wallet.tokens.forEach((token) => {
 
-                  if (market[i].symbol == token.currency.symbol.toString().toLowerCase()) {
-                    token.image = await market[i].image
-                    token.currency.valueMarket = await market[i].current_price != null && token.currency.symbol != null ? market[i].current_price.toFixed(9) : 0
-                    if (token.currency.valueMarket) {
-                      token.quantity = token.value;
-
-                      // token.value = await convertValue(Number(token.quantity).toFixed(6), token.currency.symbol)
-                      if (!token.currency.quantity) {
-                        // token.quantity = quantityMarket(token.value, token.currency.valueMarket)
-                      }
-                    }
-                  }
-                }
-              }
-              return token
-            })]
+            let arrayResult = Object.assign({quantity: token.currency.quantity? token.currency.quantity : token.value}, ...walletCoinMarket.filter((coin) => token.currency.address == coin.contract_address) )
+            portfolioTokens.push(arrayResult)
+            
           })
 
-          let exchanges = [];
+        })
 
-          portfolio.exchanges.forEach(function (exchange) {
-            if (!exchanges[exchange.network]) {
-              exchanges[exchange.network] = {
-                network: exchange.network,
-                totalQuantity: 0,
-                totalTokens: exchange.tokens
-              }
-              exchanges.push(exchanges[exchange.network]);
+        // console.log(portfolioTokens)
 
-            };
+        let exchangeCoins = []
+        let exchangeCoinMarket = []
 
-            let tokens = [];
-            tokens = [...tokens, exchange.tokens.reduce((a, d) => (a[d] ? a[d].value += d.value : a[d] = d, a), {})]
+        portfolio.exchanges.map((exchange) => {
+          exchange.tokens.forEach((token) => {
+            exchangeCoins.push(...coinList.data.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol.toLowerCase()))
+          })
+        })
 
-            exchanges[exchange.network].totalQuantity = parseFloat(exchange.quantity) + parseFloat(exchanges[exchange.network].totalQuantity);
-            exchanges[exchange.network].totalTokens.push(exchange.tokens);
-
-            exchanges[exchange.network].tokens = tokens;
-          });
-
-
-          metadata.cryptos = [...exchangeCryptos, ...walletCryptos]
-
-          return metadata;
+        for (let i = 0; i < exchangeCoins.length; i++) {
+          const { data } = await CoinGeckoClient.coins.fetch(exchangeCoins[i].id)
+          const { symbol, name, image: { large }, contract_address, market_data: { current_price: { usd } }, coingecko_rank } = data
+          exchangeCoinMarket.push({ symbol, name, large, contract_address, usd, coingecko_rank })
         }
-        catch (err) {
-          console.log(err)
+
+        let newCoins = [];
+
+        portfolio.exchanges.map((exchange) => {
+          exchange.tokens.forEach((token) => {
+            newCoins = exchangeCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
+            
+            
+            newCoins.sort((a, c) => a.coingecko_rank - c.coingecko_rank)
+            for (let i = 0; i < newCoins.length; i++) {
+            let arrayResult = Object.assign({quantity: token.currency.quantity? token.currency.quantity : token.value}, newCoins[0])
+            portfolioTokens.push(arrayResult)  
+              break;
+            }
+
+          })
+        })
+
+        metadata = {
+          balance: 0,
+          cryptos: []
         }
-      } else {
-        return {}
+
+
+        metadata.cryptos = from(portfolioTokens).groupBy(tokens => tokens.symbol, null, (key, t) => {
+          console.log(t)
+          return{
+            symbol: key,
+            quantity: t.sum(token => token["quantity"] || 0),
+            name: t.first().name,
+            image: t.first().large,
+            valueMarket: t.first().usd,
+            value: t.sum(token => token["quantity"]) * t.first().usd 
+          };
+        }).toArray()
+
+        metadata.cryptos = metadata.cryptos.filter((crypto) => crypto.symbol != undefined)
+        
+        return metadata
       }
+
     },
   },
 
@@ -424,7 +418,7 @@ export default {
       context
     ) {
 
-      const user = checkAuth(context);
+      // const user = checkAuth(context);
 
       const client = new MainClient({
         api_key: key,
@@ -446,42 +440,41 @@ export default {
         if (network == "coinbase") {
           let data = []
 
-          let tokens =
-            myClient.getAccounts({}, async (err, accounts) => {
-              accounts.forEach(async (acct) => {
-                if (acct.balance.amount > 0) {
-                  newToken = {}
-                  newToken.value = Number(acct.native_balance.amount),
-                    newToken.currency = {
-                      symbol: acct.currency,
-                      name: acct.name,
-                      quantity: Number(acct.balance.amount)
-                    }
+          myClient.getAccounts({}, async (err, accounts) => {
+            accounts.forEach(async (acct) => {
+              if (acct.balance.amount > 0) {
+                console.log(acct)
+                newToken = {}
+                newToken.value = Number(acct.native_balance.amount),
+                  newToken.currency = {
+                    symbol: acct.currency,
+                    name: acct.name,
+                    quantity: Number(acct.balance.amount)
+                  }
 
-                  console.log(newToken)
-                  portfolioTokens.unshift(newToken)
-                }
-              });
-              if (portfolio) {
-                const tokensQuantity = portfolioTokens.reduce((a, c) => a + Number(c.value), 0)
-                await portfolio.exchanges.unshift({
-                  name,
-                  apiKey: key,
-                  image: image,
-                  inusd: "ready",
-                  quantity: tokensQuantity,
-                  apiSecret: secret,
-                  tokens: portfolioTokens
-                });
-
-                portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.exchanges[0].quantity);
-
-
-                await portfolio.save();
+                portfolioTokens.unshift(newToken)
               }
-
-
             });
+            if (portfolio) {
+              const tokensQuantity = portfolioTokens.reduce((a, c) => a + Number(c.value), 0)
+              await portfolio.exchanges.unshift({
+                name,
+                apiKey: key,
+                image: image,
+                inusd: "ready",
+                quantity: tokensQuantity,
+                apiSecret: secret,
+                tokens: portfolioTokens
+              });
+
+              portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.exchanges[0].quantity);
+
+
+              // await portfolio.save();
+            }
+
+
+          });
 
 
         } else if (network == "binance") {
