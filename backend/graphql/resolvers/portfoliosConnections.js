@@ -7,7 +7,7 @@ import Kucoin from 'kucoin-node-api';
 import CoinGecko from 'coingecko-api';
 import Enumerable from 'linq'
 
-const {from} = Enumerable; 
+const { from } = Enumerable;
 
 const { Client } = Coinbase;
 const { MainClient } = Binance;
@@ -143,22 +143,21 @@ export default {
         for (let i = 0; i < walletCoins.length; i++) {
           const { data } = await CoinGeckoClient.coins.fetch(walletCoins[i].id)
           const { symbol, name, image: { large }, contract_address, market_data: { current_price: { usd } } } = data
-          
-          walletCoinMarket.push({ symbol, name, large, contract_address, usd})
+
+          walletCoinMarket.push({ symbol, name, large, contract_address, usd })
         }
 
 
         portfolio.wallets.map((wallet) => {
           wallet.tokens.forEach((token) => {
 
-            let arrayResult = Object.assign({quantity: token.currency.quantity? token.currency.quantity : token.value}, ...walletCoinMarket.filter((coin) => token.currency.address == coin.contract_address) )
+            let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => token.currency.address == coin.contract_address))
             portfolioTokens.push(arrayResult)
-            
+
           })
 
         })
 
-        // console.log(portfolioTokens)
 
         let exchangeCoins = []
         let exchangeCoinMarket = []
@@ -180,12 +179,12 @@ export default {
         portfolio.exchanges.map((exchange) => {
           exchange.tokens.forEach((token) => {
             newCoins = exchangeCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
-            
-            
+
+
             newCoins.sort((a, c) => a.coingecko_rank - c.coingecko_rank)
             for (let i = 0; i < newCoins.length; i++) {
-            let arrayResult = Object.assign({quantity: token.currency.quantity? token.currency.quantity : token.value}, newCoins[0])
-            portfolioTokens.push(arrayResult)  
+              let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, newCoins[0])
+              portfolioTokens.push(arrayResult)
               break;
             }
 
@@ -199,19 +198,18 @@ export default {
 
 
         metadata.cryptos = from(portfolioTokens).groupBy(tokens => tokens.symbol, null, (key, t) => {
-          console.log(t)
-          return{
+          return {
             symbol: key,
             quantity: t.sum(token => token["quantity"] || 0),
             name: t.first().name,
             image: t.first().large,
             valueMarket: t.first().usd,
-            value: t.sum(token => token["quantity"]) * t.first().usd 
+            value: t.sum(token => token["quantity"]) * t.first().usd
           };
         }).toArray()
 
         metadata.cryptos = metadata.cryptos.filter((crypto) => crypto.symbol != undefined)
-        
+        metadata.balance = metadata.cryptos.reduce((a, c) => a + c.value * 1, 0)
         return metadata
       }
 
@@ -276,21 +274,22 @@ export default {
         };
 
         const portfolio = await Portfolio.findById(portfolioId);
-        const data = await rp(requestOptions);
+        const { data } = await rp(requestOptions);
         if (portfolio) {
+          if (data.ethereum.address[0].balances) {
 
-          await portfolio.wallets.unshift({
-            name,
-            address: publicAddress,
-            network: network,
-            image: image,
-            quantity: 100,
-            tokens: data.data.ethereum.address[0].balances ? data.data.ethereum.address[0].balances.filter((bal, index) => bal.value > 0) : []
-          });
-
-          portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.wallets[0].quantity);
-
-          await portfolio.save();
+            await portfolio.wallets.unshift({
+              name,
+              address: publicAddress,
+              network: network,
+              image: image,
+              quantity: 100,
+              tokens: data.ethereum.address[0].balances.filter((bal) => bal.value > 0)
+            });
+            portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.wallets[0].quantity);
+            await portfolio.save();
+          }
+          
           return 200;
         } else {
           throw new Error(701);

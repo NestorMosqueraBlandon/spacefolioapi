@@ -41,24 +41,15 @@ export default {
       try {
         const portfolio = await Portfolio.findById(portfolioId);
         if (portfolio) {
-          console.log(userId)
-          console.log(portfolio.user)
+
           if (userId == portfolio.user) {
             if(type == 0){
-              const element = portfolio.wallets.filter((w) => w.id === exchangeOrWalletId? w : []);
-              if(element){
-                return element
-              }else{
-                return 105
-              }
+              const walletIndex = portfolio.wallets.findIndex((w) => w.id === exchangeOrWalletId);
+              return portfolio.wallets[walletIndex]              
             }
             if(type == 1){
-              const element = portfolio.exchanges.filter((w) => w.id === exchangeOrWalletId? w : []);
-              if(element){
-                return element
-              }else{
-                return 105
-              }
+              const exchangeIndex = portfolio.exchanges.findIndex((w) => w.id === exchangeOrWalletId);
+              return portfolio.exchanges[exchangeIndex]
             }
           } else {
             return 105;

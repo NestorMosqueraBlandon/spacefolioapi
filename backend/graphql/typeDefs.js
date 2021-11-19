@@ -17,7 +17,8 @@ type Query{
     getWalletsConnection(portfolioId: String!): [WalletConnection]
     getExchangesConnection(portfolioId: String!): [WalletConnection]
     googleAuth: String
-    getExchangeOrWalletData(portfolioId: String, userId: String, exchangeOrWalletId: String, type: String): [ExchangeOrWallet]
+    getExchangeOrWalletData(portfolioId: String, userId: String, exchangeOrWalletId: String, type: String): ExchangeOrWallet
+    coinListSearch(page: String, search: String) :  [Coin]
 }
 
 type New{

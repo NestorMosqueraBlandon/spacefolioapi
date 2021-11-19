@@ -19,17 +19,25 @@ const CoinGeckoClient = new CoinGecko();
 export default {
   Query: {
     async coinList(_, {page}) {
-      try {
-        const data = await CoinGeckoClient.coins.markets({page: page? page: 1, per_page: 50});
-                  
-        const newData = data.data
-        return newData
+      try {        
+
+        const {data} = await CoinGeckoClient.coins.markets({page: page? page: 1, per_page: 50});       
+        return data
 
       } catch (err) {
         throw new Error(err);
       }
     },
 
+    async coinListSearch(_, {page, search})
+    {
+      const {data} = await CoinGeckoClient.coins.list();
+      const newData = await data.filter((d) => d.name.toLowerCase().includes(search.toLowerCase()))
+      const {data: marketData} = await CoinGeckoClient.coins.markets({ids: newData.map((d) => d.id), page: page? page: 2, per_page: 100});   
+
+      return marketData
+    },
+    
     async coinMarket(_, {coinId}) {
 
       try {
