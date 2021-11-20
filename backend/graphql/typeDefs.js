@@ -51,6 +51,7 @@ type Portfolio {
     name: String!
     dfCurrency: String!
     balance: String!
+    percentage: String
     sellTransactions: [SellTransaction]
     buyTransactions: [SellTransaction]
     transferTransactions: [TransferTransaction]

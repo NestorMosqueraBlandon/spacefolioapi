@@ -289,7 +289,7 @@ export default {
             portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.wallets[0].quantity);
             await portfolio.save();
           }
-          
+
           return 200;
         } else {
           throw new Error(701);

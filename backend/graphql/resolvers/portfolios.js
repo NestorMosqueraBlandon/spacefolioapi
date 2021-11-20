@@ -5,13 +5,22 @@ export default {
   Query: {
     
     async getPortfolios(_, { userId }, context) {
-      const user = checkAuth(context);
+      // const user = checkAuth(context);
       try {
-        const portfolios = await Portfolio.find({
+        let portfolios = await Portfolio.find({
           user: userId,
         }).sort({
           createdAt: -1,
         });
+
+
+        const totalBalance = portfolios.reduce((a, p) => a + p.balance * 1, 0)
+
+        portfolios = portfolios.map((portfolio) => {
+          const percentage = (portfolio.balance / totalBalance) * 100
+          portfolio = Object.assign(portfolio, {percentage})
+          return portfolio
+        })
         return portfolios;
       } catch (err) {
         throw new Error(err);

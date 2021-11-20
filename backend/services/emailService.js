@@ -5,7 +5,7 @@ import messagebird from 'messagebird';
 import otpGenerator from 'otp-generator';
 
 //Mailgun configuration
-const DOMAIN = 'https://api.mailgun.net/v3/sandbox84c43a8b62434b1d913b0242a0770e15.mailgun.org';
+const DOMAIN = 'sandbox84c43a8b62434b1d913b0242a0770e15.mailgun.org';
 const mg = mailgun({ apiKey: 'e743b8a991c9c5be740accd07260bd95-adf6de59-c57926e6', domain: DOMAIN });
 
 
