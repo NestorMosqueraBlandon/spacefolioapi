@@ -1,5 +1,6 @@
 import Portfolio from '../../models/portfolioModel.js';
 import checkAuth from '../../utils/checkAuth.js';
+import User from "../../models/userModel.js"
 
 export default {
   Query: {
@@ -79,18 +80,24 @@ export default {
       context
     ) {
       const user = checkAuth(context);
-
       try {
-        const newPortfolio = new Portfolio({
+        const userData = await User.findById(user._id)  
+        console.log(userData)
+        
+        if(!userData){
+          throw new Error(701)
+        }
+
+        await userData.portfolios.unshift({
           name,
           dfCurrency,
           balance: initialValue,
           user: user._id,
         });
 
-        const portfolioCreated = await newPortfolio.save();
+        const portfolioCreated = await userData.save();
 
-        return portfolioCreated._id;
+        // return portfolioCreated._id;
       } catch (err) {
         return err;
       }

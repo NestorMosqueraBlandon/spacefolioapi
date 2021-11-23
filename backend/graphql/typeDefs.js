@@ -44,6 +44,14 @@ type Crypto{
     image: String
     valueMarket: String
     value: String
+    price_change_percentage_24h: String
+    price_change_percentage_7d: String
+    price_change_percentage_30d: String
+    price_change_percentage_1y: String
+    value_usd_24h: String
+    value_usd_7d: String
+    value_usd_30d: String
+    value_usd_1y: String
 }
 
 type Portfolio {
