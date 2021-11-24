@@ -37,7 +37,8 @@ type Currency{
     name: String
     symbol: String
 }
-type Crypto{    
+type Crypto{
+    coinId: String    
     symbol: String
     name: String
     quantity: String

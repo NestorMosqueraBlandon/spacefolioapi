@@ -335,7 +335,6 @@ export default {
 
           const { data } = await rp(requestOptions);
           if (data && data.ethereum.address[0].balances) {
-            console.log(data.ethereum.address[0].balances)
             wallets.tokens.push(...data.ethereum.address[0].balances.filter((bal) => bal.value > 0))
 
           }
@@ -355,12 +354,12 @@ export default {
 
       for (let i = 0; i < walletCoins.length; i++) {
         const { data } = await CoinGeckoClient.coins.fetch(walletCoins[i].id)
-        const { symbol, name, image: { large }, platforms, contract_address, market_data: { current_price: { usd } }, market_data: { price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y } } = data
+        const { id: coinId, symbol, name, image: { large }, platforms, contract_address, market_data: { current_price: { usd } }, market_data: { price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y } } = data
 
-        walletCoinMarket.push({ symbol, name, large, platforms, contract_address, usd, price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y })
+        walletCoinMarket.push({ coinId, symbol, name, large, platforms, contract_address, usd, price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y })
       }
 
-      // console.log(walletCoinMarket)
+      console.log(walletCoinMarket)
 
 
       wallets.tokens.forEach((token) => {
@@ -415,11 +414,11 @@ export default {
         chart: {}
       }
 
-      console.log(portfolioTokens)
 
       metadata.cryptos = from(portfolioTokens).groupBy(tokens => tokens.symbol, null, (key, t) => {
         return {
           symbol: key,
+          coinId: t.first().coinId,
           quantity: t.sum(token => token["quantity"] || 0),
           name: t.first().name,
           image: t.first().large,
