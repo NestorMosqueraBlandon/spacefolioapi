@@ -479,17 +479,25 @@ export default {
 
 
         const userData = await User.findById(user._id)
-        console.log(userData)
 
         if (!userData) {
           throw new Error(701)
         }
 
         const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
-
+ 
         const portfolio = userData.portfolios[portfolioIde];
 
-        console.log(portfolio)
+
+        userData.portfolios[portfolioIde].wallets.map((wallet)=> {
+        console.log((wallet.address == publicAddress && wallet.network == network))
+
+          if(wallet.name == name || (wallet.address == publicAddress && wallet.network == network)){
+            throw new Error(701);  
+          }
+
+        })
+        
         if (portfolio) {
           await userData.portfolios[portfolioIde].wallets.unshift({
             name,
