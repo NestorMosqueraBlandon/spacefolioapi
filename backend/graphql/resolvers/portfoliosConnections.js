@@ -186,11 +186,23 @@ export default {
     async getWalletsConnection(_, { portfolioId }, context) {
       const user = checkAuth(context);
       try {
-        const portfolio = await Portfolio.findById(portfolioId);
-        return portfolio.wallets;
+        const userData = await User.findById(user._id)
+        if (!userData) {
+          throw new Error(701)
+        }
+
+        const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
+
+        const portfolio = userData.portfolios[portfolioIde];
+
+        if(!portfolio){
+          throw new Error(701);
+        }
+        return userData.portfolios[portfolioIde].wallets;
       } catch (err) {
         throw new Error(err);
       }
+
     },
 
     async getExchangesConnection(_, { portfolioId }, context) {
