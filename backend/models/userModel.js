@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
             dfCurrency: { type: String },
             wallets: [
                 {
-                    name: { type: String, unique: true },
+                    name: { type: String },
                     address: { type: String, unique: true },
                     network: String,
                     active: { type: Boolean, default: true },
