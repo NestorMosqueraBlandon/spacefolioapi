@@ -13,7 +13,7 @@ type Query{
     fiatList: [Fiat]
     getPortfolios: [Portfolio]
     getPortfolio(portfolioId: ID!, userId: ID): Portfolio
-    getMetadataPortfolio(portfolioId: String!): Metadata
+    getMetadataPortfolio(portfolioId: String!, interval: String): Metadata
     getWalletsConnection(portfolioId: String!): [WalletConnection]
     getExchangesConnection(portfolioId: String!): [WalletConnection]
     googleAuth: String

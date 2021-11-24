@@ -359,7 +359,6 @@ export default {
         walletCoinMarket.push({ coinId, symbol, name, large, platforms, contract_address, usd, price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y })
       }
 
-      console.log(walletCoinMarket)
 
 
       wallets.tokens.forEach((token) => {
@@ -370,7 +369,7 @@ export default {
         // newCoinsWallet = walletCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
       })
 
-      // console.log(portfolioTokens)
+      console.log(portfolioTokens)
 
       let exchangeCoins = []
       let exchangeCoinMarket = []
