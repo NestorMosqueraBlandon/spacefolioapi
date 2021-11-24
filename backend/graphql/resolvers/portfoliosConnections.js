@@ -357,11 +357,10 @@ export default {
 
 
 
-      console.log(walletCoinMarket)
       wallets.tokens.forEach((token) => {
-        console.log("token", token.currency)
-        let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => token.currency.address === "-" ? console.log(coin) : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
-        console.log("arrayresult", arrayResult)
+        // console.log("token", token.currency)
+        let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => token.currency.symbol.toLowerCase() === coin.contract_address.toLowerCase()? coin : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
+        // console.log("arrayresult", arrayResult)
         portfolioTokens.push(arrayResult)
         // newCoinsWallet = walletCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
       })
