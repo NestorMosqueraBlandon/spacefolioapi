@@ -489,8 +489,8 @@ export default {
 
         const portfolio = userData.portfolios[portfolioIde];
 
+        console.log(portfolio)
         if (portfolio) {
-          console.log(userData.portfolios[portfolioIde].wallets)
           await userData.portfolios[portfolioIde].wallets.unshift({
             name,
             address: publicAddress,
@@ -506,7 +506,7 @@ export default {
           throw new Error(701);
         }
       } catch (err) {
-        console.log(err);
+        throw new Error(701);
       }
     },
     async updateWalletConnection(
