@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
             name: { type: String, trim: true },
             balance: { type: Number, default: 0 },
             dfCurrency: { type: String },
+            portfolioGeneralChart: {type: String},
             wallets: [
                 {
                     name: { type: String },

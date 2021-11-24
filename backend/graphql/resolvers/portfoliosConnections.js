@@ -267,8 +267,11 @@ export default {
 
       const userData = await User.findById(user._id)
 
-      const portfolios = userData.portfolios;
+      const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
+ 
+      const portfolio = userData.portfolios[portfolioIde];
 
+      console.log("portfolio",portfolio)
       let metadata = {}
       let walletCoins = []
       let walletCoinMarket = []
@@ -279,7 +282,7 @@ export default {
         tokens: []
       }
 
-      if (portfolios) {
+      if (portfolio) {
 
 
         // userWallets(portfolios, async (walletsItems) => {
@@ -287,8 +290,7 @@ export default {
         // })
       }
 
-      for (let i = 0; i < portfolios.length; i++) {
-        for (let j = 0; j < portfolios[i].wallets.length; j++) {
+        for (let j = 0; j < portfolio.wallets.length; j++) {
 
           const query = `
      query ($network: EthereumNetwork!, $address: String!) {
@@ -312,8 +314,8 @@ export default {
 
           const variables = `
     {
-     "network": "${portfolios[i].wallets[j].network}",
-     "address": "${portfolios[i].wallets[j].address}"
+     "network": "${portfolio.wallets[j].network}",
+     "address": "${portfolio.wallets[j].address}"
     }
     
     `;
@@ -341,7 +343,7 @@ export default {
 
 
         }
-      }
+      
 
       // 0x9dF2fe92B91105adE1266f57de548346E9b4009a
       const coinList = await CoinGeckoClient.coins.list();
@@ -410,7 +412,7 @@ export default {
       metadata = {
         balance: 0,
         cryptos: [],
-        chart: {}
+        chart: ''
       }
 
 
@@ -448,14 +450,14 @@ export default {
       metadata.balance = metadata.cryptos.reduce((a, c) => a + c.value * 1, 0)
 
 
+      let chart = ""
       if (interval) {
-        const chart = JSON.stringify(await portfolioChart(metadata.balance, JSON.parse(userData.portfolioGeneralChart)))
-        userData.portfolioGeneralChart = chart
-        userData.save();
+        chart = JSON.stringify(await portfolioChart(metadata.balance, JSON.parse(userData.portfolioGeneralChart)))
+        userData.portfolios[portfolioIde].portfolioGeneralChart = chart;
+        await userData.save();
+        metadata.chart = chart;
       }
 
-
-      // console.log(metadata)
 
       return metadata
 

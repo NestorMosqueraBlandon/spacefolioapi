@@ -31,6 +31,7 @@ type New{
 type Metadata{
     balance: String
     cryptos: [Crypto]
+    chart: String
 }
 
 type Currency{
