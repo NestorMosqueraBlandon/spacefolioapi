@@ -271,7 +271,6 @@ export default {
  
       const portfolio = userData.portfolios[portfolioIde];
 
-      console.log("portfolio",portfolio)
       let metadata = {}
       let walletCoins = []
       let walletCoinMarket = []
@@ -282,12 +281,8 @@ export default {
         tokens: []
       }
 
-      if (portfolio) {
-
-
-        // userWallets(portfolios, async (walletsItems) => {
-        //   wallets = walletsItems
-        // })
+      if (!portfolio) {
+        throw new Error(701)        
       }
 
         for (let j = 0; j < portfolio.wallets.length; j++) {
@@ -348,7 +343,6 @@ export default {
       // 0x9dF2fe92B91105adE1266f57de548346E9b4009a
       const coinList = await CoinGeckoClient.coins.list();
 
-      wallets.tokens.map(token => console.log(token))
       wallets.tokens.forEach((token) => {
         walletCoins.push(...coinList.data.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol.toLowerCase()))
       })
@@ -363,15 +357,16 @@ export default {
 
 
 
+      console.log(walletCoinMarket)
       wallets.tokens.forEach((token) => {
-        //  console.log("token", token)
-        //  console.log(walletCoinMarket)
-        let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => token.currency.address == "-" ? coin : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
+        console.log("token", token.currency)
+        let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => token.currency.address === "-" ? console.log(coin) : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
+        console.log("arrayresult", arrayResult)
         portfolioTokens.push(arrayResult)
         // newCoinsWallet = walletCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
       })
 
-      console.log(portfolioTokens)
+      // console.log(portfolioTokens)
 
       let exchangeCoins = []
       let exchangeCoinMarket = []
