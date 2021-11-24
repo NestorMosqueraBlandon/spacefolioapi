@@ -333,16 +333,14 @@ export default {
           const { data } = await rp(requestOptions);
           if (data && data.ethereum.address[0].balances) {
             wallets.tokens.push(...data.ethereum.address[0].balances.filter((bal) => bal.value > 0))
-
           }
-
-
         }
       
 
       // 0x9dF2fe92B91105adE1266f57de548346E9b4009a
       const coinList = await CoinGeckoClient.coins.list();
 
+      
       wallets.tokens.forEach((token) => {
         walletCoins.push(...coinList.data.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol.toLowerCase()))
       })
@@ -356,15 +354,15 @@ export default {
       }
 
 
-
       wallets.tokens.forEach((token) => {
-        // console.log("token", token.currency)
-        let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => token.currency.symbol.toLowerCase() === coin.contract_address.toLowerCase()? coin : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
+        console.log(token.currency)
+        let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => token.currency.tokenType == '' && token.currency.symbol.toLowerCase() == coin.symbol? coin : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
         // console.log("arrayresult", arrayResult)
         portfolioTokens.push(arrayResult)
         // newCoinsWallet = walletCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
       })
 
+      // coin.contract_address == undefined || token.currency.symbol.toLowerCase() === coin.contract_address.toLowerCase()? coin :
       // console.log(portfolioTokens)
 
       let exchangeCoins = []
