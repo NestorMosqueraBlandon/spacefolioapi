@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
             wallets: [
                 {
                     name: { type: String },
-                    address: { type: String, unique: true },
+                    address: { type: String, unique: false },
                     network: String,
                     active: { type: Boolean, default: true },
                     image: String,
