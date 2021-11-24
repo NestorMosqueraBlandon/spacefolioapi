@@ -289,6 +289,7 @@ export default {
 
       for (let i = 0; i < portfolios.length; i++) {
         for (let j = 0; j < portfolios[i].wallets.length; j++) {
+
           const query = `
      query ($network: EthereumNetwork!, $address: String!) {
        ethereum(network: $network) {
@@ -333,7 +334,7 @@ export default {
           };
 
           const { data } = await rp(requestOptions);
-          if (data.ethereum.address[0].balances) {
+          if (data && data.ethereum.address[0].balances) {
             console.log(data.ethereum.address[0].balances)
             wallets.tokens.push(...data.ethereum.address[0].balances.filter((bal) => bal.value > 0))
 
