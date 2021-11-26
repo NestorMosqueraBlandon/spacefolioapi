@@ -339,7 +339,8 @@ export default {
       // console.log(portfolioTokens)
     }
 
-    if(porfolio.exchanges.lenght > 0)
+    if(portfolio.exchanges.lenght > 0){
+
 
       let exchangeCoins = []
       let exchangeCoinMarket = []
@@ -375,6 +376,8 @@ export default {
         })
 
       }
+    }
+
 
 
       metadata = {
