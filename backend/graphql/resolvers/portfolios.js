@@ -52,12 +52,19 @@ export default {
     },
 
     async getExchangeOrWalletData(_, { portfolioId, userId, exchangeOrWalletId, type }, context) {
-      // const user = checkAuth(context);
+      const user = checkAuth(context);
       try {
-        const portfolio = await Portfolio.findById(portfolioId);
-        if (portfolio) {
+        
+        const userData = await User.findById(user._id)
 
-          if (userId == portfolio.user) {
+        if (!userData) {
+          throw new Error(105)
+        }
+
+        const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
+ 
+        const portfolio = userData.portfolios[portfolioIde];
+        if (portfolio) {
             if(type == 0){
               const walletIndex = portfolio.wallets.findIndex((w) => w.id === exchangeOrWalletId);
               return portfolio.wallets[walletIndex]              
@@ -66,9 +73,6 @@ export default {
               const exchangeIndex = portfolio.exchanges.findIndex((w) => w.id === exchangeOrWalletId);
               return portfolio.exchanges[exchangeIndex]
             }
-          } else {
-            return 105;
-          }
         } else {
           throw new Error(701);
         }
