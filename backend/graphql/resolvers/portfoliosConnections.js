@@ -233,34 +233,6 @@ export default {
       }
     },
 
-    async portfolioMarket(_, { portfolioId, coinId }) {
-      // const user = checkAuth(context);
-      try {
-
-        const data = await CoinGeckoClient.coins.fetch(coinId, {});
-
-        const dataMarketall = await CoinGeckoClient.coins.fetchMarketChart(coinId, { days: "max" });
-        const dataMarket24h = await CoinGeckoClient.coins.fetchMarketChart(coinId, { days: 1 });
-        const dataMarket7d = await CoinGeckoClient.coins.fetchMarketChart(coinId, { days: 7 });
-        const dataMarket1m = await CoinGeckoClient.coins.fetchMarketChart(coinId, { days: 30 });
-        const dataMarket1y = await CoinGeckoClient.coins.fetchMarketChart(coinId, { days: 365 });
-
-        return {
-          marketall: JSON.stringify(dataMarketall.data.prices),
-          market24h: JSON.stringify(dataMarket24h.data.prices),
-          market7d: JSON.stringify(dataMarket7d.data.prices),
-          market1m: JSON.stringify(dataMarket1m.data.prices),
-          market1y: JSON.stringify(dataMarket1y.data.prices),
-          marketall: JSON.stringify(dataMarketall.data.prices),
-        }
-
-      } catch (err) {
-        throw new Error(err);
-      }
-    },
-
-
-
     async getMetadataPortfolio(_, { portfolioId, userId, interval = false }, context) {
 
       const user = checkAuth(context);

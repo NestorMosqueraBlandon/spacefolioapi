@@ -6,7 +6,6 @@ type Query{
     coinList(page: String): [Coin]
     newsList(page:String): [New]
     coinMarket(coinId: String): Data
-    portfolioMarket(portfolioId: String): PotfolioMarket
     exchangeList(page: String): [Exchange]
     walletsList: [Wallet]
     exchangeListAvailable: [Wallet]
