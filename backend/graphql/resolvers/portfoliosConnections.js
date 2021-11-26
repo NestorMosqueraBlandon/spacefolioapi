@@ -350,7 +350,10 @@ export default {
 
             metadata = {
               balance: 0,
+              name: portfolio.wallets[wallet].name,
+              image: portfolio.wallets[wallet].image,
               tokens: [],
+
             }
       
       
