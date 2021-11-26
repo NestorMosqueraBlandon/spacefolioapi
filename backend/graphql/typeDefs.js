@@ -89,12 +89,9 @@ type Exchange{
 
 type ExchangeOrWallet {
     name: String
-    address : String
-    apiKey: String
-    apiSecret: String
-    network: String
     image : String
     quantity : String
+    balance : String
     tokens: [Token]
 }
 
@@ -109,9 +106,15 @@ type WalletConnection{
 }
 
 type Token{
-    id: ID
-    currency: Currency
+    symbol: String
+    coinId: String
+    quantity: String
+    name: String
+    image: String
+    valueMarket:String
     value: String
+    value_usd_24h: String
+    price_change_percentage_24h: String
 }
 
 type Currency{

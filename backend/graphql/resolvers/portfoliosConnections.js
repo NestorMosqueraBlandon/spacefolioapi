@@ -206,12 +206,12 @@ export default {
     async getExchangesConnection(_, { portfolioId }, context) {
       const user = checkAuth(context);
       try {
-        
-      const userData = await User.findById(user._id)
 
-      const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
- 
-      const portfolio = userData.portfolios[portfolioIde];
+        const userData = await User.findById(user._id)
+
+        const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
+
+        const portfolio = userData.portfolios[portfolioIde];
 
         return portfolio.exchanges;
       } catch (err) {
@@ -237,6 +237,160 @@ export default {
       }
     },
 
+    async getExchangeOrWalletData(_, { portfolioId, exchangeOrWalletId, type }, context) {
+      const user = checkAuth(context);
+      try {
+
+        const userData = await User.findById(user._id)
+
+        if (!userData) {
+          throw new Error(105)
+        }
+
+
+        let metadata = {}
+        let walletCoins = []
+        let walletCoinMarket = []
+        let portfolioTokens = []
+
+        let exchanges = []
+        let wallets = {
+          tokens: []
+        }
+
+        const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
+
+        const portfolio = userData.portfolios[portfolioIde];
+        if (portfolio) {
+          if (type == 0) {
+
+            const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
+
+            const portfolio = userData.portfolios[portfolioIde];
+
+            const wallet = userData.portfolios[portfolioIde].wallets.findIndex(wallet => wallet.id === exchangeOrWalletId)
+            if (wallet >= 0) {
+              const query = `
+             query ($network: EthereumNetwork!, $address: String!) {
+               ethereum(network: $network) {
+                 address(address: {is: $address}) {
+                   balances {
+                     currency {
+                       address
+                       symbol
+                       tokenType
+                       name
+                     }
+                     value
+                   }
+                   balance
+                 }
+               }
+             }
+             
+            `;
+
+              const variables = `
+            {
+             "network": "${portfolio.wallets[wallet].network}",
+             "address": "${portfolio.wallets[wallet].address}"
+            }
+            
+            `;
+
+              const requestOptions = {
+                method: 'POST',
+                uri: `https://graphql.bitquery.io`,
+                headers: {
+                  "Content-Type": "application/json",
+                  'X-API-KEY': 'BQYmmb3rW726zLmxE3Fd5aMSyr7AtWT5'
+                },
+                body: ({
+                  query,
+                  variables
+                }),
+                json: true,
+                gzip: true
+              };
+
+              const { data } = await rp(requestOptions);
+              console.log(data)
+              if (data && data.ethereum.address[0].balances) {
+                wallets.tokens.push(...data.ethereum.address[0].balances.filter((bal) => bal.value > 0))
+              }
+            }
+
+            // 0x9dF2fe92B91105adE1266f57de548346E9b4009a
+            const coinList = await CoinGeckoClient.coins.list();
+
+
+            wallets.tokens.forEach((token) => {
+              walletCoins.push(...coinList.data.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol.toLowerCase()))
+            })
+
+
+            for (let i = 0; i < walletCoins.length; i++) {
+              const { data } = await CoinGeckoClient.coins.fetch(walletCoins[i].id)
+              const { id: coinId, symbol, name, image: { large }, platforms, contract_address, market_data: { current_price: { usd } }, market_data: { price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y } } = data
+
+              walletCoinMarket.push({ coinId, symbol, name, large, platforms, contract_address, usd, price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y })
+            }
+
+
+            wallets.tokens.forEach((token) => {
+              let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => token.currency.tokenType == '' && token.currency.symbol.toLowerCase() == coin.symbol ? coin : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
+              // console.log("arrayresult", arrayResult)
+              portfolioTokens.push(arrayResult)
+              // newCoinsWallet = walletCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
+            })
+
+            // coin.contract_address == undefined || token.currency.symbol.toLowerCase() === coin.contract_address.toLowerCase()? coin :
+            // console.log(portfolioTokens)
+
+
+            metadata = {
+              balance: 0,
+              tokens: [],
+            }
+      
+      
+            metadata.tokens = from(portfolioTokens).groupBy(tokens => tokens.symbol, null, (key, t) => {
+              return {
+                symbol: key,
+                coinId: t.first().coinId,
+                quantity: t.sum(token => token["quantity"] || 0),
+                name: t.first().name,
+                image: t.first().large,
+                valueMarket: t.first().usd,
+                value: t.sum(token => token["quantity"]) * t.first().usd,
+                value_usd_24h: (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h),      
+                price_change_percentage_24h: (100 / (t.sum(token => token["quantity"]) * t.first().usd)) * (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h),
+      
+              };
+            }).toArray()
+      
+            // console.log(metadata)
+      
+            metadata.tokens = metadata.tokens.filter((crypto) => crypto.symbol != undefined)
+            metadata.balance = metadata.tokens.reduce((a, c) => a + c.value * 1, 0)
+      
+
+            console.log(metadata)
+            return metadata
+          }
+
+          if (type == 1) {
+            const exchangeIndex = portfolio.exchanges.findIndex((w) => w.id === exchangeOrWalletId);
+            return portfolio.exchanges[exchangeIndex]
+          }
+        } else {
+          throw new Error(701);
+        }
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+
     async getMetadataPortfolio(_, { portfolioId, userId, interval = false }, context) {
 
       const user = checkAuth(context);
@@ -244,7 +398,7 @@ export default {
       const userData = await User.findById(user._id)
 
       const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
- 
+
       const portfolio = userData.portfolios[portfolioIde];
 
       let metadata = {}
@@ -258,13 +412,10 @@ export default {
       }
 
       if (!portfolio) {
-        throw new Error(701)        
+        throw new Error(701)
       }
 
-      if(portfolio.wallets.length > 0)
-      {
-
-
+      if (portfolio.wallets.length > 0) {
         for (let j = 0; j < portfolio.wallets.length; j++) {
 
           const query = `
@@ -315,74 +466,74 @@ export default {
             wallets.tokens.push(...data.ethereum.address[0].balances.filter((bal) => bal.value > 0))
           }
         }
-      
-      // 0x9dF2fe92B91105adE1266f57de548346E9b4009a
-      const coinList = await CoinGeckoClient.coins.list();
 
-      
-      wallets.tokens.forEach((token) => {
-        walletCoins.push(...coinList.data.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol.toLowerCase()))
-      })
+        // 0x9dF2fe92B91105adE1266f57de548346E9b4009a
+        const coinList = await CoinGeckoClient.coins.list();
 
 
-      for (let i = 0; i < walletCoins.length; i++) {
-        const { data } = await CoinGeckoClient.coins.fetch(walletCoins[i].id)
-        const { id: coinId, symbol, name, image: { large }, platforms, contract_address, market_data: { current_price: { usd } }, market_data: { price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y } } = data
-
-        walletCoinMarket.push({ coinId, symbol, name, large, platforms, contract_address, usd, price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y })
-      }
-
-
-      wallets.tokens.forEach((token) => {
-        console.log(token.currency)
-        let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => token.currency.tokenType == '' && token.currency.symbol.toLowerCase() == coin.symbol? coin : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
-        // console.log("arrayresult", arrayResult)
-        portfolioTokens.push(arrayResult)
-        // newCoinsWallet = walletCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
-      })
-
-      // coin.contract_address == undefined || token.currency.symbol.toLowerCase() === coin.contract_address.toLowerCase()? coin :
-      // console.log(portfolioTokens)
-    }
-
-    if(portfolio.exchanges.lenght > 0){
-
-
-      let exchangeCoins = []
-      let exchangeCoinMarket = []
-
-      if (exchanges.length > 0) {
-
-        exchanges.tokens.forEach((token) => {
-          exchangeCoins.push(...coinList.data.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol.toLowerCase()))
+        wallets.tokens.forEach((token) => {
+          walletCoins.push(...coinList.data.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol.toLowerCase()))
         })
 
-        for (let i = 0; i < exchangeCoins.length; i++) {
-          const { data } = await CoinGeckoClient.coins.fetch(exchangeCoins[i].id)
-          const { symbol, name, image: { large }, contract_address, market_data: { current_price: { usd } }, coingecko_rank, price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y } = data
-          exchangeCoinMarket.push({ symbol, name, large, contract_address, usd, coingecko_rank, price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y })
+
+        for (let i = 0; i < walletCoins.length; i++) {
+          const { data } = await CoinGeckoClient.coins.fetch(walletCoins[i].id)
+          const { id: coinId, symbol, name, image: { large }, platforms, contract_address, market_data: { current_price: { usd } }, market_data: { price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y } } = data
+
+          walletCoinMarket.push({ coinId, symbol, name, large, platforms, contract_address, usd, price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y })
         }
 
-        exchanges.tokens.forEach((token) => {
-          for (let i = 0; i < newCoins.length; i++) {
-            let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, newCoins[0])
-            portfolioTokens.push(arrayResult)
-            break;
-          }
-          newCoins = exchangeCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
 
-
-          newCoins.sort((a, c) => a.coingecko_rank - c.coingecko_rank)
-          for (let i = 0; i < newCoins.length; i++) {
-            let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, newCoins[0])
-            portfolioTokens.push(arrayResult)
-            break;
-          }
-
+        wallets.tokens.forEach((token) => {
+          console.log(token.currency)
+          let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => token.currency.tokenType == '' && token.currency.symbol.toLowerCase() == coin.symbol ? coin : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
+          // console.log("arrayresult", arrayResult)
+          portfolioTokens.push(arrayResult)
+          // newCoinsWallet = walletCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
         })
 
+        // coin.contract_address == undefined || token.currency.symbol.toLowerCase() === coin.contract_address.toLowerCase()? coin :
+        // console.log(portfolioTokens)
       }
-    }
+
+      if (portfolio.exchanges.lenght > 0) {
+
+
+        let exchangeCoins = []
+        let exchangeCoinMarket = []
+
+        if (exchanges.length > 0) {
+
+          exchanges.tokens.forEach((token) => {
+            exchangeCoins.push(...coinList.data.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol.toLowerCase()))
+          })
+
+          for (let i = 0; i < exchangeCoins.length; i++) {
+            const { data } = await CoinGeckoClient.coins.fetch(exchangeCoins[i].id)
+            const { symbol, name, image: { large }, contract_address, market_data: { current_price: { usd } }, coingecko_rank, price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y } = data
+            exchangeCoinMarket.push({ symbol, name, large, contract_address, usd, coingecko_rank, price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y })
+          }
+
+          exchanges.tokens.forEach((token) => {
+            for (let i = 0; i < newCoins.length; i++) {
+              let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, newCoins[0])
+              portfolioTokens.push(arrayResult)
+              break;
+            }
+            newCoins = exchangeCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
+
+
+            newCoins.sort((a, c) => a.coingecko_rank - c.coingecko_rank)
+            for (let i = 0; i < newCoins.length; i++) {
+              let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, newCoins[0])
+              portfolioTokens.push(arrayResult)
+              break;
+            }
+
+          })
+
+        }
+      }
 
 
 
@@ -449,7 +600,7 @@ export default {
       context
     ) {
 
-      
+
       const user = checkAuth(context);
       console.log(user)
       try {
@@ -462,19 +613,19 @@ export default {
         }
 
         const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
- 
+
         const portfolio = userData.portfolios[portfolioIde];
 
 
-        userData.portfolios[portfolioIde].wallets.map((wallet)=> {
-        console.log((wallet.address == publicAddress && wallet.network == network))
+        userData.portfolios[portfolioIde].wallets.map((wallet) => {
+          console.log((wallet.address == publicAddress && wallet.network == network))
 
-          if(wallet.name == name || (wallet.address == publicAddress && wallet.network == network)){
-            throw new Error(801);  
+          if (wallet.name == name || (wallet.address == publicAddress && wallet.network == network)) {
+            throw new Error(801);
           }
 
         })
-        
+
         if (portfolio) {
           await userData.portfolios[portfolioIde].wallets.unshift({
             name,
@@ -505,13 +656,13 @@ export default {
         const userData = await User.findById(user._id)
 
         console.log(userData)
-        
+
         if (!userData) {
           throw new Error(701)
         }
 
         const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
- 
+
         const portfolio = userData.portfolios[portfolioIde];
         if (portfolio) {
 
@@ -585,13 +736,13 @@ export default {
         const userData = await User.findById(user._id)
 
         console.log(userData)
-        
+
         if (!userData) {
           throw new Error(701)
         }
 
         const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
- 
+
         const portfolio = userData.portfolios[portfolioIde];
         console.log(portfolio)
         if (portfolio) {
