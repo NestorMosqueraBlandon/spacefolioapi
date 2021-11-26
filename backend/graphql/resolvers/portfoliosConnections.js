@@ -602,7 +602,6 @@ export default {
 
 
       const user = checkAuth(context);
-      console.log(user)
       try {
 
 
@@ -786,19 +785,39 @@ export default {
       context
     ) {
 
-      // const user = checkAuth(context);
+      const user = checkAuth(context);
 
-      const client = new MainClient({
-        api_key: key,
-        api_secret: secret,
-      });
+      // const client = new MainClient({
+      //   api_key: key,
+      //   api_secret: secret,
+      // });
 
-      const myClient = new Client({
-        'apiKey': key, 'apiSecret': secret,
-        strictSSL: false
-      });
+      // const myClient = new Client({
+      //   'apiKey': key, 'apiSecret': secret,
+      //   strictSSL: false
+      // });
 
-      const portfolio = await Portfolio.findById(portfolioId);
+      const userData = await User.findById(user._id)
+
+      if (!userData) {
+        throw new Error(701)
+      }
+
+
+      const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
+
+      const portfolio = userData.portfolios[portfolioIde];
+
+
+      userData.portfolios[portfolioIde].exchanges.map((exchange) => {
+
+        if (exchange.name == name || (exchange.apiKey == key && exchange.network == network)) {
+          throw new Error(801);
+        }
+
+      })
+
+
 
       let portfolioTokens = [];
       let newToken = {}
@@ -808,78 +827,73 @@ export default {
         if (network == "coinbase") {
           let data = []
 
-          myClient.getAccounts({}, async (err, accounts) => {
-            accounts.forEach(async (acct) => {
-              if (acct.balance.amount > 0) {
-                console.log(acct)
-                newToken = {}
-                newToken.value = Number(acct.native_balance.amount),
-                  newToken.currency = {
-                    symbol: acct.currency,
-                    name: acct.name,
-                    quantity: Number(acct.balance.amount)
-                  }
+          // myClient.getAccounts({}, async (err, accounts) => {
+          //   accounts.forEach(async (acct) => {
+          //     if (acct.balance.amount > 0) {
+          //       console.log(acct)
+          //       newToken = {}
+          //       newToken.value = Number(acct.native_balance.amount),
+          //         newToken.currency = {
+          //           symbol: acct.currency,
+          //           name: acct.name,
+          //           quantity: Number(acct.balance.amount)
+          //         }
 
-                portfolioTokens.unshift(newToken)
-              }
-            });
+          //       portfolioTokens.unshift(newToken)
+          //     }
+          //   });
             if (portfolio) {
-              const tokensQuantity = portfolioTokens.reduce((a, c) => a + Number(c.value), 0)
-              await portfolio.exchanges.unshift({
+              // const tokensQuantity = portfolioTokens.reduce((a, c) => a + Number(c.value), 0)
+              await userData.portfolios[portfolioIde].exchanges.unshift({
                 name,
                 apiKey: key,
                 image: image,
                 inusd: "ready",
-                quantity: tokensQuantity,
                 apiSecret: secret,
-                tokens: portfolioTokens
+                tokens: []
               });
 
-              portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.exchanges[0].quantity);
+              // portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.exchanges[0].quantity);
 
 
-              // await portfolio.save();
+              await userData.save();
             }
-
-
-          });
 
 
         } else if (network == "binance") {
 
-          const data = await client.getBalances();
+          // const data = await client.getBalances();
 
-          const tokens = data.filter((token) => token.free > 0)
-          const tokensQuantity = tokens.reduce((a, c) => a + Number(c.free), 0)
+          // const tokens = data.filter((token) => token.free > 0)
+          // const tokensQuantity = tokens.reduce((a, c) => a + Number(c.free), 0)
 
           let portfolioTokens = [];
           let newToken = {}
 
-          tokens.map((token) => {
-            newToken = {}
-            newToken.value = Number(token.free),
-              newToken.currency = {
-                symbol: token.coin,
-                name: token.name
-              }
+          // tokens.map((token) => {
+          //   newToken = {}
+          //   newToken.value = Number(token.free),
+          //     newToken.currency = {
+          //       symbol: token.coin,
+          //       name: token.name
+          //     }
 
-            portfolioTokens.unshift(newToken)
-          })
+          //   portfolioTokens.unshift(newToken)
+          // })
 
-          console.log(portfolioTokens);
+          // console.log(portfolioTokens);
 
           if (portfolio) {
-            await portfolio.exchanges.unshift({
+            await userData.portfolios[portfolioIde].exchanges.unshift({
               name,
               apiKey: key,
               image: image,
-              quantity: tokensQuantity,
               apiSecret: secret,
-              tokens: portfolioTokens
+              tokens: []
             });
 
-            portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.exchanges[0].quantity);
-            await portfolio.save();
+            // portfolio.balance = parseFloat(portfolio.balance) + parseFloat(portfolio.exchanges[0].quantity);
+            await userData.save();
           }
 
         } else {
