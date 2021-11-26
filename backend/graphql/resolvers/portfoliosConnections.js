@@ -485,7 +485,7 @@ export default {
         console.log((wallet.address == publicAddress && wallet.network == network))
 
           if(wallet.name == name || (wallet.address == publicAddress && wallet.network == network)){
-            throw new Error(701);  
+            throw new Error(801);  
           }
 
         })
@@ -585,13 +585,25 @@ export default {
     ) {
       const user = checkAuth(context);
 
+      console.log(user._)
       try {
-        const portfolio = await Portfolio.findById(portfolioId);
-        if (portfolio) {
-          const walletIndex = portfolio.wallets.findIndex((w) => w.id === walletId);
+        const userData = await User.findById(user._id)
 
-          portfolio.wallets.splice(walletIndex, 1)
-          await portfolio.save();
+        console.log(userData)
+        
+        if (!userData) {
+          throw new Error(701)
+        }
+
+        const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
+ 
+        const portfolio = userData.portfolios[portfolioIde];
+        console.log(portfolio)
+        if (portfolio) {
+          const walletIndex = userData.portfolios[portfolioIde].wallets.findIndex((w) => w.id === walletId);
+
+          userData.portfolios[portfolioIde].wallets.splice(walletIndex, 1)
+          await userData.save();
           return 200;
         } else {
           throw new Error(701);
