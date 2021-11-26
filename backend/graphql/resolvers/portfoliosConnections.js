@@ -206,7 +206,13 @@ export default {
     async getExchangesConnection(_, { portfolioId }, context) {
       const user = checkAuth(context);
       try {
-        const portfolio = await Portfolio.findById(portfolioId);
+        
+      const userData = await User.findById(user._id)
+
+      const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
+ 
+      const portfolio = userData.portfolios[portfolioIde];
+
         return portfolio.exchanges;
       } catch (err) {
         throw new Error(err);

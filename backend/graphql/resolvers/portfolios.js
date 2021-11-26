@@ -69,6 +69,19 @@ export default {
         const portfolio = userData.portfolios[portfolioIde];
         if (portfolio) {
             if(type == 0){
+              const userData = await User.findById(user._id)
+
+              console.log(userData)
+              
+              if (!userData) {
+                throw new Error(701)
+              }
+      
+              const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
+       
+              const portfolio = userData.portfolios[portfolioIde];
+      
+                const wallet = userData.portfolios[portfolioIde].wallets.findIndex(wallet => wallet.id === walletId)
               const walletIndex = portfolio.wallets.findIndex((w) => w.id === exchangeOrWalletId);
               return portfolio.wallets[walletIndex]              
             }
