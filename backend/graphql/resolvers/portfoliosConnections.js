@@ -489,13 +489,23 @@ export default {
       const user = checkAuth(context);
 
       try {
-        const portfolio = await Portfolio.findById(portfolioId);
+        const userData = await User.findById(user._id)
+
+        console.log(userData)
+        
+        if (!userData) {
+          throw new Error(701)
+        }
+
+        const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
+ 
+        const portfolio = userData.portfolios[portfolioIde];
         if (portfolio) {
 
-          const wallet = portfolio.wallets.findIndex(wallet => wallet.id === walletId)
+          const wallet = userData.portfolios[portfolioIde].wallets.findIndex(wallet => wallet.id === walletId)
 
-          if (portfolio.wallets[wallet].id === walletId) {
-            portfolio.wallets[wallet] = ({
+          if (userData.portfolios[portfolioIde].wallets[wallet].id === walletId) {
+            userData.portfolios[portfolioIde].wallets[wallet] = ({
               name: name ? name : portfolio.wallets[wallet].name,
               address: publicAddress ? publicAddress : portfolio.wallets[wallet].address,
               active: active ? active : portfolio.wallets[wallet].active,
@@ -506,7 +516,7 @@ export default {
             })
           }
 
-          await portfolio.save();
+          await userData.save();
           return 200;
         } else {
           throw new Error(701);
