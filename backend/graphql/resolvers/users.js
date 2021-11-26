@@ -13,9 +13,10 @@ export default {
             return users;
         },
 
-        async getUserInfo(_, {userId}) {
-            const user = await User.findById(userId);
-            return user;
+        async getUserInfo(_, {}, context) {
+            const user = checkAuth(context);
+            const userData = await User.findById(user._id)
+            return userData;
         },
     },
 

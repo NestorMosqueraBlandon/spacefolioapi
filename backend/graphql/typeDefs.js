@@ -2,7 +2,7 @@ const typeDefs = `
 
 type Query{
     users: [User]
-    getUserInfo(userId: String!): User
+    getUserInfo: User
     coinList(page: String): [Coin]
     newsList(page:String): [New]
     coinMarket(coinId: String): Data
@@ -11,12 +11,12 @@ type Query{
     exchangeListAvailable: [Wallet]
     fiatList: [Fiat]
     getPortfolios: [Portfolio]
-    getPortfolio(portfolioId: ID!, userId: ID): Portfolio
+    getPortfolio(portfolioId: ID!): Portfolio
     getMetadataPortfolio(portfolioId: String!, interval: String): Metadata
     getWalletsConnection(portfolioId: String!): [WalletConnection]
     getExchangesConnection(portfolioId: String!): [WalletConnection]
     googleAuth: String
-    getExchangeOrWalletData(portfolioId: String, userId: String, exchangeOrWalletId: String, type: String): ExchangeOrWallet
+    getExchangeOrWalletData(portfolioId: String, exchangeOrWalletId: String, type: String): ExchangeOrWallet
     coinListSearch(page: String, search: String) :  [Coin]
 }
 

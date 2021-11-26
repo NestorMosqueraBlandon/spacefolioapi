@@ -107,8 +107,6 @@ export const portfolioChart = async (balance) => {
 
 const userWallets = async (portfolios, _callback) => {
 
-
-
   let walletsItems = {
     tokens: []
   }
@@ -257,6 +255,10 @@ export default {
         throw new Error(701)        
       }
 
+      if(portfolio.wallets.length > 0)
+      {
+
+
         for (let j = 0; j < portfolio.wallets.length; j++) {
 
           const query = `
@@ -308,7 +310,6 @@ export default {
           }
         }
       
-
       // 0x9dF2fe92B91105adE1266f57de548346E9b4009a
       const coinList = await CoinGeckoClient.coins.list();
 
@@ -336,6 +337,9 @@ export default {
 
       // coin.contract_address == undefined || token.currency.symbol.toLowerCase() === coin.contract_address.toLowerCase()? coin :
       // console.log(portfolioTokens)
+    }
+
+    if(porfolio.exchanges.lenght > 0)
 
       let exchangeCoins = []
       let exchangeCoinMarket = []
