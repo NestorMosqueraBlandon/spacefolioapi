@@ -90,7 +90,6 @@ type Exchange{
 type ExchangeOrWallet {
     name: String
     image : String
-    quantity : String
     balance : String
     tokens: [Token]
 }

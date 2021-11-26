@@ -16,6 +16,7 @@ import { portfolioChart } from "./graphql/resolvers/portfoliosConnections.js";
 
 
 const server = new ApolloServer({
+    cors: true,
     typeDefs,
     resolvers,
     context: ({req}) => ({req}),
