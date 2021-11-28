@@ -61,6 +61,7 @@ type Portfolio {
     dfCurrency: String!
     balance: String!
     percentage: String
+    price_change_percentage: String
     sellTransactions: [SellTransaction]
     buyTransactions: [SellTransaction]
     transferTransactions: [TransferTransaction]
