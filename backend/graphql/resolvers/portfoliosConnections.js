@@ -902,13 +902,13 @@ export default {
           let avg = sumPercentage / metadata.cryptos.length;
           totalBalance += metadata.balance + totalBalance;
           let percentage = (metadata.balance / totalBalance) * 100
-          firtsArray.push({ name: portfolios[i].name, balance: metadata.balance, price_change_percentage: avg })
+          firtsArray.push({id:portfolios[i].id, name: portfolios[i].name, balance: metadata.balance, price_change_percentage: avg })
           // arrayPortfolios.push({ name: portfolios[i].name, balance: metadata.balance })
         }
 
         for (let i = 0; i < portfolios.length; i++) {
           let percentage = (firtsArray[i].balance / totalBalance) * 100
-          arrayPortfolios.push({name: firtsArray[i].name, balance:firtsArray[i].balance, price_change_percentage: firtsArray[i].price_change_percentage , percentage})
+          arrayPortfolios.push({id: firtsArray[i].id, name: firtsArray[i].name, balance:firtsArray[i].balance, price_change_percentage: firtsArray[i].price_change_percentage , percentage})
         }
         console.log(arrayPortfolios)
 
