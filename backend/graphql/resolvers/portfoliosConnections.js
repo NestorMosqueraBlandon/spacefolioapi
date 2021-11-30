@@ -899,20 +899,32 @@ export default {
           metadata.balance = metadata.cryptos.reduce((a, c) => a + c.value * 1, 0)
 
           let sumPercentage = metadata.cryptos.reduce((a, c) => a + c.price_change_percentage_30d * 1, 0)
+          let sumPercentageUsd = metadata.cryptos.reduce((a, c) => a + c.value_usd_30d * 1, 0)
+          
           let avg = sumPercentage / metadata.cryptos.length;
+          let avgUsd = sumPercentageUsd / metadata.cryptos.length;
+
           totalBalance += metadata.balance + totalBalance;
           let percentage = (metadata.balance / totalBalance) * 100
-          firtsArray.push({id:portfolios[i].id, name: portfolios[i].name, balance: metadata.balance, price_change_percentage: avg })
+          firtsArray.push({id:portfolios[i].id, name: portfolios[i].name, balance: metadata.balance, price_change_percentage: avg, value_usd: avgUsd  })
           // arrayPortfolios.push({ name: portfolios[i].name, balance: metadata.balance })
         }
 
         for (let i = 0; i < portfolios.length; i++) {
           let percentage = (firtsArray[i].balance / totalBalance) * 100
-          arrayPortfolios.push({id: firtsArray[i].id, name: firtsArray[i].name, balance:firtsArray[i].balance, price_change_percentage: firtsArray[i].price_change_percentage , percentage})
+          arrayPortfolios.push({id: firtsArray[i].id, name: firtsArray[i].name, balance:firtsArray[i].balance, price_change_percentage: firtsArray[i].price_change_percentage, percentage, value_usd: firtsArray[i].value_usd})
         }
-        console.log(arrayPortfolios)
 
-        return arrayPortfolios;
+        let metadataArray = {
+          totalBalance: 0,
+          portfolios: []
+        }
+
+        metadataArray = {totalBalance, portfolios: arrayPortfolios}
+        
+        console.log(metadataArray)
+
+        return metadataArray;
       } catch (err) {
         console.log(err)
         // throw new Error(err);

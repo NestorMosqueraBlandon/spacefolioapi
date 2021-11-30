@@ -10,7 +10,7 @@ type Query{
     walletsList: [Wallet]
     exchangeListAvailable: [Wallet]
     fiatList: [Fiat]
-    getPortfolios: [Portfolio]
+    getPortfolios: PortfolioData
     getPortfolio(portfolioId: ID!): Portfolio
     getMetadataPortfolio(portfolioId: String!, interval: String): Metadata
     getWalletsConnection(portfolioId: String!): [WalletConnection]
@@ -55,6 +55,11 @@ type Crypto{
     value_usd_1y: String
 }
 
+type PortfolioData {
+    totalBalance: String
+    portfolios : [Portfolio]
+}
+
 type Portfolio {
     id: ID!
     name: String!
@@ -62,6 +67,7 @@ type Portfolio {
     balance: String!
     percentage: String
     price_change_percentage: String
+    value_usd: String
     sellTransactions: [SellTransaction]
     buyTransactions: [SellTransaction]
     transferTransactions: [TransferTransaction]
