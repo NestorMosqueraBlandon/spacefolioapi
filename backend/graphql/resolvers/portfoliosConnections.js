@@ -899,20 +899,20 @@ export default {
           metadata.balance = metadata.cryptos.reduce((a, c) => a + c.value * 1, 0)
 
           let sumPercentage = metadata.cryptos.reduce((a, c) => a + c.price_change_percentage_30d * 1, 0)
-          let sumPercentageUsd = metadata.cryptos.reduce((a, c) => a + c.value_usd_30d * 1, 0)
-          
+          let sumPercentageUsd = metadata.cryptos.reduce((a, c) => a + c.value_usd_7d * 1, 0)
+
           let avg = sumPercentage / metadata.cryptos.length;
           let avgUsd = sumPercentageUsd / metadata.cryptos.length;
 
           totalBalance += metadata.balance + totalBalance;
           let percentage = (metadata.balance / totalBalance) * 100
-          firtsArray.push({id:portfolios[i].id, name: portfolios[i].name, balance: metadata.balance, price_change_percentage: avg, value_usd: avgUsd  })
+          firtsArray.push({ id: portfolios[i].id, name: portfolios[i].name, balance: metadata.balance, price_change_percentage: avg, value_usd: avgUsd })
           // arrayPortfolios.push({ name: portfolios[i].name, balance: metadata.balance })
         }
 
         for (let i = 0; i < portfolios.length; i++) {
           let percentage = (firtsArray[i].balance / totalBalance) * 100
-          arrayPortfolios.push({id: firtsArray[i].id, name: firtsArray[i].name, balance:firtsArray[i].balance, price_change_percentage: firtsArray[i].price_change_percentage, percentage, value_usd: firtsArray[i].value_usd})
+          arrayPortfolios.push({ id: firtsArray[i].id, name: firtsArray[i].name, balance: firtsArray[i].balance, price_change_percentage: firtsArray[i].price_change_percentage, percentage, value_usd: firtsArray[i].value_usd })
         }
 
         let metadataArray = {
@@ -920,8 +920,8 @@ export default {
           portfolios: []
         }
 
-        metadataArray = {totalBalance, portfolios: arrayPortfolios}
-        
+        metadataArray = { totalBalance, portfolios: arrayPortfolios }
+
         console.log(metadataArray)
 
         return metadataArray;
@@ -958,12 +958,37 @@ export default {
 
       const coinList = await CoinGeckoClient.coins.list();
 
+      let query;
       if (portfolio.wallets.length > 0) {
         for (let j = 0; j < portfolio.wallets.length; j++) {
 
-          const query = `
-     query ($network: EthereumNetwork!, $address: String!) {
-       ethereum(network: $network) {
+          if (portfolio.wallets[j].network == "cardano") {
+            query = `
+            query {
+              cardano{
+                address(address: {in: 
+                  "${portfolio.wallets[j].address}",
+                  }){
+                  balance {
+                    currency {
+                      name
+                      symbol
+                      tokenId
+                    }
+                    value
+                  }
+                  
+                }
+              }
+            }
+            
+        `
+          }
+          else {
+
+            query = `
+     query ($network: CardanoNetwork!, $address: String!) {
+       cardano(network: $network) {
          address(address: {is: $address}) {
            balances {
              currency {
@@ -980,6 +1005,7 @@ export default {
      }
      
     `;
+          }
 
           const variables = `
     {
@@ -999,20 +1025,29 @@ export default {
             body: ({
               query,
               variables
+
             }),
             json: true,
             gzip: true
           };
 
           const { data } = await rp(requestOptions);
-          if (data && data.ethereum.address[0].balances) {
-            wallets.tokens.push(...data.ethereum.address[0].balances.filter((bal) => bal.value > 0))
+          if (portfolio.wallets[j].network == "cardano") {
+
+            if (data && data.cardano.address[0].balance) {
+              wallets.tokens.push(...data.cardano.address[0].balance.filter((bal) => bal.value > 0))
+            }
+          } else {
+            if (data && data.ethereum.address[0].balances) {
+              wallets.tokens.push(...data.ethereum.address[0].balances.filter((bal) => bal.value > 0))
+            }
           }
+
         }
 
         // 0x9dF2fe92B91105adE1266f57de548346E9b4009a
 
-
+        console.log(wallets)
 
         wallets.tokens.forEach((token) => {
           walletCoins.push(...coinList.data.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol.toLowerCase()))
@@ -1026,13 +1061,17 @@ export default {
           walletCoinMarket.push({ coinId, symbol, name, large, platforms, contract_address, usd, price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y })
         }
 
+        // console.log(walletCoinMarket)
+
 
         wallets.tokens.forEach((token) => {
-          let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => token.currency.tokenType == '' && token.currency.symbol.toLowerCase() == coin.symbol ? coin : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
+          let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => (token.currency.tokenType == '' || token.currency.contract_address == undefined) && token.currency.symbol.toLowerCase() == coin.symbol ? coin : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
           // console.log("arrayresult", arrayResult)
           portfolioTokens.push(arrayResult)
           // newCoinsWallet = walletCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
         })
+
+        console.log(portfolioTokens)
 
         // coin.contract_address == undefined || token.currency.symbol.toLowerCase() === coin.contract_address.toLowerCase()? coin :
         // console.log(portfolioTokens)
