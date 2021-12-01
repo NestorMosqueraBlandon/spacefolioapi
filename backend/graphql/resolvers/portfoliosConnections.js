@@ -645,11 +645,35 @@ export default {
           }
 
           const coinList = await CoinGeckoClient.coins.list();
-
+          let query;
+          
           if (portfolios[i].wallets.length > 0) {
             for (let j = 0; j < portfolios[i].wallets.length; j++) {
+              if (portfolios[i].wallets[j].network == "cardano") {
+                query = `
+                query {
+                  cardano{
+                    address(address: {in: 
+                      "${portfolios[i].wallets[j].address}",
+                      }){
+                      balance {
+                        currency {
+                          name
+                          symbol
+                          tokenId
+                        }
+                        value
+                      }
+                      
+                    }
+                  }
+                }
+                
+            `
+              }
+              else {
 
-              const query = `
+              query = `
      query ($network: EthereumNetwork!, $address: String!) {
        ethereum(network: $network) {
          address(address: {is: $address}) {
@@ -668,7 +692,7 @@ export default {
      }
      
     `;
-
+    }
               const variables = `
     {
      "network": "${portfolios[i].wallets[j].network}",
@@ -693,13 +717,19 @@ export default {
               };
 
               const { data } = await rp(requestOptions);
+              if (portfolios[i].wallets[j].network == "cardano") {
+
+                if (data && data.cardano.address[0].balance) {
+                  wallets.tokens.push(...data.cardano.address[0].balance.filter((bal) => bal.value > 0))
+                }
+              } else {
               if (data && data.ethereum.address[0].balances) {
                 wallets.tokens.push(...data.ethereum.address[0].balances.filter((bal) => bal.value > 0))
               }
             }
+          }
 
             // 0x9dF2fe92B91105adE1266f57de548346E9b4009a
-
 
 
             wallets.tokens.forEach((token) => {
@@ -716,11 +746,13 @@ export default {
 
 
             wallets.tokens.forEach((token) => {
-              let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => token.currency.tokenType == '' && token.currency.symbol.toLowerCase() == coin.symbol ? coin : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
+              let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => (token.currency.tokenType == '' || token.currency.contract_address == undefined) && token.currency.symbol.toLowerCase() == coin.symbol ? coin : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
               // console.log("arrayresult", arrayResult)
               portfolioTokens.push(arrayResult)
               // newCoinsWallet = walletCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
             })
+
+            console.log(portfolioTokens)
 
             // coin.contract_address == undefined || token.currency.symbol.toLowerCase() === coin.contract_address.toLowerCase()? coin :
             // console.log(portfolioTokens)
@@ -904,7 +936,8 @@ export default {
           let avg = sumPercentage / metadata.cryptos.length;
           let avgUsd = sumPercentageUsd / metadata.cryptos.length;
 
-          totalBalance += metadata.balance + totalBalance;
+          console.log(metadata.balance)
+          totalBalance += metadata.balance;
           let percentage = (metadata.balance / totalBalance) * 100
           firtsArray.push({ id: portfolios[i].id, name: portfolios[i].name, balance: metadata.balance, price_change_percentage: avg, value_usd: avgUsd })
           // arrayPortfolios.push({ name: portfolios[i].name, balance: metadata.balance })
