@@ -29,6 +29,14 @@ type New{
 }
 type Metadata{
     balance: String
+    price_change_percentage_24h: String,
+    price_change_percentage_7d: String,
+    price_change_percentage_30d: String,
+    price_change_percentage_1y: String,
+    value_24h: String,
+    value_7d: String,
+    value_30d: String,
+    value_1y: String,
     cryptos: [Crypto]
     chart: String
 }

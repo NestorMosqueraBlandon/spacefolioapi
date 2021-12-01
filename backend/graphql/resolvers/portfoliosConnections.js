@@ -748,6 +748,7 @@ export default {
 
 
             wallets.tokens.forEach((token) => {
+              console.log(token)
               let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => token.currency.tokenType == '' && token.currency.symbol.toLowerCase() == coin.symbol ? coin : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
               // console.log("arrayresult", arrayResult)
               portfolioTokens.push(arrayResult)
@@ -967,7 +968,6 @@ export default {
                 metadataArray = { totalBalance, totalPercentage, totalValue, portfolios: arrayPortfolios }
 
              
-          console.log(metadataArray)
           
 
                 return metadataArray;
