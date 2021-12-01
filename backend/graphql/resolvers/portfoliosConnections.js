@@ -721,7 +721,6 @@ export default {
 
               const { data } = await rp(requestOptions);
               if (portfolios[i].wallets[j].network == "cardano") {
-
                 if (data && data.cardano.address[0].balance) {
                   wallets.tokens.push(...data.cardano.address[0].balance.filter((bal) => bal.value > 0))
                 }
@@ -755,8 +754,6 @@ export default {
               // newCoinsWallet = walletCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
             })
 
-            console.log(portfolioTokens)
-
             // coin.contract_address == undefined || token.currency.symbol.toLowerCase() === coin.contract_address.toLowerCase()? coin :
             // console.log(portfolioTokens)
           }
@@ -771,7 +768,7 @@ export default {
 
               for (let j = 0; j < portfolios[i].wallets.length; j++) {
                 if (portfolios[i].exchanges[j].network === "binance") {
-                  console.log("ENTRO")
+ 
                   const client = new MainClient({
                     api_key: portfolios[i].exchanges[j].apiKey,
                     api_secret: portfolios[i].exchanges[j].apiSecret,
@@ -893,8 +890,7 @@ export default {
 
           }
 
-          
-                console.log("entrasao")
+      
                 metadata = {
                   balance: 0,
                   percentage: 0,
@@ -938,16 +934,16 @@ export default {
                 let sumPercentage = metadata.cryptos.reduce((a, c) => a + c.price_change_percentage_30d * 1, 0)
                 let sumPercentageUsd = metadata.cryptos.reduce((a, c) => a + c.value_usd_7d * 1, 0)
 
-                let avg = sumPercentage / metadata.cryptos.length;
-                let avgUsd = sumPercentageUsd / metadata.cryptos.length;
+                let avg = metadata.cryptos.length > 0? sumPercentage / metadata.cryptos.length : 0;
+                let avgUsd = metadata.cryptos.length > 0? sumPercentageUsd / metadata.cryptos.length : 0;
 
-                console.log(metadata.balance)
+    
+                
 
                 totalBalance += metadata.balance;
                 totalPercentage += avg
                 totalValue += avgUsd
 
-                let percentage = (metadata.balance / totalBalance) * 100
                 firtsArray.push({ id: portfolios[i].id, name: portfolios[i].name, balance: metadata.balance, price_change_percentage: avg, value_usd: avgUsd })
                 // arrayPortfolios.push({ name: portfolios[i].name, balance: metadata.balance })
               }
@@ -956,7 +952,7 @@ export default {
   
 
                 for (let k = 0; k < portfolios.length; k++) {
-                  console.log(firtsArray[k])
+     
                   let percentage = (firtsArray[k].balance / totalBalance) * 100
                   arrayPortfolios.push({ id: firtsArray[k].id, name: firtsArray[k].name, balance: firtsArray[k].balance, price_change_percentage: firtsArray[k].price_change_percentage, percentage, value_usd: firtsArray[k].value_usd })
                 }
@@ -970,7 +966,8 @@ export default {
 
                 metadataArray = { totalBalance, totalPercentage, totalValue, portfolios: arrayPortfolios }
 
-                console.log(metadataArray)
+             
+          console.log(metadataArray)
           
 
                 return metadataArray;
