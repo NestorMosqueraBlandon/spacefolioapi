@@ -10,7 +10,7 @@ type Query{
     walletsList: [Wallet]
     exchangeListAvailable: [Wallet]
     fiatList: [Fiat]
-    getPortfolios: PortfolioData
+    getPortfolios(getInternalData: Boolean): PortfolioData
     getPortfolio(portfolioId: ID!): Portfolio
     getMetadataPortfolio(portfolioId: String!, interval: String): Metadata
     getWalletsConnection(portfolioId: String!): [WalletConnection]
