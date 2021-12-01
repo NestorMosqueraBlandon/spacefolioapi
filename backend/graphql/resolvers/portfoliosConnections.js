@@ -648,7 +648,7 @@ export default {
           const coinList = await CoinGeckoClient.coins.list();
           let query;
 
-          if (portfolios[i].wallets.length > 0 && !getInternalData) {
+          if (portfolios[i].wallets.length > 0 && getInternalData === false) {
             for (let j = 0; j < portfolios[i].wallets.length; j++) {
               if (portfolios[i].wallets[j].network == "cardano") {
                 query = `
@@ -759,7 +759,7 @@ export default {
             // console.log(portfolioTokens)
           }
 
-          if (portfolios[i].exchanges.length > 0 && !getInternalData) {
+          if (portfolios[i].exchanges.length > 0 && getInternalData === false) {
 
 
             let exchangeCoins = []
@@ -893,7 +893,7 @@ export default {
 
           if (getInternalData === false) {
 
-            console.log("entro")
+            console.log("entrasao")
             metadata = {
               balance: 0,
               cryptos: [],
@@ -940,37 +940,37 @@ export default {
             let avgUsd = sumPercentageUsd / metadata.cryptos.length;
 
             console.log(metadata.balance)
+            
             totalBalance += metadata.balance;
             let percentage = (metadata.balance / totalBalance) * 100
             firtsArray.push({ id: portfolios[i].id, name: portfolios[i].name, balance: metadata.balance, price_change_percentage: avg, value_usd: avgUsd })
             // arrayPortfolios.push({ name: portfolios[i].name, balance: metadata.balance })
+            
+            for (let i = 0; i < firtsArray.length; i++) {
+              console.log(firtsArray[i])
+              let percentage = (firtsArray[i].balance / totalBalance) * 100
+              arrayPortfolios.push({ id: firtsArray[i].id, name: firtsArray[i].name, balance: firtsArray[i].balance, price_change_percentage: firtsArray[i].price_change_percentage, percentage, value_usd: firtsArray[i].value_usd })
+            }
 
-          for (let i = 0; i < portfolios.length; i++) {
-            let percentage = (firtsArray[i].balance / totalBalance) * 100
-            arrayPortfolios.push({ id: firtsArray[i].id, name: firtsArray[i].name, balance: firtsArray[i].balance, price_change_percentage: firtsArray[i].price_change_percentage, percentage, value_usd: firtsArray[i].value_usd })
+            let metadataArray = {
+              totalBalance: 0,
+              portfolios: []
+            }
+
+            metadataArray = { totalBalance, portfolios: arrayPortfolios }
+
+            console.log(metadataArray)
+
+            return metadataArray;
+          } else {
+            let metadataArray = {
+              totalBalance: 0,
+              portfolios: []
+            }
+
+            metadataArray = { portfolios }
+            return metadataArray
           }
-
-          let metadataArray = {
-            totalBalance: 0,
-            portfolios: []
-          }
-
-          metadataArray = { totalBalance, portfolios: arrayPortfolios }
-
-          console.log(metadataArray)
-
-          return metadataArray;
-        }else{
-          let metadataArray = {
-            totalBalance: 0,
-            portfolios: []
-          }
-
-          metadataArray = { portfolios }
-
-
-          return metadataArray
-        }
 
         }
       } catch (err) {
@@ -1248,24 +1248,6 @@ export default {
                 })
               })
 
-              // myClient.getAccounts({}, async (err, accounts) => {
-              //   accounts.forEach(async (acct) => {
-              //     if (acct.balance.amount > 0) {
-              //       console.log(acct)
-              //       newToken = {}
-              //       newToken.value = Number(acct.native_balance.amount),
-              //         newToken.currency = {
-              //           symbol: acct.currency,
-              //           name: acct.name,
-              //           quantity: Number(acct.balance.amount)
-              //         }
-
-              //       portfolioTokens.unshift(newToken)
-              //     }
-              // });
-
-
-
               let exchangeCoins = []
               let exchangeCoinMarket = []
 
@@ -1297,26 +1279,8 @@ export default {
 
 
           }
-          // exchanges.tokens.forEach((token) => {
-          //   exchangeCoins.push(...coinList.data.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol.toLowerCase()))
-          // })
-
-          // for (let i = 0; i < exchangeCoins.length; i++) {
-          //   const { data } = await CoinGeckoClient.coins.fetch(exchangeCoins[i].id)
-          //   const { symbol, name, image: { large }, contract_address, market_data: { current_price: { usd } }, coingecko_rank, price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y } = data
-          //   exchangeCoinMarket.push({ symbol, name, large, contract_address, usd, coingecko_rank, price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y })
-          // }
-
-          // exchanges.tokens.forEach((token) => {
-          //     let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, newCoins[0])
-          //     portfolioTokens.push(arrayResult)
-
-          // })
-
         }
       }
-
-
 
       metadata = {
         balance: 0,
