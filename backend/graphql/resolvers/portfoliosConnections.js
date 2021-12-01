@@ -1047,8 +1047,8 @@ export default {
           else {
 
             query = `
-     query ($network: CardanoNetwork!, $address: String!) {
-       cardano(network: $network) {
+     query ($network: EthereumNetwork!, $address: String!) {
+      ethereum(network: $network) {
          address(address: {is: $address}) {
            balances {
              currency {
