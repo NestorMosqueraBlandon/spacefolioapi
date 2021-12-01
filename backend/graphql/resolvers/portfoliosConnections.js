@@ -748,8 +748,8 @@ export default {
 
 
             wallets.tokens.forEach((token) => {
-              console.log(token)
-              let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => token.currency.tokenType == '' && token.currency.symbol.toLowerCase() == coin.symbol ? coin : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
+              console.log("TOKEN", token.currency)
+              let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => (token.currency.tokenType == '' || !token.currency.tokenType && token.currency.tokenId == null) && token.currency.symbol.toLowerCase() == coin.symbol ? coin : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
               // console.log("arrayresult", arrayResult)
               portfolioTokens.push(arrayResult)
               // newCoinsWallet = walletCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
@@ -837,9 +837,7 @@ export default {
                   let portfolioTokens = [];
                   let newToken = {}
 
-                  myClient.getAccounts({}, (err, accounts) => {
-                    console.log(accounts)
-                  })
+         
 
                   myClient.getAccounts({}, async (err, accounts) => {
                     accounts.forEach(async (acct) => {
@@ -1122,7 +1120,7 @@ export default {
 
 
         wallets.tokens.forEach((token) => {
-          let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => token.currency.tokenType == '' && token.currency.symbol.toLowerCase() == coin.symbol ? coin : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
+          let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => (token.currency.tokenType == '' || !token.currency.tokenType && token.currency.tokenId == null) && token.currency.symbol.toLowerCase() == coin.symbol ? coin : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
           // console.log("arrayresult", arrayResult)
           portfolioTokens.push(arrayResult)
           // newCoinsWallet = walletCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
