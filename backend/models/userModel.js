@@ -11,13 +11,13 @@ const userSchema = new mongoose.Schema({
     token: { data: String, dafault: '' },
     portfolios: [
         {
-            name: { type: String, trim: true },
+            name: { type: String, trim: true, unique: false},
             balance: { type: Number, default: 0 },
             dfCurrency: { type: String },
-            portfolioGeneralChart: {type: String},
+            portfolioGeneralChart: { type: String },
             wallets: [
                 {
-                    name: { type: String },
+                    name: { type: String, unique: false},
                     address: { type: String, unique: false },
                     network: String,
                     active: { type: Boolean, default: true },
@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema({
             ],
             exchanges: [
                 {
-                    name: String,
+                    name: {type: String, unique: false},
                     apiKey: String,
                     apiSecret: String,
                     network: String,
@@ -60,14 +60,14 @@ const userSchema = new mongoose.Schema({
             ],
             coinBlacklist: [
                 {
-                    name: String
+                    name:{String, unique: false}
                 }
             ],
 
         }
     ],
 
-    portfolioGeneralChart:{type: String}
+    portfolioGeneralChart: { type: String }
 
 
 }, {

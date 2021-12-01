@@ -11,7 +11,6 @@ import typeDefs from './graphql/typeDefs.js';
 import resolvers from './graphql/resolvers/index.js';
 
 import config from './utils/config.js';
-import { walletAndExchangeUpdate } from "./utils/dataUpdate.js";
 import { portfolioChart } from "./graphql/resolvers/portfoliosConnections.js";
 
 

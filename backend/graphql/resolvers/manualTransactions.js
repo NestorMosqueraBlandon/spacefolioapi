@@ -4,7 +4,6 @@ import BuyManualTransaction from '../../models/buyManualTransaction.js';
 import SellManualTransaction from '../../models/sellManualTransaction.js';
 import TransferTransaction from '../../models/transferTransaction.js';
 import checkAuth from '../../utils/checkAuth.js';
-import Portfolio from '../../models/portfolioModel.js';
 import Wallet from '../../models/walletModel.js';
 import Exchange from '../../models/exchangeModel.js';
 

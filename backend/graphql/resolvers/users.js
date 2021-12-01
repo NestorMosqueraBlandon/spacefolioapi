@@ -23,6 +23,7 @@ export default {
     Mutation: {
         async signup(_, { signupInput: { email, password } }) {
 
+            
             // Validate user data
             const { valid, errors } = validateSignupInput(email, password);
             if (!valid) {
@@ -31,6 +32,7 @@ export default {
 
             // Sure user doesn't already exist
             const user = await User.findOne({ email });
+            console.log(user)
             if (user && user.activate) {
                 throw new Error(104)
             } else if (user && !user.activate) {
@@ -44,6 +46,7 @@ export default {
                 const otpCode = await sendConfirmationEmail({ email, password });
 
                 const newUser = new User({ email, password, activateCode: otpCode });
+                console.log(newUser)
                 await newUser.save();
                 return 200;
             }

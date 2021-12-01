@@ -1,4 +1,3 @@
-import Portfolio from '../../models/portfolioModel.js';
 import checkAuth from '../../utils/checkAuth.js';
 import User from "../../models/userModel.js"
 
