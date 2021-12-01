@@ -630,6 +630,8 @@ export default {
 
         let firtsArray = []
         let totalBalance = 0
+        let totalPercentage = 0
+        let totalValue = 0
         for (let i = 0; i < portfolios.length; i++) {
           let metadata = {}
           let walletCoins = []
@@ -896,6 +898,7 @@ export default {
             console.log("entrasao")
             metadata = {
               balance: 0,
+              percentage: 0,
               cryptos: [],
               chart: ''
             }
@@ -942,6 +945,9 @@ export default {
             console.log(metadata.balance)
             
             totalBalance += metadata.balance;
+            totalPercentage += avg
+            totalValue += avgUsd
+
             let percentage = (metadata.balance / totalBalance) * 100
             firtsArray.push({ id: portfolios[i].id, name: portfolios[i].name, balance: metadata.balance, price_change_percentage: avg, value_usd: avgUsd })
             // arrayPortfolios.push({ name: portfolios[i].name, balance: metadata.balance })
@@ -954,10 +960,12 @@ export default {
 
             let metadataArray = {
               totalBalance: 0,
+              totalPercetage: 0,
+              totalValue: 0,
               portfolios: []
             }
 
-            metadataArray = { totalBalance, portfolios: arrayPortfolios }
+            metadataArray = { totalBalance, totalPercentage, totalValue, portfolios: arrayPortfolios }
 
             console.log(metadataArray)
 

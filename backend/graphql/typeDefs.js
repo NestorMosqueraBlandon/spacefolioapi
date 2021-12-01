@@ -57,6 +57,8 @@ type Crypto{
 
 type PortfolioData {
     totalBalance: String
+    totalPercentage: String
+    totalValue: String
     portfolios : [Portfolio]
 }
 
