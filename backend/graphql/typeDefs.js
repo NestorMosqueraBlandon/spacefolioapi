@@ -3,10 +3,10 @@ const typeDefs = `
 type Query{
     users: [User]
     getUserInfo: User
-    coinList(page: String): [Coin]
+    coinList(page: String, search: String, order: String): [Coin]
     newsList(page:String): [New]
     coinMarket(coinId: String): Data
-    exchangeList(page: String): [Exchange]
+    exchangeList(page: String, search: String): [Exchange]
     walletsList: [Wallet]
     exchangeListAvailable: [Wallet]
     fiatList: [Fiat]
@@ -94,7 +94,7 @@ type User{
 }
 
 type Exchange{
-    id: String
+    coin_id: String
     name: String
     image: String
     year_established: String

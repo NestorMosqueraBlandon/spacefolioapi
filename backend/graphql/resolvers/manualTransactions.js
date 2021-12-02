@@ -17,24 +17,24 @@ const client = new Client({
 const CoinGeckoClient = new CoinGecko();
 export default {
   Query: {
-    async coinList(_, {page}) {
+    async coinList(_, {page, search, order}) {
       try {        
 
-        const {data} = await CoinGeckoClient.coins.markets({page: page? page: 1, per_page: 50});       
-        return data
+        if(search != "")
+        {
+          const {data} = await CoinGeckoClient.coins.list();
+          const newData = await data.filter((d) => d.name.toLowerCase().includes(search.toLowerCase()) || d.symbol.toLowerCase().includes(search.toLowerCase()))  
+          const {data: marketData} = await CoinGeckoClient.coins.markets({ids: newData.map((d) => d.id), page: page? page: 2, per_page: 100});   
+    
+          return marketData
+        }else{
+          const {data} = await CoinGeckoClient.coins.markets({page: page? page: 1, per_page: 50, order: order});       
+          return data
+        }
 
       } catch (err) {
         throw new Error(err);
       }
-    },
-
-    async coinListSearch(_, {page, search})
-    {
-      const {data} = await CoinGeckoClient.coins.list();
-      const newData = await data.filter((d) => d.name.toLowerCase().includes(search.toLowerCase()))
-      const {data: marketData} = await CoinGeckoClient.coins.markets({ids: newData.map((d) => d.id), page: page? page: 2, per_page: 100});   
-
-      return marketData
     },
     
     async coinMarket(_, {coinId}) {
@@ -65,13 +65,33 @@ export default {
       }
     },
 
-    async exchangeList(_, {page}) {
+    async exchangeList(_, {page, search}) {
       try {
-        const exchangev3 = await client.exchanges({page:page? page: 1, per_page:50})
 
-        return exchangev3;
+        if(search != "")
+        {
+          let exchanges = []
+          const data = await client.exchangeList();
+          const newData = await data.filter((d) => d.name.toLowerCase().includes(search.toLowerCase()) || d.id.toLowerCase().includes(search.toLowerCase()))  
+
+          for(let i=0; i < newData.length; i++)
+          {
+            const {coinId, name, image, year_established, url, trust_score_rank, trade_volume_24h_btc} = await client.exchangeId(newData[i].id)
+            exchanges.push({coinId, name, image, year_established, url, trust_score_rank, trade_volume_24h_btc})
+          }
+          
+          // const b = await client.exchangeId("binance")
+          // console.log(b)
+          // console.log(exchanges)
+                    
+          return exchanges
+        }else{
+          const exchangev3 = await client.exchanges({page:page? page: 1, per_page:50})
+          return exchangev3;
+        }
+
       } catch (err) {
-        throw new Error(err);
+        console.log(err)
       }
     },
 
