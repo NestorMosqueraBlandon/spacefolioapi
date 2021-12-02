@@ -24,7 +24,7 @@ export default {
         {
           const {data} = await CoinGeckoClient.coins.list();
           const newData = await data.filter((d) => d.name.toLowerCase().includes(search.toLowerCase()) || d.symbol.toLowerCase().includes(search.toLowerCase()))  
-          const {data: marketData} = await CoinGeckoClient.coins.markets({ids: newData.map((d) => d.id), page: page? page: 2, per_page: 100});   
+          const {data: marketData} = await CoinGeckoClient.coins.markets({ids: newData.map((d) => d.id), page: page? page: 1, per_page: 100});   
     
           return marketData
         }else{
