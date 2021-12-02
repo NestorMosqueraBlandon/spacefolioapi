@@ -94,7 +94,6 @@ type User{
 }
 
 type Exchange{
-    coin_id: String
     name: String
     image: String
     year_established: String

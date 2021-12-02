@@ -76,8 +76,8 @@ export default {
 
           for(let i=0; i < newData.length; i++)
           {
-            const {coinId, name, image, year_established, url, trust_score_rank, trade_volume_24h_btc} = await client.exchangeId(newData[i].id)
-            exchanges.push({coinId, name, image, year_established, url, trust_score_rank, trade_volume_24h_btc})
+            const {name, image, year_established, url, trust_score_rank, trade_volume_24h_btc} = await client.exchangeId(newData[i].id)
+            exchanges.push({name, image, year_established, url, trust_score_rank, trade_volume_24h_btc})
           }
           
           // const b = await client.exchangeId("binance")
