@@ -49,13 +49,13 @@ const convertValue = async (amount, symbol) => {
 export default {
   Query: {
 
-    async coinGlobal(_, {}){
-      const {data} = await CoinGeckoClient.global()
-      const {data: { active_cryptocurrencies, markets, total_market_cap, total_volume, market_cap_change_percentage_24h_usd}} = data
-      
+    async coinGlobal(_, { }) {
+      const { data } = await CoinGeckoClient.global()
+      const { data: { active_cryptocurrencies, markets, total_market_cap, total_volume, market_cap_change_percentage_24h_usd } } = data
+
       console.log(data.data)
 
-      return {active_cryptocurrencies, markets, total_market_cap: total_market_cap.usd, total_volume: total_volume.usd, market_cap_change_percentage_24h_usd }
+      return { active_cryptocurrencies, markets, total_market_cap: total_market_cap.usd, total_volume: total_volume.usd, market_cap_change_percentage_24h_usd }
     },
 
     async coinList(_, { page, search, order }) {
@@ -67,10 +67,20 @@ export default {
           const newData = await data.filter((d) => d.name.toLowerCase().includes(search.toLowerCase()) || d.symbol.toLowerCase().includes(search.toLowerCase()))
 
           let dataMarket = [];
-          for (let i = 0; i < 100; i++) {
-            dataMarket.push(newData[i + ((page - 1) * 100)].id)
+          if (newData.length > 100) {
+
+            for (let i = 0; i < 100; i++) {
+              console.log(i + "-" + newData[i + ((page - 1) * 100)].id)
+              dataMarket.push(newData[i + ((page - 1) * 100)].id)
+            }
+          } else {
+            for (let i = 0; i < newData.length; i++) {
+              console.log(i + "-" + newData[i + ((page - 1) * 100)].id)
+              dataMarket.push(newData[i + ((page - 1) * 100)].id)
+            }
           }
 
+          console.log(dataMarket)
           const { data: marketData } = await CoinGeckoClient.coins.markets({ ids: dataMarket, per_page: 100 });
           return marketData
         } else {
