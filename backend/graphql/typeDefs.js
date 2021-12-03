@@ -3,6 +3,7 @@ const typeDefs = `
 type Query{
     users: [User]
     getUserInfo: User
+    coinGlobal: Global
     coinList(page: String, search: String, order: String): [Coin]
     newsList(page:String): [New]
     coinMarket(coinId: String): Data
@@ -20,6 +21,13 @@ type Query{
     coinListSearch(page: String, search: String) :  [Coin]
 }
 
+type Global{
+    active_cryptocurrencies: String
+    markets: String
+    total_market_cap: String
+    total_volume: String
+    market_cap_change_percentage_24h_usd: String
+}
 type New{
     feedDate: String
     title: String

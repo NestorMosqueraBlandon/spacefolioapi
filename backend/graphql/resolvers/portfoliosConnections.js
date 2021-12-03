@@ -615,10 +615,8 @@ export default {
       const user = checkAuth(context);
       const userData = await User.findById(user._id)
       const portfolios = userData.portfolios;
-      try 
-      {
-        if (!portfolios) 
-        {
+      try {
+        if (!portfolios) {
           throw new Error(701)
         }
 
@@ -628,8 +626,7 @@ export default {
         let totalPercentage = 0;
         let totalValue = 0;
 
-        for (let i = 0; i < portfolios.length; i++) 
-        {
+        for (let i = 0; i < portfolios.length; i++) {
           let metadata = {}
           let walletCoins = []
           let walletCoinMarket = []
@@ -647,35 +644,52 @@ export default {
           const coinList = await CoinGeckoClient.coins.list();
           let query;
 
-          if (portfolios[i].wallets.length > 0 && getInternalData === false)  
-          {
-            for (let j = 0; j < portfolios[i].wallets.length; j++) 
-            {
-              if (portfolios[i].wallets[j].network == "cardano") 
-              {
-                 query = `
-                 query {
-                  cardano{
-                    address(address: {in: 
-                      "${portfolios[i].wallets[j].address}",
-                      }){
-                      balance {
-                        currency {
-                          name
-                          symbol
-                          tokenId
-                        }
-                        value
+          if (portfolios[i].wallets.length > 0 && getInternalData === false) {
+            switch (portfolios[i].wallets[j].network) {
+              case "cardano":
+                query = `
+                query {
+                 cardano{
+                   address(address: {in: 
+                     "${portfolios[i].wallets[j].address}",
+                     }){
+                     balance {
+                       currency {
+                         name
+                         symbol
+                         tokenId
+                       }
+                       value
+                     }
+                     
+                   }
+                 }
+               }
+               
+             `
+                break;
+              case "bitcoin" || "bitcash" || "litecoin" || "dash" || "dogecoin" || "bitcoinsv" || "zcash":
+                query = `  
+              query ($network: BitcoinNetwork!,) {
+                  bitcoin(network: $network) {
+                    coinpath(initialAddress: {in: "${portfolios[i].wallets[j].address}"}) {
+                      currency {
+                        address
+                        decimals
+                        name
+                        symbol
+                        tokenId
+                        tokenType
                       }
-                      
+                      amount
+                      count
                     }
                   }
                 }
                 
-              `
-              }
-              else 
-              {
+                `
+                break;
+              case "ethereum" || "bsc" || "velas" || "matic" || "goerlic":
                 query = `
                 query ($network: EthereumNetwork!, $address: String!) {
                   ethereum(network: $network) {
@@ -695,7 +709,101 @@ export default {
                 }
      
                 `;
-              }
+                break;
+              case "eos":
+                `
+                query {
+                  eos(network: eos) {
+                    coinpath(initialAddress: {in: "${portfolios[i].wallets[j].address}"}) {
+                      currency {
+                        address
+                        name
+                        symbol
+                        tokenType
+                      }
+                      amount
+                    }
+                  }
+                }`
+                
+                break;
+              case "tron":
+               query = `
+                query {
+                  tron(network: tron) {
+                    coinpath(initialAddress: {in: "${portfolios[i].wallets[j].address}"}) {
+                      amount
+                      count
+                      currency {
+                        address
+                        name
+                        symbol
+                        tokenId
+                      }
+                    }
+                  }
+                }
+                `
+                 break; 
+              case "algoran":
+                `
+                query {
+                  algorand(network: algorand) {
+                    coinpath(initialAddress: {in: "${portfolios[i].wallets[j].address}"}) {
+                      currency {
+                        address
+                        name
+                        symbol
+                        tokenType
+                      }
+                      count
+                      amount
+                    }
+                  }
+                }
+                `
+                 break;
+                 case "binance":
+                  `
+                  query  {
+                    binance {
+                      coinpath(initialAddress: {in: "${portfolios[i].wallets[j].address}"}) {
+                        amount
+                        count
+                        currency {
+                          address
+                          name
+                          symbol
+                          tokenType
+                        }
+                      }
+                    }
+                  }
+                  
+                  `  
+                  case "elrond":
+                    `
+                    query {
+                      elrond(network: elrond) {
+                        coinpath(initialAddress: {in: "${portfolios[i].wallets[j].address}"}) {
+                          amount
+                          currency {
+                            address
+                            name
+                            symbol
+                            tokenType
+                          }
+                        }
+                      }
+                    }
+                    `
+                    
+                    break;
+              default:
+                break;
+            }
+            for (let j = 0; j < portfolios[i].wallets.length; j++) {
+       
               const variables = `
                       {
                       "network": "${portfolios[i].wallets[j].network}",
@@ -768,7 +876,7 @@ export default {
 
               for (let j = 0; j < portfolios[i].wallets.length; j++) {
                 if (portfolios[i].exchanges[j].network === "binance") {
- 
+
                   const client = new MainClient({
                     api_key: portfolios[i].exchanges[j].apiKey,
                     api_secret: portfolios[i].exchanges[j].apiSecret,
@@ -836,7 +944,7 @@ export default {
                   let portfolioTokens = [];
                   let newToken = {}
 
-         
+
 
                   myClient.getAccounts({}, async (err, accounts) => {
                     accounts.forEach(async (acct) => {
@@ -888,96 +996,94 @@ export default {
 
           }
 
-      
-                metadata = {
-                  balance: 0,
-                  percentage: 0,
-                  cryptos: [],
-                  chart: ''
-                }
+
+          metadata = {
+            balance: 0,
+            percentage: 0,
+            cryptos: [],
+            chart: ''
+          }
 
 
-                metadata.cryptos = from(portfolioTokens).groupBy(tokens => tokens.symbol, null, (key, t) => {
-                  return {
-                    symbol: key,
-                    coinId: t.first().coinId,
-                    quantity: t.sum(token => token["quantity"] || 0),
-                    name: t.first().name,
-                    image: t.first().large,
-                    valueMarket: t.first().usd,
-                    value: t.sum(token => token["quantity"]) * t.first().usd,
+          metadata.cryptos = from(portfolioTokens).groupBy(tokens => tokens.symbol, null, (key, t) => {
+            return {
+              symbol: key,
+              coinId: t.first().coinId,
+              quantity: t.sum(token => token["quantity"] || 0),
+              name: t.first().name,
+              image: t.first().large,
+              valueMarket: t.first().usd,
+              value: t.sum(token => token["quantity"]) * t.first().usd,
 
-                    value_usd_24h: (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h),
+              value_usd_24h: (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h),
 
-                    value_usd_7d: (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? token["quantity"] * t.first().usd * t.first().price_change_percentage_24h / 100 : (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100,
+              value_usd_7d: (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? token["quantity"] * t.first().usd * t.first().price_change_percentage_24h / 100 : (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100,
 
-                    value_usd_30d: (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h) : (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 : (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100,
+              value_usd_30d: (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h) : (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 : (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100,
 
-                    value_usd_1y: (t.first().price_change_percentage_1y * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h) : (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_7d) : (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 : (t.first().price_change_percentage_1y * (t.sum(token => token["quantity"]) * t.first().usd)) / 100,
+              value_usd_1y: (t.first().price_change_percentage_1y * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h) : (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_7d) : (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 : (t.first().price_change_percentage_1y * (t.sum(token => token["quantity"]) * t.first().usd)) / 100,
 
-                    price_change_percentage_24h: (100 / (t.sum(token => token["quantity"]) * t.first().usd)) * (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h),
+              price_change_percentage_24h: (100 / (t.sum(token => token["quantity"]) * t.first().usd)) * (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h),
 
-                    price_change_percentage_7d: (100 / (t.sum(token => token["quantity"]) * t.first().usd)) * (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_7d) == 0 ? (100 / (t.sum(token => token["quantity"]) * t.first().usd)) * (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h) : (100 / (t.sum(token => token["quantity"]) * t.first().usd)) * (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_7d),
+              price_change_percentage_7d: (100 / (t.sum(token => token["quantity"]) * t.first().usd)) * (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_7d) == 0 ? (100 / (t.sum(token => token["quantity"]) * t.first().usd)) * (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h) : (100 / (t.sum(token => token["quantity"]) * t.first().usd)) * (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_7d),
 
-                    price_change_percentage_30d: (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h) : (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 : (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100,
+              price_change_percentage_30d: (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h) : (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 : (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100,
 
-                    price_change_percentage_1y: (t.first().price_change_percentage_1y * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h) : (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_7d) : (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 : (t.first().price_change_percentage_1y * (t.sum(token => token["quantity"]) * t.first().usd)) / 100,
-                  };
-                }).toArray()
+              price_change_percentage_1y: (t.first().price_change_percentage_1y * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h) : (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_7d) : (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 : (t.first().price_change_percentage_1y * (t.sum(token => token["quantity"]) * t.first().usd)) / 100,
+            };
+          }).toArray()
 
 
-                metadata.cryptos = metadata.cryptos.filter((crypto) => crypto.symbol != undefined)
-                metadata.balance = metadata.cryptos.reduce((a, c) => a + c.value * 1, 0)
+          metadata.cryptos = metadata.cryptos.filter((crypto) => crypto.symbol != undefined)
+          metadata.balance = metadata.cryptos.reduce((a, c) => a + c.value * 1, 0)
 
-                let sumPercentage = metadata.cryptos.reduce((a, c) => a + c.price_change_percentage_30d * 1, 0)
-                let sumPercentageUsd = metadata.cryptos.reduce((a, c) => a + c.value_usd_7d * 1, 0)
+          let sumPercentage = metadata.cryptos.reduce((a, c) => a + c.price_change_percentage_30d * 1, 0)
+          let sumPercentageUsd = metadata.cryptos.reduce((a, c) => a + c.value_usd_7d * 1, 0)
 
-                let avg = metadata.cryptos.length > 0? sumPercentage / metadata.cryptos.length : 0;
-                let avgUsd = metadata.cryptos.length > 0? sumPercentageUsd / metadata.cryptos.length : 0;
+          let avg = metadata.cryptos.length > 0 ? sumPercentage / metadata.cryptos.length : 0;
+          let avgUsd = metadata.cryptos.length > 0 ? sumPercentageUsd / metadata.cryptos.length : 0;
 
-    
-                
 
-                totalBalance += metadata.balance;
-                totalPercentage += avg
-                totalValue += avgUsd
 
-                firtsArray.push({ id: portfolios[i].id, name: portfolios[i].name, balance: metadata.balance, price_change_percentage: avg, value_usd: avgUsd })
-                // arrayPortfolios.push({ name: portfolios[i].name, balance: metadata.balance })
-              }
-              if (getInternalData === false) 
-              {
-  
 
-                for (let k = 0; k < portfolios.length; k++) {
-     
-                  let percentage = (firtsArray[k].balance / totalBalance) * 100
-                  arrayPortfolios.push({ id: firtsArray[k].id, name: firtsArray[k].name, balance: firtsArray[k].balance, price_change_percentage: firtsArray[k].price_change_percentage, percentage, value_usd: firtsArray[k].value_usd })
-                }
+          totalBalance += metadata.balance;
+          totalPercentage += avg
+          totalValue += avgUsd
 
-                let metadataArray = {
-                  totalBalance: 0,
-                  totalPercetage: 0,
-                  totalValue: 0,
-                  portfolios: []
-                }
+          firtsArray.push({ id: portfolios[i].id, name: portfolios[i].name, balance: metadata.balance, price_change_percentage: avg, value_usd: avgUsd })
+          // arrayPortfolios.push({ name: portfolios[i].name, balance: metadata.balance })
+        }
+        if (getInternalData === false) {
 
-                metadataArray = { totalBalance, totalPercentage, totalValue, portfolios: arrayPortfolios }
 
-             
-          
+          for (let k = 0; k < portfolios.length; k++) {
 
-                return metadataArray;
-            } else 
-            {
-                  let metadataArray = {
-                  totalBalance: 0,
-                  portfolios: []
-                }
+            let percentage = (firtsArray[k].balance / totalBalance) * 100
+            arrayPortfolios.push({ id: firtsArray[k].id, name: firtsArray[k].name, balance: firtsArray[k].balance, price_change_percentage: firtsArray[k].price_change_percentage, percentage, value_usd: firtsArray[k].value_usd })
+          }
 
-                metadataArray = { portfolios }
-                return metadataArray
-            }
+          let metadataArray = {
+            totalBalance: 0,
+            totalPercetage: 0,
+            totalValue: 0,
+            portfolios: []
+          }
+
+          metadataArray = { totalBalance, totalPercentage, totalValue, portfolios: arrayPortfolios }
+
+
+
+
+          return metadataArray;
+        } else {
+          let metadataArray = {
+            totalBalance: 0,
+            portfolios: []
+          }
+
+          metadataArray = { portfolios }
+          return metadataArray
+        }
 
       } catch (err) {
         console.log(err)
@@ -1099,10 +1205,6 @@ export default {
 
         }
 
-        // 0x9dF2fe92B91105adE1266f57de548346E9b4009a
-
-        console.log(wallets)
-
         wallets.tokens.forEach((token) => {
           walletCoins.push(...coinList.data.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol.toLowerCase()))
         })
@@ -1115,20 +1217,13 @@ export default {
           walletCoinMarket.push({ coinId, symbol, name, large, platforms, contract_address, usd, price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y })
         }
 
-        // console.log(walletCoinMarket)
-
 
         wallets.tokens.forEach((token) => {
           let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...walletCoinMarket.filter((coin) => (token.currency.tokenType == '' || !token.currency.tokenType && token.currency.tokenId == null) && token.currency.symbol.toLowerCase() == coin.symbol ? coin : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
-          // console.log("arrayresult", arrayResult)
           portfolioTokens.push(arrayResult)
-          // newCoinsWallet = walletCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
         })
 
-        console.log(portfolioTokens)
 
-        // coin.contract_address == undefined || token.currency.symbol.toLowerCase() === coin.contract_address.toLowerCase()? coin :
-        // console.log(portfolioTokens)
       }
 
       if (portfolio.exchanges.length > 0) {
@@ -1185,9 +1280,6 @@ export default {
               exchangePortfolioTokens.forEach((token) => {
                 let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...exchangeCoinMarket.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol))
                 newExchangesTokens.push(arrayResult)
-                // newCoins = exchangeCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
-
-
                 newExchangesTokens.sort((a, c) => a.coingecko_rank - c.coingecko_rank)
 
                 portfolioTokens.push(arrayResult)
@@ -1196,33 +1288,6 @@ export default {
 
 
               portfolioTokens.push(exchangePortfolioTokens)
-              // metadata.tokens.push(from(newExchangesTokens).groupBy(tokens => tokens.symbol, null, (key, t) => {
-              //   return {
-              //     symbol: key,
-              //     coinId: t.first().coinId,
-              //     quantity: t.sum(token => token["quantity"] || 0),
-              //     name: t.first().name,
-              //     image: t.first().large,
-              //     valueMarket: t.first().usd,
-              //     value: t.sum(token => token["quantity"]) * t.first().usd,
-
-              //     value_usd_24h: (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h),
-
-              //     value_usd_7d: (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? token["quantity"] * t.first().usd * t.first().price_change_percentage_24h / 100 : (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100,
-
-              //     value_usd_30d: (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h) : (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 : (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100,
-
-              //     value_usd_1y: (t.first().price_change_percentage_1y * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h) : (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_7d) : (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 : (t.first().price_change_percentage_1y * (t.sum(token => token["quantity"]) * t.first().usd)) / 100,
-
-              //     price_change_percentage_24h: (100 / (t.sum(token => token["quantity"]) * t.first().usd)) * (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h),
-
-              //     price_change_percentage_7d: (100 / (t.sum(token => token["quantity"]) * t.first().usd)) * (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_7d) == 0 ? (100 / (t.sum(token => token["quantity"]) * t.first().usd)) * (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h) : (100 / (t.sum(token => token["quantity"]) * t.first().usd)) * (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_7d),
-
-              //     price_change_percentage_30d: (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h) : (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 : (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100,
-
-              //     price_change_percentage_1y: (t.first().price_change_percentage_1y * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h) : (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_7d) : (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 : (t.first().price_change_percentage_1y * (t.sum(token => token["quantity"]) * t.first().usd)) / 100,
-              //   };
-              // }).toArray())
             }
 
             if (portfolio.exchanges[j].network === "coinbase") {
@@ -1274,7 +1339,6 @@ export default {
               portfolioTokens.forEach((token) => {
                 let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...exchangeCoinMarket.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol))
                 newExchangesTokens.push(arrayResult)
-                // newCoins = exchangeCoinMarket.filter((coin) => coin.symbol.toLowerCase() == token.currency.symbol.toLowerCase())
 
                 portfolioTokens.push(arrayResult)
 

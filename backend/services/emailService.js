@@ -50,7 +50,7 @@ export const sendResetPassword = async (user) => {
     // const token = await jwt.sign({_id}, config.JWT_ACC_ACTIVATE, { expiresIn: '20m' });
 
     const token = otpCode;
-    const url =  `${config.CLIENT_URL}/resetpassword/${token}`;
+    const url =  `spacefolio.com/resetpassword/${token}`;
 
     console.log(email);
     const data = {
