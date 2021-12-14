@@ -25,12 +25,12 @@ const userSchema = new mongoose.Schema({
                     quantity: String,
                     tokens: [
                         {
-                            currency: {
-                                address: String,
-                                symbol: String,
-                                name: String
-                            },
-                            value: Number
+                            coinId: String,
+                            quantity: Number,
+                            symbol:String,
+                            address: String,
+                            apiSymbol: String
+
                         }
                     ]
                 },

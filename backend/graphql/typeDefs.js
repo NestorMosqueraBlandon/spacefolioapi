@@ -376,7 +376,7 @@ type Mutation{
     updatePortfolio(portfolioId: ID!, name: String, coinBlacklist: String) : String!
     deleteCoinBlackList(portfolioId: ID!, coinBlacklistId: ID): String
     addWalletConnection(name: String, portfolioId: String, publicAddress: String, network: String, image: String): String
-    updateWalletConnection(name: String, portfolioId: String!, walletId: String, active : String): String
+    updateWalletConnection(name: String, portfolioId: String, walletId: String, active : String): String
     updateExchangeConnection(name: String, portfolioId: String!, exchangeId: String, active: String): String
     deleteWalletConnection(portfolioId: String, walletId: String!): String
     deleteExchangeConnection(portfolioId: String, exchangeId: String!): String
