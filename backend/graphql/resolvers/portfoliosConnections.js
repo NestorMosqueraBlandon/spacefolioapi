@@ -1729,6 +1729,106 @@ export default {
         console.log(err)
       }
     },
+
+    async updateDataConection(_,  {portfolioId, walletId}, context){
+
+      const user = checkAuth(context);
+
+      let walletCoins = []
+      let walletCoinMarket = []
+      let marketDataCryptos = []
+
+
+      if (walletId == "") {
+
+
+
+      } else {
+
+        try {
+          const userData = await User.findById(user._id)
+
+          if (!userData) {
+            throw new Error(701)
+          }
+
+          const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
+
+          const portfolio = userData.portfolios[portfolioIde];
+          if (portfolio) {
+
+            const wallet = userData.portfolios[portfolioIde].wallets.findIndex(wallet => wallet.id === walletId)
+            const walletApi = await walletsRequests(userData.portfolios[portfolioIde].wallets[wallet].address, userData.portfolios[portfolioIde].wallets[wallet].network)
+
+            console.log(walletApi.tokens)
+            let newCryptos = {
+              tokens: []
+            };
+
+            walletApi.tokens.pop();
+
+            let equals = -1;
+
+            for (let index = 0; index < walletApi.tokens.length; index++) {
+              for (let j = 0; j < userData.portfolios[portfolioIde].wallets[wallet].tokens.length; j++) {
+                if (walletApi.tokens[index].currency.symbol.toLowerCase() == userData.portfolios[portfolioIde].wallets[wallet].tokens[j].apiSymbol) {
+                  equals++
+                }
+              }
+            }
+
+            if(equals != walletApi.tokens.length -1){
+              let walletRestore = [];
+              for (var i = 0; i < userData.portfolios[portfolioIde].wallets[wallet].tokens.length; i++) {
+                for (var j = 0; j < walletApi.tokens.length; j++) {
+                  if (userData.portfolios[portfolioIde].wallets[wallet].tokens[i].apiSymbol === walletApi.tokens[j].currency.symbol.toLowerCase()) {
+                    walletRestore.push(userData.portfolios[portfolioIde].wallets[wallet].tokens[i]);
+                    break;
+                  }
+                }
+              }
+
+              userData.portfolios[portfolioIde].wallets[wallet].tokens = walletRestore
+
+
+              walletApi.tokens.map((walletApiValue) => {
+                try {
+                  from(userData.portfolios[portfolioIde].wallets[wallet].tokens).where((walletDbValue) => walletApiValue.currency.symbol.toLowerCase() == walletDbValue.apiSymbol).first()
+                } catch (err) {
+
+                  newCryptos.tokens.push(walletApiValue);
+                  console.log("ADD", walletApiValue)
+                }
+              })
+
+              let marketDataCryptos = await coingeckoRequests(0, newCryptos)
+              marketDataCryptos.map((value, index) => {
+                userData.portfolios[portfolioIde].wallets[wallet].tokens.push({ coinId: value.coinId, quantity: newCryptos.tokens[index].value, symbol: newCryptos.tokens[index].currency.symbol });
+              })
+
+            }
+
+            for (let index = 0; index < walletApi.tokens.length; index++) {
+              for (let j = 0; j < userData.portfolios[portfolioIde].wallets[wallet].tokens.length; j++) {
+                if (walletApi.tokens[index].currency.symbol.toLowerCase() == userData.portfolios[portfolioIde].wallets[wallet].tokens[j].apiSymbol && walletApi.tokens[index].value != userData.portfolios[portfolioIde].wallets[wallet].tokens[j].quantity) {
+                  userData.portfolios[portfolioIde].wallets[wallet].tokens[j].quantity = walletApi.tokens[index].value;
+                }
+              }
+            }
+
+            await userData.save();
+
+            return 200;
+          }
+
+
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+
+    },
     async updateWalletConnection(_, { name, portfolioId, walletId, active, all }, context) {
 
 
