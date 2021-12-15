@@ -1730,7 +1730,7 @@ export default {
       }
     },
 
-    async updateDataConection(_,  {portfolioId, walletId}, context){
+    async updateDataConection(_,  {portfolioId, walletId, exchangeId}, context){
 
       const user = checkAuth(context);
 

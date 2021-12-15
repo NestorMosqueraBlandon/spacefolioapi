@@ -384,7 +384,7 @@ type Mutation{
     handlePayment(email: String): String
     cancelSubscription(subscriptionId: String): String
     deleteUser(userId: String): String
-    updateDataConection(portfolioId: String, walletId: String): String
+    updateDataConection(portfolioId: String, walletId: String, exchangeId: String): String
 }
 
 type Subscription{
