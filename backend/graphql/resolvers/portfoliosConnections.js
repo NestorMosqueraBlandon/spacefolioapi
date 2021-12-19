@@ -1352,7 +1352,7 @@ export default {
 
          
         }
-        if (getInternalData === false) {
+        if (getInternalData == false) {
 
           metadata = {
             balance: 0,
