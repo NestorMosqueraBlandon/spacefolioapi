@@ -1350,6 +1350,10 @@ export default {
           }
 
 
+         
+        }
+        if (getInternalData === false) {
+
           metadata = {
             balance: 0,
             percentage: 0,
@@ -1405,8 +1409,6 @@ export default {
 
           firtsArray.push({ id: portfolios[i].id, name: portfolios[i].name, balance: metadata.balance, price_change_percentage: avg, value_usd: avgUsd })
           // arrayPortfolios.push({ name: portfolios[i].name, balance: metadata.balance })
-        }
-        if (getInternalData === false) {
 
 
           for (let k = 0; k < portfolios.length; k++) {
