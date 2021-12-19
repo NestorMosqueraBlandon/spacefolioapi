@@ -407,7 +407,7 @@ const coingeckoRequests = async (type, cryptos) => {
 
   cryptos.tokens.forEach((token) => {
     if (type == 0) {
-      
+
       let arrayResult = Object.assign({ quantity: token.value, apiSymbol: token.currency.symbol.toLowerCase() }, ...cryptosCoinMarket.filter((coin) => (token.currency.tokenType == '' || !token.currency.tokenType && token.currency.tokenId == null) && token.currency.symbol.toLowerCase() == coin.symbol ? coin : from(Object.values(coin.platforms)).where(platform => platform == token.currency.address).firstOrDefault()))
       portfolioTokens.push(arrayResult)
     } else {
@@ -511,7 +511,7 @@ const updateCryptos = async (databaseItems, apiItems, portfolioIde, userData) =>
 }
 
 const compare = async (apiObject, databaseObject) => {
-  
+
   apiObject.map((o) => {
     databaseObject.includes(o)
   })
@@ -1471,9 +1471,9 @@ export default {
 
 
             portfolio.wallets[j].tokens.forEach((token) => {
-              // console.log("TOOKENS", token.coinId)
+              console.log("TOOKENS", token.coinId)
               let arrayResult = Object.assign({ quantity: token.quantity }, ...walletCoinMarket.filter((coin) => token.coinId == coin.coinId))
-              // console.log("ARRRAYS", arrayResult)
+              console.log("ARRRAYS", arrayResult)
               portfolioTokens.push(arrayResult)
             })
           }
@@ -1482,124 +1482,119 @@ export default {
       }
 
 
+      const coinList = await CoinGeckoClient.coins.list();
 
-      // if (portfolio.exchanges.length > 0) {
-      //   for (let j = 0; j < portfolio.exchanges.length; j++) {
-      //     if (portfolio.exchanges[j].network === "binance") {
-      //       const client = new MainClient({
-      //         api_key: portfolio.exchanges[j].apiKey,
-      //         api_secret: portfolio.exchanges[j].apiSecret,
-      //       });
+      if (portfolio.exchanges.length > 0) {
+        for (let j = 0; j < portfolio.exchanges.length; j++) {
+          if (portfolio.exchanges[j].network === "binance") {
+            const client = new MainClient({
+              api_key: portfolio.exchanges[j].apiKey,
+              api_secret: portfolio.exchanges[j].apiSecret,
+            });
 
-      //       const data = await client.getBalances();
+            const data = await client.getBalances();
 
-      //       const tokens = data.filter((token) => token.free > 0)
+            const tokens = data.filter((token) => token.free > 0)
 
-      //       let exchangePortfolioTokens = [];
-      //       let newToken = {}
+            let exchangePortfolioTokens = [];
+            let newToken = {}
 
-      //       tokens.map((token) => {
-      //         newToken = {}
-      //         newToken.value = Number(token.free)
-      //         newToken.currency = {
-      //           symbol: token.coin,
-      //           name: token.name
-      //         }
-      //         exchangePortfolioTokens.unshift(newToken)
-      //       })
-
-
-      //       let exchangeCoins = []
-      //       let exchangeCoinMarket = []
+            tokens.map((token) => {
+              newToken = {}
+              newToken.value = Number(token.free)
+              newToken.currency = {
+                symbol: token.coin,
+                name: token.name
+              }
+              exchangePortfolioTokens.unshift(newToken)
+            })
 
 
-      //       exchangePortfolioTokens.forEach((token) => {
-      //         exchangeCoins.push(...coinList.data.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol.toLowerCase()))
-      //       })
-
-      //       for (let i = 0; i < exchangeCoins.length; i++) {
-      //         const { data } = await CoinGeckoClient.coins.fetch(exchangeCoins[i].id)
-      //         const { symbol, name, image: { large }, contract_address, market_data: { current_price: { usd } }, coingecko_rank, market_data: { price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y } } = data
-      //         exchangeCoinMarket.push({ symbol, name, large, contract_address, usd, coingecko_rank, price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y })
-      //       }
-
-      //       let newCoins;
-      //       let newExchangesTokens = [];
-
-      //       exchangePortfolioTokens.forEach((token) => {
-      //         let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...exchangeCoinMarket.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol))
-      //         newExchangesTokens.push(arrayResult)
-      //         newExchangesTokens.sort((a, c) => a.coingecko_rank - c.coingecko_rank)
-
-      //         portfolioTokens.push(arrayResult)
-      //       })
+            let exchangeCoins = []
+            let exchangeCoinMarket = []
 
 
+            exchangePortfolioTokens.forEach((token) => {
+              exchangeCoins.push(...coinList.data.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol.toLowerCase()))
+            })
 
-      //       portfolioTokens.push(exchangePortfolioTokens)
-      //     }
+            for (let i = 0; i < exchangeCoins.length; i++) {
+              const { data } = await CoinGeckoClient.coins.fetch(exchangeCoins[i].id)
+              const { symbol, name, image: { large }, contract_address, market_data: { current_price: { usd } }, coingecko_rank, market_data: { price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y } } = data
+              exchangeCoinMarket.push({ symbol, name, large, contract_address, usd, coingecko_rank, price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y })
+            }
 
-      //     if (portfolio.exchanges[j].network === "coinbase") {
-      //       const myClient = new Client({
-      //         'apiKey': portfolio.exchanges[j].apiKey,
-      //         'apiSecret': portfolio.exchanges[j].apiSecret,
-      //         strictSSL: false
-      //       });
-
-      //       let portfolioTokens = [];
-      //       let newToken = {}
-
-      //       myClient.getAccounts({}, (err, accounts) => {
-      //         console.log(accounts)
-      //       })
-
-      //       myClient.getAccounts({}, async (err, accounts) => {
-      //         accounts.forEach(async (acct) => {
-      //           if (acct.balances.amount > 0) {
-      //             newToken = {}
-      //             newToken.value = Number(acct.native_balance.amount)
-      //             newToken.currency = {
-      //               symbol: acct.currency,
-      //               name: acct.name,
-      //               quantity: Number(acct.balance.amount)
-      //             }
-      //             portfolioTokens.unshift(newToken)
-      //           }
-      //         })
-      //       })
-
-      //       let exchangeCoins = []
-      //       let exchangeCoinMarket = []
+            let newCoins;
+            let newExchangesTokens = [];
 
 
-      //       portfolioTokens.forEach((token) => {
-      //         exchangeCoins.push(...coinList.data.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol.toLowerCase()))
-      //       })
-
-      //       for (let i = 0; i < exchangeCoins.length; i++) {
-      //         const { data } = await CoinGeckoClient.coins.fetch(exchangeCoins[i].id)
-      //         const { symbol, name, image: { large }, contract_address, market_data: { current_price: { usd } }, coingecko_rank, market_data: { price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y } } = data
-      //         exchangeCoinMarket.push({ symbol, name, large, contract_address, usd, coingecko_rank, price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y })
-      //       }
-
-      //       let newCoins;
-      //       let newExchangesTokens = [];
-
-      //       portfolioTokens.forEach((token) => {
-      //         let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...exchangeCoinMarket.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol))
-      //         newExchangesTokens.push(arrayResult)
-
-      //         portfolioTokens.push(arrayResult)
-
-      //         newExchangesTokens.sort((a, c) => a.coingecko_rank - c.coingecko_rank)
-      //       })
-
-      //     }
+            exchangePortfolioTokens.forEach((token) => {
+              let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...exchangeCoinMarket.filter((coin) => token.currency.name.toLowerCase() == coin.name.toLowerCase()))
+              newExchangesTokens.sort((a, c) => a.coingecko_rank - c.coingecko_rank)
+              newExchangesTokens.push(arrayResult)
+              portfolioTokens.push(arrayResult)
+            })
 
 
-      // }
+            portfolioTokens.push(exchangePortfolioTokens)
+          }
 
-      // }
+          if (portfolio.exchanges[j].network === "coinbase") {
+            const myClient = new Client({
+              'apiKey': portfolio.exchanges[j].apiKey,
+              'apiSecret': portfolio.exchanges[j].apiSecret,
+              strictSSL: false
+            });
+
+            let portfolioTokens = [];
+            let newToken = {}
+            myClient.getAccounts({}, async (err, accounts) => {
+              accounts.forEach(async (acct) => {
+                if (acct.balances.amount > 0) {
+                  newToken = {}
+                  newToken.value = Number(acct.native_balance.amount)
+                  newToken.currency = {
+                    symbol: acct.currency,
+                    name: acct.name,
+                    quantity: Number(acct.balance.amount)
+                  }
+                  portfolioTokens.unshift(newToken)
+                }
+              })
+            })
+
+            let exchangeCoins = []
+            let exchangeCoinMarket = []
+
+
+            portfolioTokens.forEach((token) => {
+              exchangeCoins.push(...coinList.data.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol.toLowerCase()))
+            })
+
+            for (let i = 0; i < exchangeCoins.length; i++) {
+              const { data } = await CoinGeckoClient.coins.fetch(exchangeCoins[i].id)
+              const { symbol, name, image: { large }, contract_address, market_data: { current_price: { usd } }, coingecko_rank, market_data: { price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y } } = data
+              exchangeCoinMarket.push({ symbol, name, large, contract_address, usd, coingecko_rank, price_change_percentage_24h, price_change_percentage_7d, price_change_percentage_30d, price_change_percentage_1y })
+            }
+
+            let newCoins;
+            let newExchangesTokens = [];
+
+            portfolioTokens.forEach((token) => {
+              let arrayResult = Object.assign({ quantity: token.currency.quantity ? token.currency.quantity : token.value }, ...exchangeCoinMarket.filter((coin) => token.currency.symbol.toLowerCase() == coin.symbol))
+              newExchangesTokens.push(arrayResult)
+
+              portfolioTokens.push(arrayResult)
+
+              newExchangesTokens.sort((a, c) => a.coingecko_rank - c.coingecko_rank)
+            })
+
+          }
+
+
+        }
+
+      }
 
       metadata = {
         balance: 0,
@@ -1615,10 +1610,12 @@ export default {
         chart: ''
       }
 
-      console.log(portfolioTokens)
 
+      portfolioTokens = portfolioTokens.filter((token) => token.name != null)
 
-      metadata.cryptos = from(portfolioTokens).groupBy(tokens => tokens.coinId, null, (key, t) => {
+      // console.log(portfolioTokens)
+
+      metadata.cryptos = from(portfolioTokens).groupBy(tokens => tokens.name, null, (key, t) => {
         return {
           coinId: key,
           symbol: t.first().symbol,
@@ -1630,7 +1627,7 @@ export default {
 
           value_usd_24h: (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h),
 
-          value_usd_7d: (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? token["quantity"] * t.first().usd * t.first().price_change_percentage_24h / 100 : (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100,
+          // value_usd_7d: (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? token["quantity"] * t.first().usd * t.first().price_change_percentage_24h / 100 : (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100,
 
           value_usd_30d: (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 == 0 ? (((t.sum(token => token["quantity"]) * t.first().usd) / 100) * t.first().price_change_percentage_24h) : (t.first().price_change_percentage_7d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100 : (t.first().price_change_percentage_30d * (t.sum(token => token["quantity"]) * t.first().usd)) / 100,
 
@@ -1730,7 +1727,10 @@ export default {
       }
     },
 
-    async updateDataConection(_,  {portfolioId, walletId, exchangeId}, context){
+    async updateDataConection(_, { portfolioId, walletId, exchangeId }, context) {
+
+      // IURpgeQSLGIUMnRilvB62Iev7L2xK8kNUQVoJOb64hR5F6Rh9bA90mBfRDvDl8xc
+      // Bq3t3Ik6s1xLyv4o2WDU6cuiUBWa5PKfhA3TuzIJwbMaoswGk9jcwBj0q6eHO3Ud
 
       const user = checkAuth(context);
 
@@ -1739,7 +1739,7 @@ export default {
       let marketDataCryptos = []
 
 
-      if (walletId == "") {
+      if (walletId == "" && exchangeId == "") {
 
         try {
           const userData = await User.findById(user._id)
@@ -1753,8 +1753,9 @@ export default {
           const portfolio = userData.portfolios[portfolioIde];
           if (portfolio) {
 
+            // CONFIRMAR SI HAY WALLETS
             for (let l = 0; l < userData.portfolios[portfolioIde].wallets.length; l++) {
-              
+
               const wallet = l;
               const walletApi = await walletsRequests(userData.portfolios[portfolioIde].wallets[wallet].address, userData.portfolios[portfolioIde].wallets[wallet].network)
 
@@ -1763,53 +1764,121 @@ export default {
                 tokens: []
               };
 
-            walletApi.tokens.pop();
+              walletApi.tokens.pop();
 
-            let equals = -1;
+              let equals = -1;
 
-            for (let index = 0; index < walletApi.tokens.length; index++) {
-              for (let j = 0; j < userData.portfolios[portfolioIde].wallets[wallet].tokens.length; j++) {
-                if (walletApi.tokens[index].currency.symbol.toLowerCase() == userData.portfolios[portfolioIde].wallets[wallet].tokens[j].apiSymbol) {
-                  equals++
-                }
-              }
-            }
-
-            if(equals != walletApi.tokens.length -1){
-              let walletRestore = [];
-              for (var i = 0; i < userData.portfolios[portfolioIde].wallets[wallet].tokens.length; i++) {
-                for (var j = 0; j < walletApi.tokens.length; j++) {
-                  if (userData.portfolios[portfolioIde].wallets[wallet].tokens[i].apiSymbol === walletApi.tokens[j].currency.symbol.toLowerCase()) {
-                    walletRestore.push(userData.portfolios[portfolioIde].wallets[wallet].tokens[i]);
-                    break;
+              for (let index = 0; index < walletApi.tokens.length; index++) {
+                for (let j = 0; j < userData.portfolios[portfolioIde].wallets[wallet].tokens.length; j++) {
+                  if (walletApi.tokens[index].currency.symbol.toLowerCase() == userData.portfolios[portfolioIde].wallets[wallet].tokens[j].apiSymbol) {
+                    equals++
                   }
                 }
               }
 
-              userData.portfolios[portfolioIde].wallets[wallet].tokens = walletRestore
-
-
-              walletApi.tokens.map((walletApiValue) => {
-                try {
-                  from(userData.portfolios[portfolioIde].wallets[wallet].tokens).where((walletDbValue) => walletApiValue.currency.symbol.toLowerCase() == walletDbValue.apiSymbol).first()
-                } catch (err) {
-
-                  newCryptos.tokens.push(walletApiValue);
-                  console.log("ADD", walletApiValue)
+              if (equals != walletApi.tokens.length - 1) {
+                let walletRestore = [];
+                for (var i = 0; i < userData.portfolios[portfolioIde].wallets[wallet].tokens.length; i++) {
+                  for (var j = 0; j < walletApi.tokens.length; j++) {
+                    if (userData.portfolios[portfolioIde].wallets[wallet].tokens[i].apiSymbol === walletApi.tokens[j].currency.symbol.toLowerCase()) {
+                      walletRestore.push(userData.portfolios[portfolioIde].wallets[wallet].tokens[i]);
+                      break;
+                    }
+                  }
                 }
-              })
 
-              let marketDataCryptos = await coingeckoRequests(0, newCryptos)
-              marketDataCryptos.map((value, index) => {
-                userData.portfolios[portfolioIde].wallets[wallet].tokens.push({ coinId: value.coinId, quantity: newCryptos.tokens[index].value, symbol: newCryptos.tokens[index].currency.symbol });
-              })
+                userData.portfolios[portfolioIde].wallets[wallet].tokens = walletRestore
 
+
+                walletApi.tokens.map((walletApiValue) => {
+                  try {
+                    from(userData.portfolios[portfolioIde].wallets[wallet].tokens).where((walletDbValue) => walletApiValue.currency.symbol.toLowerCase() == walletDbValue.apiSymbol).first()
+                  } catch (err) {
+
+                    newCryptos.tokens.push(walletApiValue);
+                    console.log("ADD", walletApiValue)
+                  }
+                })
+
+                let marketDataCryptos = await coingeckoRequests(0, newCryptos)
+                marketDataCryptos.map((value, index) => {
+                  userData.portfolios[portfolioIde].wallets[wallet].tokens.push({ coinId: value.coinId, quantity: newCryptos.tokens[index].value, symbol: newCryptos.tokens[index].currency.symbol });
+                })
+
+
+
+
+              }
+
+              for (let index = 0; index < walletApi.tokens.length; index++) {
+                for (let j = 0; j < userData.portfolios[portfolioIde].wallets[wallet].tokens.length; j++) {
+                  if (walletApi.tokens[index].currency.symbol.toLowerCase() == userData.portfolios[portfolioIde].wallets[wallet].tokens[j].apiSymbol && walletApi.tokens[index].value != userData.portfolios[portfolioIde].wallets[wallet].tokens[j].quantity) {
+                    userData.portfolios[portfolioIde].wallets[wallet].tokens[j].quantity = walletApi.tokens[index].value;
+                  }
+                }
+              }
             }
 
-            for (let index = 0; index < walletApi.tokens.length; index++) {
-              for (let j = 0; j < userData.portfolios[portfolioIde].wallets[wallet].tokens.length; j++) {
-                if (walletApi.tokens[index].currency.symbol.toLowerCase() == userData.portfolios[portfolioIde].wallets[wallet].tokens[j].apiSymbol && walletApi.tokens[index].value != userData.portfolios[portfolioIde].wallets[wallet].tokens[j].quantity) {
-                  userData.portfolios[portfolioIde].wallets[wallet].tokens[j].quantity = walletApi.tokens[index].value;
+            //WALLET UPDATE END
+
+
+            for (let l = 0; l < userData.portfolios[portfolioIde].exchanges.length; l++) {
+
+              const wallet = l;
+              const walletApi = await walletsRequests(userData.portfolios[portfolioIde].exchanges[wallet].address, userData.portfolios[portfolioIde].exchanges[wallet].network)
+
+              console.log(walletApi.tokens)
+              let newCryptos = {
+                tokens: []
+              };
+
+              walletApi.tokens.pop();
+
+              let equals = -1;
+
+              for (let index = 0; index < walletApi.tokens.length; index++) {
+                for (let j = 0; j < userData.portfolios[portfolioIde].exchanges[wallet].tokens.length; j++) {
+                  if (walletApi.tokens[index].currency.symbol.toLowerCase() == userData.portfolios[portfolioIde].exchanges[wallet].tokens[j].apiSymbol) {
+                    equals++
+                  }
+                }
+              }
+
+              if (equals != walletApi.tokens.length - 1) {
+                let walletRestore = [];
+                for (var i = 0; i < userData.portfolios[portfolioIde].exchanges[wallet].tokens.length; i++) {
+                  for (var j = 0; j < walletApi.tokens.length; j++) {
+                    if (userData.portfolios[portfolioIde].exchanges[wallet].tokens[i].apiSymbol === walletApi.tokens[j].currency.symbol.toLowerCase()) {
+                      walletRestore.push(userData.portfolios[portfolioIde].exchanges[wallet].tokens[i]);
+                      break;
+                    }
+                  }
+                }
+
+                userData.portfolios[portfolioIde].exchanges[wallet].tokens = walletRestore
+
+
+                walletApi.tokens.map((walletApiValue) => {
+                  try {
+                    from(userData.portfolios[portfolioIde].exchanges[wallet].tokens).where((walletDbValue) => walletApiValue.currency.symbol.toLowerCase() == walletDbValue.apiSymbol).first()
+                  } catch (err) {
+
+                    newCryptos.tokens.push(walletApiValue);
+                    console.log("ADD", walletApiValue)
+                  }
+                })
+
+                let marketDataCryptos = await coingeckoRequests(0, newCryptos)
+                marketDataCryptos.map((value, index) => {
+                  userData.portfolios[portfolioIde].exchanges[wallet].tokens.push({ coinId: value.coinId, quantity: newCryptos.tokens[index].value, symbol: newCryptos.tokens[index].currency.symbol });
+                })
+              }
+
+              for (let index = 0; index < walletApi.tokens.length; index++) {
+                for (let j = 0; j < userData.portfolios[portfolioIde].exchanges[wallet].tokens.length; j++) {
+                  if (walletApi.tokens[index].currency.symbol.toLowerCase() == userData.portfolios[portfolioIde].exchanges[wallet].tokens[j].apiSymbol && walletApi.tokens[index].value != userData.portfolios[portfolioIde].exchanges[wallet].tokens[j].quantity) {
+                    userData.portfolios[portfolioIde].exchanges[wallet].tokens[j].quantity = walletApi.tokens[index].value;
+                  }
                 }
               }
             }
@@ -1817,17 +1886,16 @@ export default {
             await userData.save();
 
             return 200;
-            }
-            
+
+
           }
 
 
         } catch (err) {
           console.log(err);
         }
-
-
-      } else {
+      }
+      else if (walletId != "") {
 
         try {
           const userData = await User.findById(user._id)
@@ -1861,7 +1929,7 @@ export default {
               }
             }
 
-            if(equals != walletApi.tokens.length -1){
+            if (equals != walletApi.tokens.length - 1) {
               let walletRestore = [];
               for (var i = 0; i < userData.portfolios[portfolioIde].wallets[wallet].tokens.length; i++) {
                 for (var j = 0; j < walletApi.tokens.length; j++) {
@@ -1909,7 +1977,120 @@ export default {
         } catch (err) {
           console.log(err);
         }
+      } else if (exchangeId != "") {
+
+        try {
+          const userData = await User.findById(user._id)
+
+          if (!userData) {
+            throw new Error(701)
+          }
+
+          const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
+
+          let walletApi = {
+            tokens: []
+          };
+
+          const portfolio = userData.portfolios[portfolioIde];
+          if (portfolio) {
+
+            const wallet = userData.portfolios[portfolioIde].exchanges.findIndex(wallet => wallet.id === exchangeId)
+
+            if (userData.portfolios[portfolioIde].exchanges[wallet].network == "binance") {
+
+
+              const client = new MainClient({
+                api_key: userData.portfolios[portfolioIde].exchanges[wallet].apiKey,
+                api_secret: userData.portfolios[portfolioIde].exchanges[wallet].apiSecret,
+              });
+
+              const data = await client.getBalances();
+
+              const tokens = data.filter((token) => token.free > 0)
+              const tokensQuantity = tokens.reduce((a, c) => a + Number(c.free), 0)
+
+              let newToken = {}
+
+              tokens.map((token) => {
+                newToken = {}
+                newToken.value = Number(token.free),
+                  newToken.currency = {
+                    symbol: token.coin,
+                    name: token.name
+                  }
+
+                walletApi.tokens.unshift(newToken)
+              })
+
+            }
+
+            console.log(walletApi)
+            let newCryptos = {
+              tokens: []
+            };
+
+            // walletApi..pop();
+
+            let equals = -1;
+
+            for (let index = 0; index < walletApi.tokens.length; index++) {
+              for (let j = 0; j < userData.portfolios[portfolioIde].exchanges[wallet].tokens.length; j++) {
+                if (walletApi.tokens[index].currency.symbol.toLowerCase() == userData.portfolios[portfolioIde].exchanges[wallet].tokens[j].symbol) {
+                  equals++
+                }
+              }
+            }
+
+            if (equals != walletApi.tokens.length - 1) {
+              let walletRestore = [];
+              for (var i = 0; i < userData.portfolios[portfolioIde].exchanges[wallet].tokens.length; i++) {
+                for (var j = 0; j < walletApi.tokens.length; j++) {
+                  if (userData.portfolios[portfolioIde].exchanges[wallet].tokens[i].symbol === walletApi.tokens[j].currency.symbol.toLowerCase()) {
+                    walletRestore.push(userData.portfolios[portfolioIde].exchanges[wallet].tokens[i]);
+                    break;
+                  }
+                }
+              }
+
+              userData.portfolios[portfolioIde].exchanges[wallet].tokens = walletRestore
+
+
+              walletApi.tokens.map((walletApiValue) => {
+                try {
+                  from(userData.portfolios[portfolioIde].exchanges[wallet].tokens).where((walletDbValue) => walletApiValue.currency.symbol.toLowerCase() == walletDbValue.currency.symbol).first()
+                } catch (err) {
+
+                  newCryptos.tokens.push(walletApiValue);
+                  console.log("ADD", walletApiValue)
+                }
+              })
+
+              let marketDataCryptos = await coingeckoRequests(0, newCryptos)
+              marketDataCryptos.map((value, index) => {
+                userData.portfolios[portfolioIde].exchanges[wallet].tokens.push(newCryptos.tokens[index]);
+              })
+
+            }
+
+            for (let index = 0; index < walletApi.tokens.length; index++) {
+              console.log("ENTROOO")
+              for (let j = 0; j < userData.portfolios[portfolioIde].exchanges[wallet].tokens.length; j++) {
+                if (walletApi.tokens[index].currency.symbol.toLowerCase() == userData.portfolios[portfolioIde].exchanges[wallet].tokens[j].symbol && walletApi.tokens[index].value != userData.portfolios[portfolioIde].exchanges[wallet].tokens[j].value) {
+                  userData.portfolios[portfolioIde].exchanges[wallet].tokens[j].value = walletApi.tokens[index].value;
+                }
+              }
+            }
+
+            await userData.save();
+
+            return 200;
+          }
+        } catch (err) {
+          console.log(err);
+        }
       }
+
 
 
     },
@@ -1961,7 +2142,7 @@ export default {
               }
             }
 
-            if(equals != walletApi.tokens.length -1){
+            if (equals != walletApi.tokens.length - 1) {
               let walletRestore = [];
               for (var i = 0; i < userData.portfolios[portfolioIde].wallets[wallet].tokens.length; i++) {
                 for (var j = 0; j < walletApi.tokens.length; j++) {
@@ -2232,7 +2413,7 @@ export default {
               image: image,
               network: network,
               apiSecret: secret,
-              tokens: []
+              tokens: portfolioTokens
             });
 
             await userData.save();
