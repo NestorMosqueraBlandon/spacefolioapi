@@ -1216,7 +1216,7 @@ export default {
 
             // console.log(portfolioTokens)
           }else{
-            
+
           }
 
           if (portfolios[i].exchanges.length > 0 && getInternalData === false) {
@@ -2346,6 +2346,9 @@ export default {
       const portfolio = userData.portfolios[portfolioIde];
 
 
+      if(userData.portfolios[portfolioIde].exchanges.length > 0)
+      {
+
       userData.portfolios[portfolioIde].exchanges.map((exchange) => {
 
         if (exchange.name == name || (exchange.apiKey == key && exchange.network == network)) {
@@ -2353,6 +2356,8 @@ export default {
         }
 
       })
+    }
+
 
 
 
