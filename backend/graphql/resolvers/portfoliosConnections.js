@@ -561,11 +561,17 @@ export default {
     },
 
     async getPortfolio(_, { portfolioId, userId }, context) {
-      // const user = checkAuth(context);
+      const user = checkAuth(context);
       try {
-        const portfolio = await Portfolio.findById(portfolioId);
+
+        const userData = await User.findById(user._id)
+
+        const portfolioIde = userData.portfolios.findIndex(port => port.id == portfolioId)
+
+        const portfolio = userData.portfolios[portfolioIde];
+
         if (portfolio) {
-          if (userId == portfolio.user) {
+          if (user) {
             return portfolio;
           } else {
             return 105;
@@ -574,6 +580,7 @@ export default {
           throw new Error(701);
         }
       } catch (err) {
+        console.log(err)
         throw new Error(err);
       }
     },
@@ -988,10 +995,10 @@ export default {
 
           if (portfolios[i].wallets.length > 0 && getInternalData === false) {
             for (let j = 0; j < portfolios[i].wallets.length; j++) {
-              
-            switch (portfolios[i].wallets[j].network) {
-              case "cardano":
-                query = `
+
+              switch (portfolios[i].wallets[j].network) {
+                case "cardano":
+                  query = `
                 query {
                  cardano{
                    address(address: {in: 
@@ -1011,9 +1018,9 @@ export default {
                }
                
              `
-                break;
-              case "bitcoin" || "bitcash" || "litecoin" || "dash" || "dogecoin" || "bitcoinsv" || "zcash":
-                query = `  
+                  break;
+                case "bitcoin" || "bitcash" || "litecoin" || "dash" || "dogecoin" || "bitcoinsv" || "zcash":
+                  query = `  
               query ($network: BitcoinNetwork!,) {
                   bitcoin(network: $network) {
                     coinpath(initialAddress: {in: "${portfolios[i].wallets[j].address}"}) {
@@ -1032,9 +1039,9 @@ export default {
                 }
                 
                 `
-                break;
-              case "bsc":
-                query = `
+                  break;
+                case "bsc":
+                  query = `
                 query ($network: EthereumNetwork!, $address: String!) {
                   ethereum(network: $network) {
                     address(address: {is: $address}) {
@@ -1053,9 +1060,9 @@ export default {
                 }
      
                 `;
-                break;
-              case "eos":
-                `
+                  break;
+                case "eos":
+                  `
                 query {
                   eos(network: eos) {
                     coinpath(initialAddress: {in: "${portfolios[i].wallets[j].address}"}) {
@@ -1070,9 +1077,9 @@ export default {
                   }
                 }`
 
-                break;
-              case "tron":
-                query = `
+                  break;
+                case "tron":
+                  query = `
                 query {
                   tron(network: tron) {
                     coinpath(initialAddress: {in: "${portfolios[i].wallets[j].address}"}) {
@@ -1088,9 +1095,9 @@ export default {
                   }
                 }
                 `
-                break;
-              case "algoran":
-                `
+                  break;
+                case "algoran":
+                  `
                 query {
                   algorand(network: algorand) {
                     coinpath(initialAddress: {in: "${portfolios[i].wallets[j].address}"}) {
@@ -1106,9 +1113,9 @@ export default {
                   }
                 }
                 `
-                break;
-              case "binance":
-                `
+                  break;
+                case "binance":
+                  `
                   query  {
                     binance {
                       coinpath(initialAddress: {in: "${portfolios[i].wallets[j].address}"}) {
@@ -1125,8 +1132,8 @@ export default {
                   }
                   
                   `
-              case "elrond":
-                `
+                case "elrond":
+                  `
                     query {
                       elrond(network: elrond) {
                         coinpath(initialAddress: {in: "${portfolios[i].wallets[j].address}"}) {
@@ -1141,12 +1148,12 @@ export default {
                       }
                     }
                     `
-                break;
-              default:
-                break;
-            }
+                  break;
+                default:
+                  break;
+              }
 
-          }
+            }
 
             for (let j = 0; j < portfolios[i].wallets.length; j++) {
 
@@ -1208,6 +1215,8 @@ export default {
             })
 
             // console.log(portfolioTokens)
+          }else{
+            
           }
 
           if (portfolios[i].exchanges.length > 0 && getInternalData === false) {
