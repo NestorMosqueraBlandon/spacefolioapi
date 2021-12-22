@@ -1400,9 +1400,6 @@ export default {
           let avg = metadata.cryptos.length > 0 ? sumPercentage / metadata.cryptos.length : 0;
           let avgUsd = metadata.cryptos.length > 0 ? sumPercentageUsd / metadata.cryptos.length : 0;
 
-
-
-
           totalBalance += metadata.balance;
           totalPercentage += avg
           totalValue += avgUsd
