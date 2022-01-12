@@ -22,6 +22,7 @@ export default {
   Query: {
 
     async coinGlobal(_, { }) {
+      const user = checkAuth(context);
       const { data } = await CoinGeckoClient.global()
       const { data: { active_cryptocurrencies, markets, total_market_cap, total_volume, market_cap_change_percentage_24h_usd } } = data
 

@@ -7,7 +7,7 @@ import {urlGoogle} from "../../utils/googleAuth.js"
 export default {
   Query: {
     async fiatList() {
-
+      const user = checkAuth(context);
       const requestOptions = {
         method: 'GET',
         uri: 'https://pro-api.coinmarketcap.com/v1/fiat/map',
@@ -33,6 +33,7 @@ export default {
     },
 
     async newsList(_, {page}){
+      const user = checkAuth(context);
       const requestOptions = {
         method: 'GET',
         uri: `https://api.coinstats.app/public/v1/news`,
@@ -103,6 +104,7 @@ export default {
     },
 
     async cancelSubscription(_, {subscriptionId}, context){
+      const user = checkAuth(context);
       const deletedSubscription = await stripe.subscriptions.del(subscriptionId);
 
       return 200
