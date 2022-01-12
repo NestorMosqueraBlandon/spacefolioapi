@@ -24,8 +24,6 @@ export default {
         throw new Error(err);
       }
     },
-
-   
   },
 
   Mutation: {
@@ -52,7 +50,7 @@ export default {
 
         const portfolioCreated = await userData.save();
 
-        // return portfolioCreated._id;
+        return portfolioCreated._id;
       } catch (err) {
         return err;
       }
@@ -103,13 +101,17 @@ export default {
       }
     },
     async deletePortfolio(_, { portfolioId }, context) {
+      
       const user = checkAuth(context);
 
+      const userData = await User.findById(user._id)
+      
+      console.log(userData)
       try {
         if (user) {
           const portfolio = await Portfolio.findById(portfolioId);
           await portfolio.delete();
-          return 202;
+          return 200;
         }
       } catch (err) {
         throw new Error(err);

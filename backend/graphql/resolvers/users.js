@@ -4,11 +4,13 @@ import bcrypt from 'bcrypt';
 import { sendConfirmationEmail, sendResetPassword } from '../../services/emailService.js';
 import jwt from 'jsonwebtoken';
 import config from '../../utils/config.js';
+import checkAuth from '../../utils/checkAuth.js';
 
 export default {
 
     Query: {
         async users() {
+            const user = checkAuth(context);
             const users = await User.find();
             return users;
         },

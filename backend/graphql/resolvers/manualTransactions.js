@@ -9,8 +9,6 @@ import Exchange from '../../models/exchangeModel.js';
 import Enumerable from 'linq'
 import rp from "request-promise"
 
-const { from } = Enumerable;
-
 const Client = CoinGeckoV3.CoinGeckoClient;
 
 const client = new Client({
@@ -19,32 +17,6 @@ const client = new Client({
 });
 
 const CoinGeckoClient = new CoinGecko();
-
-const convertValue = async (amount, symbol) => {
-
-  const requestOptions = {
-    method: 'GET',
-    uri: 'https://pro-api.coinmarketcap.com/v1/tools/price-conversion',
-    qs: {
-      "amount": amount,
-      "symbol": symbol,
-      "convert": "USD"
-    },
-    headers: {
-      'X-CMC_PRO_API_KEY': '91f97ef8-bc4e-40f9-9d20-7e7e67af1776'
-    },
-    json: true,
-    gzip: true
-  };
-
-  try {
-    const { data } = await rp(requestOptions);
-    return data.quote["USD"].price
-  }
-  catch (err) {
-    console.log(err)
-  }
-}
 
 export default {
   Query: {
@@ -61,7 +33,8 @@ export default {
     async coinList(_, { page, search, order }) {
       try {
 
-        if (search != "") {
+        console.log(search)
+        if (search != null) {
           const { data } = await CoinGeckoClient.coins.list();
 
           const newData = await data.filter((d) => d.name.toLowerCase().includes(search.toLowerCase()) || d.symbol.toLowerCase().includes(search.toLowerCase()))
@@ -89,13 +62,20 @@ export default {
         }
 
       } catch (err) {
-        throw new Error(err);
+        console.log(err)
+        // throw new Error(err);
       }
     },
 
     async coinMarket(_, { coinId }) {
 
+      console.log("ENTRO")
       try {
+
+
+        // coinId = 'bitcoin'
+
+        coinId = coinId.toLowerCase()
 
         const data = await CoinGeckoClient.coins.fetch(coinId, {});
 
@@ -118,6 +98,7 @@ export default {
         }
 
       } catch (err) {
+        console.log(err)
         throw new Error(err);
       }
     },
@@ -125,7 +106,8 @@ export default {
     async exchangeList(_, { page, search }) {
       try {
 
-        if (search != "") {
+        
+        if (search != null) {
           const dataList = await client.exchangeList();
 
           const newData = await dataList.filter((d) => d.name.toLowerCase().includes(search.toLowerCase()))
@@ -142,9 +124,11 @@ export default {
             })
           }
 
+          
           return dataMarket
         } else {
           const exchangev3 = await client.exchanges({ page: page ? page : 1, per_page: 50 })
+          console.log(exchangev3)
           return exchangev3;
         }
 

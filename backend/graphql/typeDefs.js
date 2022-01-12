@@ -81,7 +81,7 @@ type PortfolioData {
 type Portfolio {
     id: ID!
     name: String!
-    dfCurrency: String!
+    dfCurrency: String
     balance: String!
     percentage: String
     price_change_percentage: String
@@ -94,6 +94,7 @@ type Portfolio {
     createdAt: String!
 }
 
+# An Author
 type User{
     _id: ID
     email: String!
@@ -275,7 +276,7 @@ type MarketData{
     price_change_percentage_200d:String
     price_change_percentage_1y: String
     market_cap_change_percentage_24h_in_currency: String
-    market_cap_change_24h_in_currency: String
+
     total_supply:String
     max_supply:String
     circulating_supply:String

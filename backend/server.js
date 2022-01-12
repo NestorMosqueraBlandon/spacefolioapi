@@ -23,10 +23,22 @@ const server = new ApolloServer({
 
 const port = config.PORT;
 
+
+
 server.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`)
 })
 
+
+// const newQuery= "";
+// const queryOperation= "";
+// const variables= "";
+// const variableData= "";
+// const queryData= "";
+
+// newQuery = queryData;
+// queryOperation = "GreetingQuery";
+// variables= sd= { "arg1": variableData };
 
 
 
